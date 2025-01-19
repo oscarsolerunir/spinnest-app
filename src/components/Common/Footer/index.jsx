@@ -1,7 +1,9 @@
 const Footer = () => {
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer>
-      <p>&copy; 2021 My Music Collection</p>
+      <p>&copy; {currentYear} My Music Collection</p>
     </footer>
   )
 }
