@@ -5,45 +5,30 @@ import { auth, signOut } from '../../../services/firebase'
 const NavItems = () => {
   const [user] = useAuthState(auth)
 
-  const handleSignOut = () => {
-    signOut(auth)
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth)
+      // Redirigir o mostrar mensaje de éxito
+    } catch (error) {
+      console.error('Error signing out:', error)
+      // Mostrar mensaje de error
+    }
   }
 
   return (
-    <ul>
-      <li>
-        <Link to="/">Home</Link>
-      </li>
-      {user && (
-        <>
-          <li>
-            <Link to="/collection">My Collection</Link>
-          </li>
-          <li>
-            <Link to="/upload-album">Upload Album</Link>
-          </li>
-        </>
-      )}
+    <nav>
       {user ? (
         <>
-          <li>
-            <Link to="/user-profile">{user.email}</Link>
-          </li>
-          <li>
-            <button onClick={handleSignOut}>Logout</button>
-          </li>
+          <Link to="/profile">Profile</Link>
+          <button onClick={handleSignOut}>Sign Out</button>
         </>
       ) : (
         <>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/register">Register</Link>
-          </li>
+          <Link to="/login">Login</Link>
+          <Link to="/register">Register</Link>
         </>
       )}
-    </ul>
+    </nav>
   )
 }
 

@@ -1,6 +1,24 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  signOut
+} from 'firebase/auth'
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  deleteDoc,
+  where,
+  onSnapshot,
+  documentId
+} from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -15,3 +33,19 @@ const firebaseApp = initializeApp(firebaseConfig)
 export const db = getFirestore(firebaseApp)
 export const auth = getAuth(firebaseApp)
 setPersistence(auth, browserLocalPersistence)
+
+// Exportar los módulos necesarios
+export {
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  deleteDoc,
+  where,
+  onSnapshot,
+  documentId,
+  signOut
+}
