@@ -14,15 +14,21 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('User authenticated:', user)
       const fetchUserData = async () => {
         const userDoc = await getDoc(doc(db, 'users', user.uid))
         if (userDoc.exists()) {
           const userData = userDoc.data()
+          console.log('User data:', userData)
           setName(userData.name)
           setEmail(userData.email)
+        } else {
+          console.log('No user data found')
         }
       }
       fetchUserData()
+    } else {
+      console.log('No user authenticated')
     }
   }, [user])
 

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, signOut } from '../../../services/firebase'
+import { NavContainer } from './styles'
 
 const NavItems = () => {
   const [user] = useAuthState(auth)
@@ -16,19 +17,27 @@ const NavItems = () => {
   }
 
   return (
-    <nav>
-      {user ? (
-        <>
-          <Link to="/profile">Profile</Link>
-          <button onClick={handleSignOut}>Sign Out</button>
-        </>
-      ) : (
-        <>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </>
+    <NavContainer>
+      {user && (
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/collection">My Collection</Link>
+          </li>
+          <li>
+            <Link to="/upload-album">Upload Album</Link>
+          </li>
+          <li>
+            <Link to="/profile">Profile</Link>
+          </li>
+          <li>
+            <button onClick={handleSignOut}>Sign Out</button>
+          </li>
+        </ul>
       )}
-    </nav>
+    </NavContainer>
   )
 }
 
