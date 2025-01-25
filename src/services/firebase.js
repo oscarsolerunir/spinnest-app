@@ -21,11 +21,12 @@ import {
 } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY || 'mock_key',
+  apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN || 'mock_auth_domain',
   projectId: import.meta.env.VITE_PROJECT_ID || 'mock_project_id',
   storageBucket: import.meta.env.VITE_STORAGE_BUCKET || 'mock_storage_bucket',
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID || 'mock_messaging_sender_id',
+  messagingSenderId:
+    import.meta.env.VITE_MESSAGING_SENDER_ID || 'mock_messaging_sender_id',
   appId: import.meta.env.VITE_APP_ID || 'mock_app_id'
 }
 
