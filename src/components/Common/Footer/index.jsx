@@ -3,7 +3,7 @@ const Footer = () => {
 
   return (
     <footer>
-      <p>&copy; {currentYear} My Music Collection</p>
+      <p>&copy; {currentYear} Spinnest App</p>
     </footer>
   )
 }
