@@ -52,7 +52,7 @@ const CreateCollection = () => {
       }
       await addDoc(collection(db, 'collections'), newCollection)
       alert('Collection created successfully')
-      navigate('/user-collections')
+      navigate('/my-collections')
     } catch (error) {
       console.error('Error creating collection:', error)
       alert('Error creating collection')
@@ -107,9 +107,20 @@ const CreateCollection = () => {
           albums={filteredAlbums}
           onClick={handleAlbumSelection}
           selectedAlbums={selectedAlbums}
+          context="create-collection"
         />
       ) : (
         <p>No albums found.</p>
+      )}
+      <h3>Albums in Collection</h3>
+      {selectedAlbums.length > 0 ? (
+        <AlbumList
+          albums={albums.filter(album => selectedAlbums.includes(album.id))}
+          onClick={handleAlbumSelection}
+          context="collection"
+        />
+      ) : (
+        <p>No albums in collection.</p>
       )}
       <button type="submit">Create Collection</button>
     </form>

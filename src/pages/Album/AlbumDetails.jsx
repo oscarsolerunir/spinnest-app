@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link, useLocation } from 'react-router-dom'
+import { useParams, useLocation, Link } from 'react-router-dom'
 import { getAlbumById } from '../../services/api'
 import styled from 'styled-components'
 
@@ -33,9 +33,8 @@ const AlbumDetails = () => {
   if (!album) return <div>Loading...</div>
 
   // Determine the previous page and button text
-  const previousPage = location.state?.from || '/my-albums'
-  const buttonText =
-    previousPage === '/' ? 'Back to albums' : 'Back to my albums'
+  const previousPage = location.state?.from || '/'
+  const buttonText = previousPage === '/' ? 'Back to home' : 'Back to my albums'
 
   return (
     <AlbumDetailContainer>

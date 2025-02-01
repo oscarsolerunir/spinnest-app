@@ -6,7 +6,8 @@ const AlbumList = ({
   onClick,
   onDelete,
   selectedAlbums = [],
-  context
+  context,
+  userName
 }) => {
   return (
     <ListContainer>
@@ -19,6 +20,7 @@ const AlbumList = ({
             onDelete={onDelete}
             selectedAlbums={selectedAlbums}
             context={context}
+            userName={userName}
           />
         ))}
       </ListGrid>

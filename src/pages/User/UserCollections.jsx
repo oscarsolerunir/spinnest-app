@@ -74,23 +74,24 @@ const UserCollections = () => {
 
   return (
     <CollectionContainer>
-      <h2>My Collections</h2>
+      <h2>Mis Colecciones</h2>
       <Link to="/create-collection">
-        <button type="button">Create Collection</button>
+        <button type="button">Crear Colección</button>
       </Link>
       {collections.length > 0 ? (
         collections.map(collection => (
           <CollectionItem key={collection.id}>
             <h3>{collection.name}</h3>
             <p>{collection.description}</p>
-            <Link to={`/collection/${collection.id}`}>View Collection</Link>
+            <p>{collection.privacy === 'public' ? 'Pública' : 'Privada'}</p>
+            <Link to={`/collection/${collection.id}`}>Ver Colección</Link>
             <DeleteButton onClick={() => handleDeleteCollection(collection.id)}>
-              Delete Collection
+              Eliminar Colección
             </DeleteButton>
           </CollectionItem>
         ))
       ) : (
-        <p>No collections found.</p>
+        <p>No se encontraron colecciones.</p>
       )}
     </CollectionContainer>
   )

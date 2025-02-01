@@ -70,6 +70,7 @@ const AlbumItem = ({
         <p>{album.year}</p>
         <p>{album.genre}</p>
         <p>{album.label}</p>
+        {context === '/' && <p>Added by: {album.userName}</p>}
       </AlbumLink>
       {context === 'create-collection' &&
         (isSelected ? (

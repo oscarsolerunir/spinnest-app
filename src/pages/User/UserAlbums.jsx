@@ -50,12 +50,12 @@ const UserAlbums = () => {
     <div>
       <h1>Mis álbums</h1>
       <Link to="/upload-album">
-        <button>Añadir un nuevo album</button>
+        <button type="button">Añadir Álbum</button>
       </Link>
       <AlbumList
         albums={albums}
         onClick={handleAlbumClick}
-        onDelete={confirmDeleteAlbum} // Pasar confirmDeleteAlbum como onDelete
+        onDelete={confirmDeleteAlbum}
         context="my-albums"
       />
       <Modal

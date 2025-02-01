@@ -11,7 +11,6 @@ import {
   getDocs,
   updateDoc
 } from 'firebase/firestore'
-import { uploadImageToS3 } from '../../services/aws' // Importar desde aws.js
 import AlbumList from '../../components/Album/AlbumList'
 import styled from 'styled-components'
 
@@ -35,11 +34,14 @@ const BackButton = styled(Link)`
 
 const UserCollection = () => {
   const { id } = useParams()
+  const [user] = useAuthState(auth)
   const [collection, setCollection] = useState(null)
   const [albums, setAlbums] = useState([])
 
   useEffect(() => {
     const fetchCollection = async () => {
+      if (!user) return
+
       const docRef = doc(db, 'collections', id)
       const docSnap = await getDoc(docRef)
       if (docSnap.exists()) {
@@ -63,7 +65,7 @@ const UserCollection = () => {
     }
 
     fetchCollection()
-  }, [id])
+  }, [id, user])
 
   const handleRemoveAlbum = async albumId => {
     const updatedAlbums = collection.albums.filter(id => id !== albumId)
