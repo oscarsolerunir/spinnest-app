@@ -42,11 +42,10 @@ const AlbumForm = ({ handleSaveAlbum }) => {
 
   return (
     <Form>
-      <h2>Search for albums by artist</h2>
-      <Label>Artist:</Label>
+      <Label>Busca tu álbum por el nombre del artista</Label>
       <Input
         type="text"
-        placeholder="Artist"
+        placeholder="Escribe aquí el nombre del artista"
         value={artist}
         onChange={e => setArtist(e.target.value)}
       />
@@ -60,9 +59,8 @@ const AlbumForm = ({ handleSaveAlbum }) => {
             genre: result.genre,
             image: result.cover_image
           }))}
-          confirmDeleteAlbum={null}
           onClick={onSelectAlbum}
-          showCollectedBy={false} // No mostrar "Collected by: " en los resultados de búsqueda
+          context="upload-album" // Pasar el contexto correcto
         />
       )}
     </Form>

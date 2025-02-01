@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, db } from '../../services/firebase'
+import { auth, db, signOut } from '../../services/firebase'
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { updateEmail, updatePassword, deleteUser } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
@@ -76,6 +76,17 @@ const UserProfile = () => {
     }
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth)
+      alert('User signed out successfully')
+      navigate('/login')
+    } catch (error) {
+      console.error('Error signing out:', error)
+      alert('Error signing out')
+    }
+  }
+
   return (
     <form onSubmit={handleSaveChanges}>
       <h2>User Profile</h2>
@@ -95,8 +106,13 @@ const UserProfile = () => {
         placeholder="Leave blank to keep current password"
       />
       <button type="submit">Save Changes</button>
+
       <button type="button" onClick={handleDeleteAccount}>
         Delete Account
+      </button>
+
+      <button type="button" onClick={handleSignOut}>
+        Sign Out
       </button>
     </form>
   )

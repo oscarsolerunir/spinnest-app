@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { getAlbumsByUser, deleteAlbum } from '../../services/api'
-import { auth } from '../../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../services/firebase'
+import { getAlbumsByUser, deleteAlbum } from '../../services/api'
 import { Link, useNavigate } from 'react-router-dom'
 import AlbumList from '../../components/Album/AlbumList'
 import Modal from '../../components/Common/Modal'
 
-const MyCollection = () => {
+const UserAlbums = () => {
   const [albums, setAlbums] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [selectedAlbum, setSelectedAlbum] = useState(null)
@@ -43,19 +43,20 @@ const MyCollection = () => {
   }
 
   const handleAlbumClick = id => {
-    navigate(`/album/${id}`, { state: { from: '/collection' } })
+    navigate(`/album/${id}`, { state: { from: '/my-albums' } })
   }
 
   return (
     <div>
-      <h1>Albums Collection</h1>
+      <h1>Mis álbums</h1>
       <Link to="/upload-album">
-        <button>Add Album</button>
+        <button>Añadir un nuevo album</button>
       </Link>
       <AlbumList
         albums={albums}
-        confirmDeleteAlbum={confirmDeleteAlbum}
         onClick={handleAlbumClick}
+        onDelete={confirmDeleteAlbum} // Pasar confirmDeleteAlbum como onDelete
+        context="my-albums"
       />
       <Modal
         showModal={showModal}
@@ -66,4 +67,4 @@ const MyCollection = () => {
   )
 }
 
-export default MyCollection
+export default UserAlbums

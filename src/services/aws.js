@@ -8,7 +8,7 @@ const s3Client = new S3Client({
   }
 })
 
-export const uploadImageToS3 = async (albumImage) => {
+export const uploadImageToS3 = async albumImage => {
   const params = {
     Bucket: import.meta.env.VITE_S3_BUCKET_NAME,
     Key: `${Date.now()}_${albumImage.name}`,
@@ -18,7 +18,9 @@ export const uploadImageToS3 = async (albumImage) => {
   try {
     const command = new PutObjectCommand(params)
     await s3Client.send(command)
-    return `https://${params.Bucket}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${params.Key}`
+    return `https://${params.Bucket}.s3.${
+      import.meta.env.VITE_AWS_REGION
+    }.amazonaws.com/${params.Key}`
   } catch (error) {
     console.error('Error uploading image:', error)
     throw error

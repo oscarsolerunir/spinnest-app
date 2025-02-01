@@ -1,39 +1,44 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, signOut } from '../../../services/firebase'
+import { auth, db } from '../../../services/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 import { NavContainer } from './styles'
 
 const NavItems = () => {
   const [user] = useAuthState(auth)
+  const [userName, setUserName] = useState('')
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth)
-      // Redirigir o mostrar mensaje de éxito
-    } catch (error) {
-      console.error('Error signing out:', error)
-      // Mostrar mensaje de error
+  useEffect(() => {
+    const fetchUserName = async () => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid))
+        if (userDoc.exists()) {
+          setUserName(userDoc.data().name)
+        }
+      }
     }
-  }
+
+    fetchUserName()
+  }, [user])
 
   return (
     <NavContainer>
       {user && (
         <ul>
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/">Inicio</Link>
           </li>
           <li>
-            <Link to="/collection">My Collection</Link>
+            <Link to="/my-albums">Mis albums</Link>
           </li>
           <li>
-            <Link to="/upload-album">Upload Album</Link>
+            <Link to="/my-collections">Mis colecciones</Link>
           </li>
           <li>
-            <Link to="/profile">Profile</Link>
-          </li>
-          <li>
-            <button onClick={handleSignOut}>Sign Out</button>
+            <Link to="/profile">
+              {userName ? `Hola, ${userName}` : 'Perfil'}
+            </Link>
           </li>
         </ul>
       )}

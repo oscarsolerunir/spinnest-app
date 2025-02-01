@@ -1,10 +1,10 @@
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth, db } from '../../services/firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { useNavigate } from 'react-router-dom'
 import { createAlbum } from '../../services/api'
 import { uploadImageToS3 } from '../../services/aws'
 import AlbumForm from '../../components/Album/AlbumForm'
-import { auth, db } from '../../services/firebase'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { useNavigate } from 'react-router-dom'
-import { doc, getDoc } from 'firebase/firestore'
 
 const UploadAlbum = () => {
   const [user] = useAuthState(auth)
@@ -52,12 +52,12 @@ const UploadAlbum = () => {
     })
 
     alert('Album added successfully')
-    navigate('/collection')
+    navigate('/my-albums')
   }
 
   return (
     <div>
-      <h1>Upload your album</h1>
+      <h1>Encuentra tu álbum</h1>
       <AlbumForm handleSaveAlbum={handleSaveAlbum} />
     </div>
   )

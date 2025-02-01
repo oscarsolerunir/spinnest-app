@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import AlbumsCollection from '../pages/Album/AlbumsCollection'
+import Home from '../pages/Home'
+import UserAlbums from '../pages/User/UserAlbums'
 import AlbumDetails from '../pages/Album/AlbumDetails'
 import UploadAlbum from '../pages/Album/UploadAlbum'
 import Login from '../components/User/Login'
@@ -7,7 +8,9 @@ import Register from '../components/User/Register'
 import UserProfile from '../pages/User/UserProfile'
 import DefaultLayout from '../layouts/DefaultLayout'
 import PrivateRoute from '../components/Common/PrivateRoute'
-import Home from '../pages/Home'
+import CreateCollection from '../components/Collection/CreateCollection'
+import UserCollections from '../pages/User/UserCollections'
+import UserCollection from '../pages/User/UserCollection'
 
 const RouterApp = () => {
   return (
@@ -16,10 +19,10 @@ const RouterApp = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
-            path="/collection"
+            path="/my-albums"
             element={
               <PrivateRoute>
-                <AlbumsCollection />
+                <UserAlbums />
               </PrivateRoute>
             }
           />
@@ -39,6 +42,30 @@ const RouterApp = () => {
             element={
               <PrivateRoute>
                 <UserProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/create-collection"
+            element={
+              <PrivateRoute>
+                <CreateCollection />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/my-collections"
+            element={
+              <PrivateRoute>
+                <UserCollections />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/collection/:id"
+            element={
+              <PrivateRoute>
+                <UserCollection />
               </PrivateRoute>
             }
           />

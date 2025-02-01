@@ -33,9 +33,9 @@ const AlbumDetails = () => {
   if (!album) return <div>Loading...</div>
 
   // Determine the previous page and button text
-  const previousPage = location.state?.from || '/collection'
+  const previousPage = location.state?.from || '/my-albums'
   const buttonText =
-    previousPage === '/' ? 'Back to all albums' : 'Back to my collection'
+    previousPage === '/' ? 'Back to albums' : 'Back to my albums'
 
   return (
     <AlbumDetailContainer>

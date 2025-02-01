@@ -3,9 +3,10 @@ import { ListContainer, ListGrid } from './styles'
 
 const AlbumList = ({
   albums,
-  confirmDeleteAlbum,
   onClick,
-  showCollectedBy = true
+  onDelete,
+  selectedAlbums = [],
+  context
 }) => {
   return (
     <ListContainer>
@@ -14,9 +15,10 @@ const AlbumList = ({
           <AlbumItem
             key={album.id}
             album={album}
-            confirmDeleteAlbum={confirmDeleteAlbum}
             onClick={onClick}
-            showCollectedBy={showCollectedBy}
+            onDelete={onDelete}
+            selectedAlbums={selectedAlbums}
+            context={context}
           />
         ))}
       </ListGrid>

@@ -24,16 +24,23 @@ export const AlbumTitle = styled.h3`
 `
 
 export const DeleteButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background-color: red;
   color: white;
   border: none;
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 5px;
-  z-index: 1;
+  margin-top: 10px;
+`
+
+export const AddButton = styled.button`
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
 `
 
 export const AlbumLink = styled(Link)`
