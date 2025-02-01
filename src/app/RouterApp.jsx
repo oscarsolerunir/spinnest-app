@@ -1,50 +1,80 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import AlbumsCollection from '../pages/Album/AlbumsCollection'
-import AlbumDetails from '../pages/Album/AlbumDetails'
-import UploadAlbum from '../pages/Album/UploadAlbum'
+import { UserProvider } from '../providers/UserContext'
+import PrivateRoute from '../components/Common/PrivateRoute'
+import DefaultLayout from '../layouts/Default'
+import Home from '../pages/Home'
+import AddAlbum from '../pages/Albums/AddAlbum'
+import ViewUserAlbums from '../pages/Albums/ViewUserAlbums'
+import ViewAlbum from '../pages/Albums/ViewAlbum'
+import ViewUserCollections from '../pages/Collections/ViewUserCollections'
+import ViewCollection from '../pages/Collections/ViewCollection'
+import EditCollection from '../pages/Collections/EditCollection'
+import UserProfile from '../pages/User/UserProfile'
 import Login from '../components/User/Login'
 import Register from '../components/User/Register'
-import UserProfile from '../pages/User/UserProfile'
-import DefaultLayout from '../layouts/DefaultLayout'
-import PrivateRoute from '../components/Common/PrivateRoute'
-import Home from '../pages/Home'
 
 const RouterApp = () => {
   return (
-    <Router>
-      <DefaultLayout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/collection"
-            element={
-              <PrivateRoute>
-                <AlbumsCollection />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/album/:id" element={<AlbumDetails />} />
-          <Route
-            path="/upload-album"
-            element={
-              <PrivateRoute>
-                <UploadAlbum />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <UserProfile />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </DefaultLayout>
-    </Router>
+    <UserProvider>
+      <Router>
+        <DefaultLayout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/albums"
+              element={
+                <PrivateRoute>
+                  <ViewUserAlbums />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/album/:id" element={<ViewAlbum />} />
+            <Route
+              path="/upload-album"
+              element={
+                <PrivateRoute>
+                  <AddAlbum />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <UserProfile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/collections"
+              element={
+                <PrivateRoute>
+                  <ViewUserCollections />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/collection/:id"
+              element={
+                <PrivateRoute>
+                  <ViewCollection />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-collection/:id"
+              element={
+                <PrivateRoute>
+                  <EditCollection />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </DefaultLayout>
+      </Router>
+    </UserProvider>
   )
 }
 

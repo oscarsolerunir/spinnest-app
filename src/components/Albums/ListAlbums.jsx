@@ -1,7 +1,19 @@
-import AlbumItem from '../AlbumItem'
-import { ListContainer, ListGrid } from './styles'
+import ViewAlbum from './ViewAlbum'
+import styled from 'styled-components'
 
-const AlbumList = ({
+const ListContainer = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+`
+
+const ListGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+`
+
+const ListAlbums = ({
   albums,
   confirmDeleteAlbum,
   onClick,
@@ -11,7 +23,7 @@ const AlbumList = ({
     <ListContainer>
       <ListGrid>
         {albums.map(album => (
-          <AlbumItem
+          <ViewAlbum
             key={album.id}
             album={album}
             confirmDeleteAlbum={confirmDeleteAlbum}
@@ -24,4 +36,4 @@ const AlbumList = ({
   )
 }
 
-export default AlbumList
+export default ListAlbums

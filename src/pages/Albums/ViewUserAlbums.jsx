@@ -3,8 +3,9 @@ import { getAlbumsByUser, deleteAlbum } from '../../services/api'
 import { auth } from '../../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { Link, useNavigate } from 'react-router-dom'
-import AlbumList from '../../components/Album/AlbumList'
+import ListAlbums from '../../components/Albums/ListAlbums'
 import Modal from '../../components/Common/Modal'
+import AddCollection from '../../components/Collections/AddCollection'
 
 const MyCollection = () => {
   const [albums, setAlbums] = useState([])
@@ -52,7 +53,7 @@ const MyCollection = () => {
       <Link to="/upload-album">
         <button>Add Album</button>
       </Link>
-      <AlbumList
+      <ListAlbums
         albums={albums}
         confirmDeleteAlbum={confirmDeleteAlbum}
         onClick={handleAlbumClick}
@@ -62,6 +63,7 @@ const MyCollection = () => {
         handleDeleteAlbum={handleDeleteAlbum}
         setShowModal={setShowModal}
       />
+      <AddCollection userId={user?.uid} albums={albums} />
     </div>
   )
 }

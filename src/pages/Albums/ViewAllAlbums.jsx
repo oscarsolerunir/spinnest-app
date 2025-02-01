@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getAlbums } from '../../services/api'
-import AlbumList from '../../components/Album/AlbumList'
+import ListAlbums from '../../components/Albums/ListAlbums'
 import { useNavigate } from 'react-router-dom'
 
 const AllAlbums = () => {
@@ -28,7 +28,7 @@ const AllAlbums = () => {
   return (
     <div>
       <h1>All Albums</h1>
-      <AlbumList albums={albums} onClick={handleAlbumClick} />
+      <ListAlbums albums={albums} onClick={handleAlbumClick} />
     </div>
   )
 }

@@ -1,9 +1,27 @@
 import { useState, useEffect } from 'react'
-import { Form, Label, Input } from './styles'
-import { searchAlbums, getAlbumDetails } from '../../../services/discogs'
-import AlbumList from '../../Album/AlbumList'
+import { searchAlbums, getAlbumDetails } from '../../services/discogs'
+import ListAlbums from './ListAlbums'
+import styled from 'styled-components'
 
-const AlbumForm = ({ handleSaveAlbum }) => {
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+`
+
+const Label = styled.label`
+  margin-bottom: 8px;
+  font-weight: bold;
+`
+
+const Input = styled.input`
+  margin-bottom: 16px;
+  padding: 8px;
+  font-size: 16px;
+`
+
+const AddAlbum = ({ handleSaveAlbum }) => {
   const [artist, setArtist] = useState('')
   const [searchResults, setSearchResults] = useState([])
 
@@ -51,7 +69,7 @@ const AlbumForm = ({ handleSaveAlbum }) => {
         onChange={e => setArtist(e.target.value)}
       />
       {searchResults.length > 0 && (
-        <AlbumList
+        <ListAlbums
           albums={searchResults.map(result => ({
             id: result.id,
             name: result.title,
@@ -69,4 +87,4 @@ const AlbumForm = ({ handleSaveAlbum }) => {
   )
 }
 
-export default AlbumForm
+export default AddAlbum
