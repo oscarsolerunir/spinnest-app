@@ -52,7 +52,7 @@ const UploadAlbum = () => {
     })
 
     alert('Album added successfully')
-    navigate('/collection')
+    navigate('/albums')
   }
 
   return (

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getCollectionById } from '../../services/api'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-const ViewCollection = ({ collectionId }) => {
+const ViewCollection = () => {
+  const { id } = useParams()
   const [collection, setCollection] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -11,7 +12,7 @@ const ViewCollection = ({ collectionId }) => {
   useEffect(() => {
     const fetchCollection = async () => {
       try {
-        const data = await getCollectionById(collectionId)
+        const data = await getCollectionById(id)
         setCollection(data)
       } catch (error) {
         console.error('Error fetching collection:', error)
@@ -24,7 +25,7 @@ const ViewCollection = ({ collectionId }) => {
     }
 
     fetchCollection()
-  }, [collectionId])
+  }, [id])
 
   if (loading) {
     return <p>Cargando...</p>
@@ -57,7 +58,7 @@ const ViewCollection = ({ collectionId }) => {
           </li>
         ))}
       </ul>
-      <button onClick={() => navigate(`/edit-collection/${collectionId}`)}>
+      <button onClick={() => navigate(`/edit-collection/${id}`)}>
         Editar Colección
       </button>
     </div>

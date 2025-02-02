@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getCollectionsByUser } from '../../services/api'
-import ViewCollection from './ViewCollection'
+import ItemCollection from './ItemCollection'
 
 const ListCollections = ({ userId }) => {
   const [collections, setCollections] = useState([])
@@ -39,9 +39,8 @@ const ListCollections = ({ userId }) => {
 
   return (
     <div>
-      <h1>Tus Colecciones</h1>
       {collections.map(collection => (
-        <ViewCollection key={collection.id} collectionId={collection.id} />
+        <ItemCollection key={collection.id} collection={collection} />
       ))}
     </div>
   )

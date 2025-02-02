@@ -4,14 +4,15 @@ import PrivateRoute from '../components/Common/PrivateRoute'
 import DefaultLayout from '../layouts/Default'
 import Home from '../pages/Home'
 import AddAlbum from '../pages/Albums/AddAlbum'
-import ViewUserAlbums from '../pages/Albums/ViewUserAlbums'
 import ViewAlbum from '../pages/Albums/ViewAlbum'
-import ViewUserCollections from '../pages/Collections/ViewUserCollections'
-import ViewCollection from '../pages/Collections/ViewCollection'
+import ViewUserAlbums from '../pages/Albums/ViewUserAlbums'
+import AddCollection from '../pages/Collections/AddCollection'
 import EditCollection from '../pages/Collections/EditCollection'
-import UserProfile from '../pages/User/UserProfile'
+import ViewCollectionPage from '../pages/Collections/ViewCollectionPage'
+import ViewUserCollections from '../pages/Collections/ViewUserCollections'
 import Login from '../components/User/Login'
 import Register from '../components/User/Register'
+import UserProfile from '../pages/User/UserProfile'
 
 const RouterApp = () => {
   return (
@@ -20,6 +21,14 @@ const RouterApp = () => {
         <DefaultLayout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route
+              path="/add-album"
+              element={
+                <PrivateRoute>
+                  <AddAlbum />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/albums"
               element={
@@ -30,20 +39,26 @@ const RouterApp = () => {
             />
             <Route path="/album/:id" element={<ViewAlbum />} />
             <Route
-              path="/upload-album"
+              path="/add-collection"
               element={
                 <PrivateRoute>
-                  <AddAlbum />
+                  <AddCollection />
                 </PrivateRoute>
               }
             />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
             <Route
-              path="/profile"
+              path="/edit-collection/:id"
               element={
                 <PrivateRoute>
-                  <UserProfile />
+                  <EditCollection />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/collection/:id"
+              element={
+                <PrivateRoute>
+                  <ViewCollectionPage />
                 </PrivateRoute>
               }
             />
@@ -55,19 +70,13 @@ const RouterApp = () => {
                 </PrivateRoute>
               }
             />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route
-              path="/collection/:id"
+              path="/profile"
               element={
                 <PrivateRoute>
-                  <ViewCollection />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/edit-collection/:id"
-              element={
-                <PrivateRoute>
-                  <EditCollection />
+                  <UserProfile />
                 </PrivateRoute>
               }
             />

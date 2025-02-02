@@ -1,12 +1,28 @@
-import { useState } from 'react'
-import { createCollection } from '../../services/api'
+import { useState, useEffect } from 'react'
 
-const AddCollection = ({ userId, albums }) => {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [privacy, setPrivacy] = useState('public')
-  const [selectedAlbums, setSelectedAlbums] = useState([])
+const CollectionForm = ({
+  initialName = '',
+  initialDescription = '',
+  initialPrivacy = 'public',
+  initialAlbums = [],
+  userAlbums = [],
+  onSubmit,
+  onDelete,
+  onCancel,
+  submitButtonText = 'Crear Colección'
+}) => {
+  const [name, setName] = useState(initialName)
+  const [description, setDescription] = useState(initialDescription)
+  const [privacy, setPrivacy] = useState(initialPrivacy)
+  const [selectedAlbums, setSelectedAlbums] = useState(initialAlbums)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    setName(initialName)
+    setDescription(initialDescription)
+    setPrivacy(initialPrivacy)
+    setSelectedAlbums(initialAlbums)
+  }, [initialName, initialDescription, initialPrivacy, initialAlbums])
 
   const handleAlbumChange = album => {
     setSelectedAlbums(prev => {
@@ -18,38 +34,13 @@ const AddCollection = ({ userId, albums }) => {
     })
   }
 
-  const handleSubmit = async e => {
+  const handleSubmit = e => {
     e.preventDefault()
     if (!name || selectedAlbums.length === 0) {
       setError('La colección debe tener al menos un nombre y un álbum.')
       return
     }
-
-    const newCollection = {
-      name,
-      description,
-      privacy,
-      albums: selectedAlbums.map(album => ({
-        id: album.id,
-        name: album.name,
-        image: album.image
-      })),
-      createdAt: new Date().toISOString(),
-      userId
-    }
-
-    try {
-      await createCollection(newCollection)
-      alert('La colección se ha creado con éxito.')
-      window.location.href = '/collections'
-    } catch (error) {
-      console.error('Error creando la colección:', error)
-      setError(
-        'Hubo un error creando la colección. Por favor, inténtalo de nuevo.'
-      )
-    }
-
-    console.log('Colección creada:', newCollection)
+    onSubmit({ name, description, privacy, albums: selectedAlbums })
   }
 
   return (
@@ -79,21 +70,32 @@ const AddCollection = ({ userId, albums }) => {
       </div>
       <div>
         <label>Álbums:</label>
-        {albums.map(album => (
+        {userAlbums.map(album => (
           <div key={album.id}>
             <input
               type="checkbox"
               checked={selectedAlbums.some(a => a.id === album.id)}
               onChange={() => handleAlbumChange(album)}
             />
+            <img src={album.image} alt={album.name} width="50" height="50" />
             {album.name}
           </div>
         ))}
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button type="submit">Crear Colección</button>
+      <button type="submit">{submitButtonText}</button>
+      {onDelete && (
+        <button type="button" onClick={onDelete}>
+          Eliminar Colección
+        </button>
+      )}
+      {onCancel && (
+        <button type="button" onClick={onCancel}>
+          Volver a Colecciones
+        </button>
+      )}
     </form>
   )
 }
 
-export default AddCollection
+export default CollectionForm

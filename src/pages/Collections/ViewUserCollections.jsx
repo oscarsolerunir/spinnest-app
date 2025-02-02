@@ -1,14 +1,19 @@
 import ListCollections from '../../components/Collections/ListCollections'
 import { useUser } from '../../providers/UserContext'
+import { Link } from 'react-router-dom'
 
-const Collections = () => {
+const ViewUserCollections = () => {
   const { userId } = useUser()
 
   return (
     <div>
+      <h1>Tus Colecciones</h1>
+      <Link to="/add-collection">
+        <button>Añadir colección</button>
+      </Link>
       <ListCollections userId={userId} />
     </div>
   )
 }
 
-export default Collections
+export default ViewUserCollections

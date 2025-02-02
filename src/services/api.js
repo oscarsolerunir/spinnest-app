@@ -52,7 +52,6 @@ export const getAlbumsByUser = async userId => {
   return getArrayFromCollection(result)
 }
 
-// READ ALBUM BY ID
 export const getAlbumById = async id => {
   const docRef = doc(db, collectionName, id)
   const result = await getDoc(docRef)
@@ -96,5 +95,9 @@ export const getCollectionsByUser = async userId => {
 export const getCollectionById = async id => {
   const docRef = doc(db, collectionsCollectionName, id)
   const result = await getDoc(docRef)
-  return result.data()
+  if (result.exists()) {
+    return { id: result.id, ...result.data() }
+  } else {
+    throw new Error('No se ha encontrado la colección')
+  }
 }

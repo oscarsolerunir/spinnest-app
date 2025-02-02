@@ -5,7 +5,6 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { Link, useNavigate } from 'react-router-dom'
 import ListAlbums from '../../components/Albums/ListAlbums'
 import Modal from '../../components/Common/Modal'
-import AddCollection from '../../components/Collections/AddCollection'
 
 const MyCollection = () => {
   const [albums, setAlbums] = useState([])
@@ -44,13 +43,13 @@ const MyCollection = () => {
   }
 
   const handleAlbumClick = id => {
-    navigate(`/album/${id}`, { state: { from: '/collection' } })
+    navigate(`/album/${id}`, { state: { from: '/albums' } })
   }
 
   return (
     <div>
       <h1>Albums Collection</h1>
-      <Link to="/upload-album">
+      <Link to="/add-album">
         <button>Add Album</button>
       </Link>
       <ListAlbums
@@ -63,7 +62,6 @@ const MyCollection = () => {
         handleDeleteAlbum={handleDeleteAlbum}
         setShowModal={setShowModal}
       />
-      <AddCollection userId={user?.uid} albums={albums} />
     </div>
   )
 }

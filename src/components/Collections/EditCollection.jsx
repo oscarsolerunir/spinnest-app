@@ -3,29 +3,31 @@ import { useParams, useNavigate } from 'react-router-dom'
 import {
   getCollectionById,
   updateCollection,
-  deleteCollection
+  deleteCollection,
+  getAlbumsByUser
 } from '../../services/api'
 
 const EditCollection = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [setCollection] = useState(null)
+  const [collection, setCollection] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [privacy, setPrivacy] = useState('public')
   const [albums, setAlbums] = useState([])
+  const [userAlbums, setUserAlbums] = useState([])
 
   useEffect(() => {
     const fetchCollection = async () => {
       try {
         const data = await getCollectionById(id)
         setCollection(data)
-        setName(data.name)
-        setDescription(data.description)
-        setPrivacy(data.privacy)
-        setAlbums(data.albums)
+        setName(data.name || '')
+        setDescription(data.description || '')
+        setPrivacy(data.privacy || 'public')
+        setAlbums(data.albums || [])
       } catch (error) {
         console.error('Error fetching collection:', error)
         setError(
@@ -36,8 +38,32 @@ const EditCollection = () => {
       }
     }
 
+    const fetchUserAlbums = async () => {
+      try {
+        const userId = 'user-id' // Replace with actual user ID
+        const data = await getAlbumsByUser(userId)
+        setUserAlbums(data)
+      } catch (error) {
+        console.error('Error fetching user albums:', error)
+        setError(
+          'Hubo un error al cargar los álbumes del usuario. Por favor, inténtalo de nuevo.'
+        )
+      }
+    }
+
     fetchCollection()
+    fetchUserAlbums()
   }, [id])
+
+  const handleAlbumChange = album => {
+    setAlbums(prev => {
+      if (prev.some(a => a.id === album.id)) {
+        return prev.filter(a => a.id !== album.id)
+      } else {
+        return [...prev, album]
+      }
+    })
+  }
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -81,6 +107,11 @@ const EditCollection = () => {
     return <p style={{ color: 'red' }}>{error}</p>
   }
 
+  const albumsInCollection = albums
+  const albumsNotInCollection = userAlbums.filter(
+    album => !albums.some(a => a.id === album.id)
+  )
+
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -107,22 +138,29 @@ const EditCollection = () => {
         </select>
       </div>
       <div>
-        <label>Álbums:</label>
-        {albums.map((album, index) => (
+        <label>Álbums en la colección:</label>
+        {albumsInCollection.map(album => (
           <div key={album.id}>
             <input
               type="checkbox"
               checked={albums.some(a => a.id === album.id)}
-              onChange={() => {
-                const newAlbums = [...albums]
-                if (newAlbums.some(a => a.id === album.id)) {
-                  newAlbums.splice(index, 1)
-                } else {
-                  newAlbums.push(album)
-                }
-                setAlbums(newAlbums)
-              }}
+              onChange={() => handleAlbumChange(album)}
             />
+            <img src={album.image} alt={album.name} width="50" height="50" />
+            {album.name}
+          </div>
+        ))}
+      </div>
+      <div>
+        <label>Álbums no en la colección:</label>
+        {albumsNotInCollection.map(album => (
+          <div key={album.id}>
+            <input
+              type="checkbox"
+              checked={albums.some(a => a.id === album.id)}
+              onChange={() => handleAlbumChange(album)}
+            />
+            <img src={album.image} alt={album.name} width="50" height="50" />
             {album.name}
           </div>
         ))}

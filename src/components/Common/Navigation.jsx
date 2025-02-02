@@ -49,22 +49,19 @@ const Navigation = () => {
       {user && (
         <ul>
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/">Inicio</Link>
           </li>
           <li>
-            <Link to="/albums">Albms</Link>
+            <Link to="/albums">Albums</Link>
           </li>
           <li>
-            <Link to="/collections">Collections</Link>
+            <Link to="/collections">Colecciones</Link>
           </li>
           <li>
-            <Link to="/upload-album">Upload Album</Link>
+            <Link to="/profile">Perfil</Link>
           </li>
           <li>
-            <Link to="/profile">Profile</Link>
-          </li>
-          <li>
-            <button onClick={handleSignOut}>Sign Out</button>
+            <button onClick={handleSignOut}>Cerrar sesión</button>
           </li>
         </ul>
       )}
