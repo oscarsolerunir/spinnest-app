@@ -30,7 +30,7 @@ const AlbumDetails = () => {
     getAlbumById(id).then(data => setAlbum(data))
   }, [id])
 
-  if (!album) return <div>Loading...</div>
+  if (!album) return <div>Cargando...</div>
 
   // Determine the previous page and button text
   const previousPage = location.state?.from || '/albums'
@@ -41,10 +41,10 @@ const AlbumDetails = () => {
     <AlbumDetailContainer>
       <h1>{album.name}</h1>
       <img src={album.image} alt={album.name} />
-      <p>Artist: {album.artist}</p>
-      <p>Year: {album.year}</p>
-      <p>Genre: {album.genre}</p>
-      <p>Label: {album.label}</p>
+      <p>Artista: {album.artist}</p>
+      <p>Año: {album.year}</p>
+      <p>Género: {album.genre}</p>
+      <p>Discográfica/s: {album.label}</p>
       <BackButton to={previousPage}>{buttonText}</BackButton>
     </AlbumDetailContainer>
   )

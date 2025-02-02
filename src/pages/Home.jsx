@@ -6,13 +6,7 @@ import Login from '../components/User/Login'
 const Home = () => {
   const [user] = useAuthState(auth)
 
-  return (
-    <div>
-      <h1>Welcome to Spinnest</h1>
-      <p>Share your records collection with your friends</p>
-      {user ? <ViewAllAlbums /> : <Login />}
-    </div>
-  )
+  return <div>{user ? <ViewAllAlbums /> : <Login />}</div>
 }
 
 export default Home

@@ -48,9 +48,9 @@ const MyCollection = () => {
 
   return (
     <div>
-      <h1>Albums Collection</h1>
+      <h1>Mis álbums</h1>
       <Link to="/add-album">
-        <button>Add Album</button>
+        <button>Añadir un álbum</button>
       </Link>
       <ListAlbums
         albums={albums}

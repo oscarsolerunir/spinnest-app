@@ -78,8 +78,8 @@ const UserProfile = () => {
 
   return (
     <form onSubmit={handleSaveChanges}>
-      <h2>User Profile</h2>
-      <label>Name:</label>
+      <h2>Perfil de usuario</h2>
+      <label>Nombre:</label>
       <input type="text" value={name} onChange={e => setName(e.target.value)} />
       <label>Email:</label>
       <input
@@ -87,16 +87,16 @@ const UserProfile = () => {
         value={email}
         onChange={e => setEmail(e.target.value)}
       />
-      <label>Password:</label>
+      <label>Contraseña:</label>
       <input
         type="password"
         value={password}
         onChange={e => setPassword(e.target.value)}
         placeholder="Leave blank to keep current password"
       />
-      <button type="submit">Save Changes</button>
+      <button type="submit">Guardar cambios</button>
       <button type="button" onClick={handleDeleteAccount}>
-        Delete Account
+        Borrar cuenta
       </button>
     </form>
   )

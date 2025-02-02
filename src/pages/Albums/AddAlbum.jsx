@@ -57,7 +57,7 @@ const UploadAlbum = () => {
 
   return (
     <div>
-      <h1>Upload your album</h1>
+      <h1>Añadir un álbum</h1>
       <AddAlbum handleSaveAlbum={handleSaveAlbum} />
     </div>
   )

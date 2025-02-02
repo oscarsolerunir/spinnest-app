@@ -27,7 +27,7 @@ const AllAlbums = () => {
 
   return (
     <div>
-      <h1>All Albums</h1>
+      <h1>Todos los álbums</h1>
       <ListAlbums albums={albums} onClick={handleAlbumClick} />
     </div>
   )

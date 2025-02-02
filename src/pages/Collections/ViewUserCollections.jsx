@@ -7,7 +7,7 @@ const ViewUserCollections = () => {
 
   return (
     <div>
-      <h1>Tus Colecciones</h1>
+      <h1>Tus colecciones</h1>
       <Link to="/add-collection">
         <button>Añadir colección</button>
       </Link>

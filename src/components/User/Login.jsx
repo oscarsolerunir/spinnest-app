@@ -38,6 +38,8 @@ const Login = () => {
 
   return (
     <div>
+      <h1>Bienvenido a Spinnest</h1>
+      <p>Comparte tu colección de discos con tus amigos</p>
       <form onSubmit={handleLogin}>
         <h2>Login</h2>
         <div>

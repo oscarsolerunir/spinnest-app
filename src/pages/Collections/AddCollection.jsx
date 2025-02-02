@@ -1,34 +1,55 @@
-import { useEffect, useState } from 'react'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth } from '../../services/firebase'
-import { getAlbumsByUser } from '../../services/api'
-import AddCollection from '../../components/Collections/AddCollection'
+import { useState, useEffect } from 'react'
+import { createCollection, getAlbumsByUser } from '../../services/api'
+import { useUser } from '../../providers/UserContext'
+import CollectionForm from '../../components/Collections/CollectionForm'
 
-const AddCollectionPage = () => {
-  const [user] = useAuthState(auth)
-  const [albums, setAlbums] = useState([])
+const AddCollection = () => {
+  const { user } = useUser()
+  const [userAlbums, setUserAlbums] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const fetchAlbums = async () => {
-      if (user) {
-        try {
-          const data = await getAlbumsByUser(user.uid)
-          setAlbums(data)
-        } catch (error) {
-          console.error('Error fetching albums:', error)
-          setError(
-            'Hubo un error al cargar los álbumes. Por favor, inténtalo de nuevo.'
-          )
-        } finally {
-          setLoading(false)
-        }
+    const fetchUserAlbums = async () => {
+      try {
+        const data = await getAlbumsByUser(user.uid)
+        setUserAlbums(data)
+      } catch (error) {
+        console.error('Error fetching user albums:', error)
+        setError(
+          'Hubo un error al cargar los álbumes del usuario. Por favor, inténtalo de nuevo.'
+        )
+      } finally {
+        setLoading(false)
       }
     }
 
-    fetchAlbums()
+    if (user && user.uid) {
+      fetchUserAlbums()
+    } else {
+      setError('Usuario no autenticado.')
+      setLoading(false)
+    }
   }, [user])
+
+  const handleSubmit = async collectionData => {
+    const newCollection = {
+      ...collectionData,
+      createdAt: new Date().toISOString(),
+      userId: user.uid
+    }
+
+    try {
+      await createCollection(newCollection)
+      alert('La colección se ha creado con éxito.')
+      window.location.href = '/collections'
+    } catch (error) {
+      console.error('Error creando la colección:', error)
+      setError(
+        'Hubo un error creando la colección. Por favor, inténtalo de nuevo.'
+      )
+    }
+  }
 
   if (loading) {
     return <p>Cargando...</p>
@@ -40,10 +61,14 @@ const AddCollectionPage = () => {
 
   return (
     <div>
-      <h1>Añadir Colección</h1>
-      <AddCollection userId={user?.uid} albums={albums} />
+      <h1>Añadir colección</h1>
+      <CollectionForm
+        userAlbums={userAlbums}
+        onSubmit={handleSubmit}
+        submitButtonText="Crear Colección"
+      />
     </div>
   )
 }
 
-export default AddCollectionPage
+export default AddCollection
