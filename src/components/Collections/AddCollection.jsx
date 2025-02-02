@@ -1,41 +1,42 @@
-import { useState } from 'react'
-import { createCollection } from '../../services/api'
+import { useState, useEffect } from 'react'
+import { createCollection, getAlbumsByUser } from '../../services/api'
+import { useUser } from '../../providers/UserContext'
+import CollectionForm from './CollectionForm'
 
-const AddCollection = ({ userId, albums }) => {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [privacy, setPrivacy] = useState('public')
-  const [selectedAlbums, setSelectedAlbums] = useState([])
+const AddCollection = () => {
+  const { user } = useUser()
+  const [userAlbums, setUserAlbums] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const handleAlbumChange = album => {
-    setSelectedAlbums(prev => {
-      if (prev.some(a => a.id === album.id)) {
-        return prev.filter(a => a.id !== album.id)
-      } else {
-        return [...prev, album]
+  useEffect(() => {
+    const fetchUserAlbums = async () => {
+      try {
+        const data = await getAlbumsByUser(user.id)
+        setUserAlbums(data)
+      } catch (error) {
+        console.error('Error fetching user albums:', error)
+        setError(
+          'Hubo un error al cargar los álbumes del usuario. Por favor, inténtalo de nuevo.'
+        )
+      } finally {
+        setLoading(false)
       }
-    })
-  }
-
-  const handleSubmit = async e => {
-    e.preventDefault()
-    if (!name || selectedAlbums.length === 0) {
-      setError('La colección debe tener al menos un nombre y un álbum.')
-      return
     }
 
+    if (user && user.id) {
+      fetchUserAlbums()
+    } else {
+      setError('Usuario no autenticado.')
+      setLoading(false)
+    }
+  }, [user])
+
+  const handleSubmit = async collectionData => {
     const newCollection = {
-      name,
-      description,
-      privacy,
-      albums: selectedAlbums.map(album => ({
-        id: album.id,
-        name: album.name,
-        image: album.image
-      })),
+      ...collectionData,
       createdAt: new Date().toISOString(),
-      userId
+      userId: user.id
     }
 
     try {
@@ -48,51 +49,25 @@ const AddCollection = ({ userId, albums }) => {
         'Hubo un error creando la colección. Por favor, inténtalo de nuevo.'
       )
     }
+  }
 
-    console.log('Colección creada:', newCollection)
+  if (loading) {
+    return <p>Cargando...</p>
+  }
+
+  if (error) {
+    return <p style={{ color: 'red' }}>{error}</p>
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Nombre:</label>
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Descripción:</label>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Privacidad:</label>
-        <select value={privacy} onChange={e => setPrivacy(e.target.value)}>
-          <option value="public">Pública</option>
-          <option value="private">Privada</option>
-        </select>
-      </div>
-      <div>
-        <label>Álbums:</label>
-        {albums.map(album => (
-          <div key={album.id}>
-            <input
-              type="checkbox"
-              checked={selectedAlbums.some(a => a.id === album.id)}
-              onChange={() => handleAlbumChange(album)}
-            />
-            {album.name}
-          </div>
-        ))}
-      </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button type="submit">Crear Colección</button>
-    </form>
+    <div>
+      <h1>Añadir Colección</h1>
+      <CollectionForm
+        userAlbums={userAlbums}
+        onSubmit={handleSubmit}
+        submitButtonText="Crear Colección"
+      />
+    </div>
   )
 }
 
