@@ -12,7 +12,7 @@ const AddCollection = () => {
   useEffect(() => {
     const fetchUserAlbums = async () => {
       try {
-        const data = await getAlbumsByUser(user.id)
+        const data = await getAlbumsByUser(user.uid)
         setUserAlbums(data)
       } catch (error) {
         console.error('Error fetching user albums:', error)
@@ -24,7 +24,7 @@ const AddCollection = () => {
       }
     }
 
-    if (user && user.id) {
+    if (user && user.uid) {
       fetchUserAlbums()
     } else {
       setError('Usuario no autenticado.')
@@ -36,7 +36,7 @@ const AddCollection = () => {
     const newCollection = {
       ...collectionData,
       createdAt: new Date().toISOString(),
-      userId: user.id
+      userId: user.uid
     }
 
     try {

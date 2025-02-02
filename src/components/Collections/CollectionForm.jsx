@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 const CollectionForm = ({
   initialName = '',
@@ -16,13 +16,6 @@ const CollectionForm = ({
   const [privacy, setPrivacy] = useState(initialPrivacy)
   const [selectedAlbums, setSelectedAlbums] = useState(initialAlbums)
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    setName(initialName)
-    setDescription(initialDescription)
-    setPrivacy(initialPrivacy)
-    setSelectedAlbums(initialAlbums)
-  }, [initialName, initialDescription, initialPrivacy, initialAlbums])
 
   const handleAlbumChange = album => {
     setSelectedAlbums(prev => {

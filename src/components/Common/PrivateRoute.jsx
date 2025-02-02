@@ -1,9 +1,8 @@
-import { useAuthState } from 'react-firebase-hooks/auth'
 import { Navigate } from 'react-router-dom'
-import { auth } from '../../services/firebase'
+import { useUser } from '../../providers/UserContext'
 
 const PrivateRoute = ({ children }) => {
-  const [user] = useAuthState(auth)
+  const { user } = useUser()
 
   if (!user) {
     return <Navigate to="/login" />
