@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../services/firebase'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -9,6 +10,13 @@ const Login = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const [user] = useAuthState(auth)
+
+  useEffect(() => {
+    if (user) {
+      navigate('/')
+    }
+  }, [user, navigate])
 
   const handleLogin = async e => {
     e.preventDefault()
