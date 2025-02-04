@@ -10,9 +10,10 @@ import AddCollection from '../pages/Collections/AddCollection'
 import EditCollection from '../pages/Collections/EditCollection'
 import ViewCollectionPage from '../pages/Collections/ViewCollection'
 import ViewUserCollections from '../pages/Collections/ViewUserCollections'
-import Login from '../components/User/Login'
-import Register from '../components/User/Register'
+import Login from '../components/Auth/Login'
+import Register from '../components/Auth/Register'
 import UserProfile from '../pages/User/UserProfile'
+import UserList from '../components/User/UserList'
 
 const RouterApp = () => {
   return (
@@ -77,6 +78,14 @@ const RouterApp = () => {
               element={
                 <PrivateRoute>
                   <UserProfile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <PrivateRoute>
+                  <UserList />
                 </PrivateRoute>
               }
             />

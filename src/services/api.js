@@ -13,6 +13,8 @@ import {
 
 const collectionName = 'albums'
 const collectionsCollectionName = 'collections'
+const usersCollectionName = 'users'
+const followsCollectionName = 'follows'
 
 // Helper function to convert Firestore collection to array
 const getArrayFromCollection = collection => {
@@ -100,4 +102,48 @@ export const getCollectionById = async id => {
   } else {
     throw new Error('No se ha encontrado la colección')
   }
+}
+
+// FOLLOW USER
+export const followUser = async (followerId, followingId) => {
+  const colRef = collection(db, followsCollectionName)
+  const data = await addDoc(colRef, { followerId, followingId })
+  return data.id
+}
+
+// UNFOLLOW USER
+export const unfollowUser = async (followerId, followingId) => {
+  const colRef = collection(db, followsCollectionName)
+  const q = query(
+    colRef,
+    where('followerId', '==', followerId),
+    where('followingId', '==', followingId)
+  )
+  const result = await getDocs(q)
+  result.forEach(async doc => {
+    await deleteDoc(doc.ref)
+  })
+}
+
+// GET FOLLOWING USERS
+export const getFollowingUsers = async userId => {
+  const colRef = collection(db, followsCollectionName)
+  const q = query(colRef, where('followerId', '==', userId))
+  const result = await getDocs(q)
+  return getArrayFromCollection(result)
+}
+
+// GET FOLLOWERS
+export const getFollowers = async userId => {
+  const colRef = collection(db, followsCollectionName)
+  const q = query(colRef, where('followingId', '==', userId))
+  const result = await getDocs(q)
+  return getArrayFromCollection(result)
+}
+
+// GET USERS
+export const getUsers = async () => {
+  const colRef = collection(db, usersCollectionName)
+  const result = await getDocs(query(colRef))
+  return getArrayFromCollection(result)
 }
