@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react'
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
-import { updateEmail, updatePassword, deleteUser } from 'firebase/auth'
+import {
+  updateEmail,
+  updatePassword,
+  deleteUser,
+  sendEmailVerification
+} from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { auth, db } from '../../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -10,6 +15,7 @@ const UserProfileForm = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -28,6 +34,7 @@ const UserProfileForm = () => {
 
   const handleSaveChanges = async e => {
     e.preventDefault()
+    setError('')
     try {
       if (user) {
         // Update Firestore
@@ -39,6 +46,10 @@ const UserProfileForm = () => {
         // Update Auth
         if (email !== user.email) {
           await updateEmail(user, email)
+          await sendEmailVerification(user)
+          alert(
+            'Verification email sent. Please verify your new email before logging in again.'
+          )
         }
         if (password) {
           await updatePassword(user, password)
@@ -48,11 +59,12 @@ const UserProfileForm = () => {
       }
     } catch (error) {
       console.error('Error updating user:', error)
-      alert('Error updating user')
+      setError('Error updating user. Please try again.')
     }
   }
 
   const handleDeleteAccount = async () => {
+    setError('')
     try {
       if (user) {
         // Delete user from Firestore
@@ -66,7 +78,7 @@ const UserProfileForm = () => {
       }
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('Error deleting user')
+      setError('Error deleting user. Please try again.')
     }
   }
 
@@ -88,6 +100,7 @@ const UserProfileForm = () => {
         onChange={e => setPassword(e.target.value)}
         placeholder="Leave blank to keep current password"
       />
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <button type="submit">Guardar cambios</button>
       <button type="button" onClick={handleDeleteAccount}>
         Borrar cuenta

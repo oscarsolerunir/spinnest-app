@@ -12,7 +12,10 @@ import ViewCollectionPage from '../pages/Collections/ViewCollection'
 import ViewUserCollections from '../pages/Collections/ViewUserCollections'
 import Login from '../components/Auth/Login'
 import Register from '../components/Auth/Register'
-import UserProfile from '../pages/User/UserProfile'
+import UserProfile from '../pages/Profile/UserProfile'
+import EditProfile from '../pages/Profile/EditProfile'
+import Messages from '../pages/Messages'
+import UserMessagesPage from '../pages/UserMessagesPage' // Importar la nueva página
 import UserList from '../components/User/UserList'
 
 const RouterApp = () => {
@@ -78,6 +81,30 @@ const RouterApp = () => {
               element={
                 <PrivateRoute>
                   <UserProfile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-profile"
+              element={
+                <PrivateRoute>
+                  <EditProfile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <PrivateRoute>
+                  <Messages />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages/:userId"
+              element={
+                <PrivateRoute>
+                  <UserMessagesPage />
                 </PrivateRoute>
               }
             />

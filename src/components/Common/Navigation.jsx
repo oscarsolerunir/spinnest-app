@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, signOut } from '../../services/firebase'
+import { auth, signOut, db } from '../../services/firebase'
+import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import styled from 'styled-components'
 
 const NavContainer = styled.nav`
@@ -33,6 +35,23 @@ const NavContainer = styled.nav`
 
 const Navigation = () => {
   const [user] = useAuthState(auth)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    if (user) {
+      const q = query(
+        collection(db, 'messages'),
+        where('recipientId', '==', user.uid),
+        where('read', '==', false)
+      )
+
+      const unsubscribe = onSnapshot(q, snapshot => {
+        setUnreadCount(snapshot.size)
+      })
+
+      return () => unsubscribe()
+    }
+  }, [user])
 
   const handleSignOut = async () => {
     try {
@@ -56,6 +75,11 @@ const Navigation = () => {
           </li>
           <li>
             <Link to="/collections">Colecciones</Link>
+          </li>
+          <li>
+            <Link to="/messages">
+              Mensajes {unreadCount > 0 && `(${unreadCount})`}
+            </Link>
           </li>
           <li>
             <Link to="/profile">Perfil</Link>
