@@ -2,18 +2,22 @@ import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db, rtdb } from '../../services/firebase'
 import {
+  doc,
+  getDoc,
+  onSnapshot,
   collection,
-  addDoc,
   query,
   where,
-  orderBy,
-  onSnapshot,
-  doc,
-  getDoc
+  orderBy
 } from 'firebase/firestore'
 import { ref, set, onValue, remove } from 'firebase/database'
+import {
+  addMessage,
+  markConversationAsRead,
+  getMessagesByConversation
+} from '../../services/api'
 
-const UserMessages = ({ recipientId }) => {
+const UserMessages = ({ conversationId }) => {
   const [user] = useAuthState(auth)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
@@ -21,18 +25,9 @@ const UserMessages = ({ recipientId }) => {
   const [userNames, setUserNames] = useState({})
 
   useEffect(() => {
-    if (user && recipientId) {
-      const q = query(
-        collection(db, 'messages'),
-        where('participants', 'array-contains', user.uid),
-        orderBy('timestamp')
-      )
-
-      const unsubscribe = onSnapshot(q, async snapshot => {
-        const msgs = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
+    if (user && conversationId) {
+      const fetchMessages = async () => {
+        const msgs = await getMessagesByConversation(conversationId)
         setMessages(msgs)
 
         // Obtener nombres de usuarios
@@ -45,11 +40,28 @@ const UserMessages = ({ recipientId }) => {
           }
         }
         setUserNames(names)
-      })
+      }
 
-      const typingRef = ref(rtdb, `typing/${recipientId}`)
+      fetchMessages()
+
+      const typingRef = ref(rtdb, `typing/${conversationId}`)
       onValue(typingRef, snapshot => {
         setIsTyping(snapshot.val() === user.uid)
+      })
+
+      // Marcar la conversación como leída
+      markConversationAsRead(conversationId)
+
+      // Suscribirse a los cambios en los mensajes
+      const messagesRef = collection(db, 'messages')
+      const q = query(
+        messagesRef,
+        where('conversationId', '==', conversationId),
+        orderBy('timestamp')
+      )
+      const unsubscribe = onSnapshot(q, snapshot => {
+        const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        setMessages(msgs)
       })
 
       return () => {
@@ -57,25 +69,19 @@ const UserMessages = ({ recipientId }) => {
         remove(ref(rtdb, `typing/${user.uid}`)) // Limpiar el estado de escritura al desmontar el componente
       }
     }
-  }, [user, recipientId])
+  }, [user, conversationId])
 
   const handleSendMessage = async () => {
     if (message.trim() === '') return
 
-    await addDoc(collection(db, 'messages'), {
-      text: message,
-      senderId: user.uid,
-      recipientId,
-      participants: [user.uid, recipientId],
-      timestamp: new Date()
-    })
+    await addMessage(conversationId, user.uid, message) // Usar la función addMessage
 
     setMessage('')
     remove(ref(rtdb, `typing/${user.uid}`)) // Limpiar el estado de escritura al enviar el mensaje
   }
 
   const handleTyping = () => {
-    set(ref(rtdb, `typing/${user.uid}`), recipientId)
+    set(ref(rtdb, `typing/${user.uid}`), conversationId)
   }
 
   const handleBlur = () => {

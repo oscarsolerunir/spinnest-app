@@ -101,7 +101,7 @@ const RouterApp = () => {
               }
             />
             <Route
-              path="/messages/:userId"
+              path="/messages/:conversationId"
               element={
                 <PrivateRoute>
                   <UserMessagesPage />
