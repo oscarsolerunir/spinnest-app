@@ -15,8 +15,9 @@ import Register from '../components/Auth/Register'
 import UserProfile from '../pages/Profile/UserProfile'
 import EditProfile from '../pages/Profile/EditProfile'
 import Messages from '../pages/Messages'
-import UserMessagesPage from '../pages/UserMessagesPage' // Importar la nueva página
-import UserList from '../components/User/UserList'
+import UserMessagesPage from '../pages/UserMessagesPage'
+import FollowersPage from '../pages/FollowersPage'
+import FollowingPage from '../pages/FollowingPage'
 
 const RouterApp = () => {
   return (
@@ -25,6 +26,8 @@ const RouterApp = () => {
         <DefaultLayout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/followers" element={<FollowersPage />} />
+            <Route path="/following" element={<FollowingPage />} />
             <Route
               path="/add-album"
               element={
@@ -105,14 +108,6 @@ const RouterApp = () => {
               element={
                 <PrivateRoute>
                   <UserMessagesPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/users"
-              element={
-                <PrivateRoute>
-                  <UserList />
                 </PrivateRoute>
               }
             />

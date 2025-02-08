@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
-import {
-  getFollowers,
-  getFollowingUsers,
-  followUser,
-  unfollowUser,
-  getUsers
-} from '../../services/api'
+import { followUser, unfollowUser, getUsers } from '../../services/api'
+import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import { db } from '../../services/firebase'
 import UserList from './UserList'
 
 const FollowersList = ({ userId }) => {
@@ -16,8 +12,35 @@ const FollowersList = ({ userId }) => {
   useEffect(() => {
     if (userId) {
       fetchUsers()
-      fetchFollowers()
-      fetchFollowing()
+
+      const qFollowers = query(
+        collection(db, 'follows'),
+        where('followingId', '==', userId)
+      )
+      const unsubscribeFollowers = onSnapshot(qFollowers, snapshot => {
+        const followersData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setFollowers(followersData)
+      })
+
+      const qFollowing = query(
+        collection(db, 'follows'),
+        where('followerId', '==', userId)
+      )
+      const unsubscribeFollowing = onSnapshot(qFollowing, snapshot => {
+        const followingData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setFollowing(followingData)
+      })
+
+      return () => {
+        unsubscribeFollowers()
+        unsubscribeFollowing()
+      }
     }
   }, [userId])
 
@@ -26,21 +49,9 @@ const FollowersList = ({ userId }) => {
     setUsers(data.filter(u => u.id !== userId))
   }
 
-  const fetchFollowers = async () => {
-    const data = await getFollowers(userId)
-    setFollowers(data)
-  }
-
-  const fetchFollowing = async () => {
-    const data = await getFollowingUsers(userId)
-    setFollowing(data)
-  }
-
   const handleFollow = async followingId => {
     try {
       await followUser(userId, followingId)
-      fetchUsers()
-      fetchFollowing()
     } catch (error) {
       console.error('Error following user:', error)
     }
@@ -49,8 +60,6 @@ const FollowersList = ({ userId }) => {
   const handleUnfollow = async followingId => {
     try {
       await unfollowUser(userId, followingId)
-      fetchUsers()
-      fetchFollowing()
     } catch (error) {
       console.error('Error unfollowing user:', error)
     }

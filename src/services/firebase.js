@@ -1,11 +1,5 @@
 import { initializeApp } from 'firebase/app'
 import {
-  getAuth,
-  setPersistence,
-  browserLocalPersistence,
-  signOut
-} from 'firebase/auth'
-import {
   getFirestore,
   collection,
   doc,
@@ -20,6 +14,12 @@ import {
   documentId,
   orderBy
 } from 'firebase/firestore'
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  signOut
+} from 'firebase/auth'
 import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {

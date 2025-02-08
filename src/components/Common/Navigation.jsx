@@ -37,20 +37,44 @@ const NavContainer = styled.nav`
 const Navigation = () => {
   const [user] = useAuthState(auth)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [followersCount, setFollowersCount] = useState(0)
+  const [followingCount, setFollowingCount] = useState(0)
 
   useEffect(() => {
     if (user) {
-      const q = query(
+      const qUnread = query(
         collection(db, 'conversations'),
         where('participants', 'array-contains', user.uid),
         where('read', '==', false)
       )
 
-      const unsubscribe = onSnapshot(q, snapshot => {
+      const unsubscribeUnread = onSnapshot(qUnread, snapshot => {
         setUnreadCount(snapshot.size)
       })
 
-      return () => unsubscribe()
+      const qFollowers = query(
+        collection(db, 'follows'),
+        where('followingId', '==', user.uid)
+      )
+
+      const unsubscribeFollowers = onSnapshot(qFollowers, snapshot => {
+        setFollowersCount(snapshot.size)
+      })
+
+      const qFollowing = query(
+        collection(db, 'follows'),
+        where('followerId', '==', user.uid)
+      )
+
+      const unsubscribeFollowing = onSnapshot(qFollowing, snapshot => {
+        setFollowingCount(snapshot.size)
+      })
+
+      return () => {
+        unsubscribeUnread()
+        unsubscribeFollowers()
+        unsubscribeFollowing()
+      }
     }
   }, [user])
 
@@ -80,6 +104,16 @@ const Navigation = () => {
           <li>
             <Link to="/messages">
               Mensajes {unreadCount > 0 && `(${unreadCount})`}
+            </Link>
+          </li>
+          <li>
+            <Link to="/followers">
+              Seguidores {followersCount > 0 && `(${followersCount})`}
+            </Link>
+          </li>
+          <li>
+            <Link to="/following">
+              Siguiendo {followingCount > 0 && `(${followingCount})`}
             </Link>
           </li>
           <li>

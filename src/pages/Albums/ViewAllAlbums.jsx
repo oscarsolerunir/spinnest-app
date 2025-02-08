@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import { getAlbums } from '../../services/api'
+import { getAlbums, getUsers } from '../../services/api'
 import ListAlbums from '../../components/Albums/ListAlbums'
 import { useNavigate } from 'react-router-dom'
+import UserList from '../../components/User/UserList'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../services/firebase'
 
 const AllAlbums = () => {
   const [albums, setAlbums] = useState([])
@@ -10,6 +13,20 @@ const AllAlbums = () => {
   useEffect(() => {
     handleGetAlbums()
   }, [])
+
+  const [user] = useAuthState(auth)
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    if (user) {
+      fetchUsers()
+    }
+  }, [user])
+
+  const fetchUsers = async () => {
+    const data = await getUsers()
+    setUsers(data.filter(u => u.id !== user.uid))
+  }
 
   const handleGetAlbums = () => {
     getAlbums().then(data => {
@@ -29,6 +46,13 @@ const AllAlbums = () => {
     <div>
       <h1>Todos los álbums</h1>
       <ListAlbums albums={albums} onClick={handleAlbumClick} />
+      <UserList
+        title="Usuarios"
+        users={users}
+        following={[]}
+        onFollow={() => {}}
+        onUnfollow={() => {}}
+      />
     </div>
   )
 }
