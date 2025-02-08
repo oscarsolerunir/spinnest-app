@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, signOut } from '../../services/firebase'
-import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  getDocs
+} from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import styled from 'styled-components'
 
@@ -41,6 +47,7 @@ const Navigation = () => {
   const [followingCount, setFollowingCount] = useState(0)
   const [albumsCount, setAlbumsCount] = useState(0)
   const [collectionsCount, setCollectionsCount] = useState(0)
+  const [newContent, setNewContent] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -89,6 +96,34 @@ const Navigation = () => {
       const unsubscribeCollections = onSnapshot(qCollections, snapshot => {
         setCollectionsCount(snapshot.size)
       })
+
+      const checkNewContent = async () => {
+        const followingSnapshot = await getDocs(qFollowing)
+        const followingIds = followingSnapshot.docs.map(
+          doc => doc.data().followingId
+        )
+
+        const albumsSnapshot = await getDocs(
+          query(collection(db, 'albums'), where('userId', 'in', followingIds))
+        )
+        const collectionsSnapshot = await getDocs(
+          query(
+            collection(db, 'collections'),
+            where('userId', 'in', followingIds)
+          )
+        )
+
+        const newAlbums = albumsSnapshot.docs.some(
+          doc => !doc.data().viewedBy?.includes(user.uid)
+        )
+        const newCollections = collectionsSnapshot.docs.some(
+          doc => !doc.data().viewedBy?.includes(user.uid)
+        )
+
+        setNewContent(newAlbums || newCollections)
+      }
+
+      checkNewContent()
 
       return () => {
         unsubscribeUnread()
@@ -141,6 +176,9 @@ const Navigation = () => {
             <Link to="/following">
               Siguiendo {followingCount > 0 && `(${followingCount})`}
             </Link>
+          </li>
+          <li>
+            <Link to="/feed">Feed {newContent && '¡Nuevos!'}</Link>
           </li>
           <li>
             <Link to="/profile">Perfil</Link>

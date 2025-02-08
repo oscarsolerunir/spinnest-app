@@ -19,6 +19,7 @@ import UserMessagesPage from '../pages/UserMessagesPage'
 import FollowersPage from '../pages/FollowersPage'
 import FollowingPage from '../pages/FollowingPage'
 import UserPage from '../pages/UserPage'
+import FeedPage from '../pages/FeedPage'
 
 const RouterApp = () => {
   return (
@@ -30,6 +31,7 @@ const RouterApp = () => {
             <Route path="/followers" element={<FollowersPage />} />
             <Route path="/following" element={<FollowingPage />} />
             <Route path="/user/:userId" element={<UserPage />} />
+            <Route path="/feed" element={<FeedPage />} />
             <Route
               path="/add-album"
               element={

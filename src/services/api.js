@@ -177,7 +177,7 @@ export const getCollections = async () => {
 
 // READ COLLECTIONS BY USER
 export const getCollectionsByUser = async userId => {
-  const colRef = collection(db, collectionsCollectionName)
+  const colRef = collection(db, 'collections')
   const result = await getDocs(query(colRef, where('userId', '==', userId)))
   return getArrayFromCollection(result)
 }
