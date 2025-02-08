@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { getAlbums, getUsers } from '../services/api'
+import { getAlbums } from '../services/api'
 import ListAlbums from '../components/Albums/ListAlbums'
 import { useNavigate } from 'react-router-dom'
-import UsersList from '../components/User/UsersList'
+import AllUsersList from '../components/User/AllUsersList'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 
@@ -34,7 +34,7 @@ const ExplorePage = () => {
     <div>
       <h1>Todos los álbums</h1>
       <ListAlbums albums={albums} onClick={handleAlbumClick} />
-      {user && <UsersList userId={user.uid} />}
+      {user && <AllUsersList userId={user.uid} />}
     </div>
   )
 }

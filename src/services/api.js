@@ -236,3 +236,14 @@ export const getUsers = async () => {
   const result = await getDocs(query(colRef))
   return getArrayFromCollection(result)
 }
+
+// GET USER BY ID
+export const getUserById = async userId => {
+  const docRef = doc(db, 'users', userId)
+  const result = await getDoc(docRef)
+  if (result.exists()) {
+    return { id: result.id, ...result.data() }
+  } else {
+    throw new Error('No se ha encontrado el usuario')
+  }
+}
