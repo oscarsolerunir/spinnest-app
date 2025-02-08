@@ -1,6 +1,6 @@
 import MessagesList from '../components/User/MessagesList'
 
-const Messages = () => {
+const MessagesPage = () => {
   return (
     <div>
       <MessagesList />
@@ -8,4 +8,4 @@ const Messages = () => {
   )
 }
 
-export default Messages
+export default MessagesPage

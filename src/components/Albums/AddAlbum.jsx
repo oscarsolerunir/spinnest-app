@@ -60,11 +60,10 @@ const AddAlbum = ({ handleSaveAlbum }) => {
 
   return (
     <Form>
-      <h2>Search for albums by artist</h2>
-      <Label>Artist:</Label>
+      <Label>Buscar:</Label>
       <Input
         type="text"
-        placeholder="Artist"
+        placeholder="Buscar por nombre del album o artista"
         value={artist}
         onChange={e => setArtist(e.target.value)}
       />

@@ -14,7 +14,7 @@ import Login from '../components/Auth/Login'
 import Register from '../components/Auth/Register'
 import UserProfile from '../pages/Profile/UserProfile'
 import EditProfile from '../pages/Profile/EditProfile'
-import Messages from '../pages/Messages'
+import MessagesPage from '../pages/MessagesPage'
 import UserMessagesPage from '../pages/UserMessagesPage'
 import FollowersPage from '../pages/FollowersPage'
 import FollowingPage from '../pages/FollowingPage'
@@ -99,7 +99,7 @@ const RouterApp = () => {
               path="/messages"
               element={
                 <PrivateRoute>
-                  <Messages />
+                  <MessagesPage />
                 </PrivateRoute>
               }
             />
