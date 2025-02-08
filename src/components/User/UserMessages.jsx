@@ -46,7 +46,9 @@ const UserMessages = ({ conversationId }) => {
 
       const typingRef = ref(rtdb, `typing/${conversationId}`)
       onValue(typingRef, snapshot => {
-        setIsTyping(snapshot.val() === user.uid)
+        const typingUsers = snapshot.val() || {}
+        const typingUserIds = Object.keys(typingUsers)
+        setIsTyping(typingUserIds.some(uid => uid !== user.uid))
       })
 
       // Marcar la conversación como leída
@@ -59,14 +61,27 @@ const UserMessages = ({ conversationId }) => {
         where('conversationId', '==', conversationId),
         orderBy('timestamp')
       )
-      const unsubscribe = onSnapshot(q, snapshot => {
+      const unsubscribe = onSnapshot(q, async snapshot => {
         const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         setMessages(msgs)
+
+        // Actualizar nombres de usuarios
+        const userIds = new Set(msgs.map(msg => msg.senderId))
+        const names = { ...userNames }
+        for (const userId of userIds) {
+          if (!names[userId]) {
+            const userDoc = await getDoc(doc(db, 'users', userId))
+            if (userDoc.exists()) {
+              names[userId] = userDoc.data().name
+            }
+          }
+        }
+        setUserNames(names)
       })
 
       return () => {
         unsubscribe()
-        remove(ref(rtdb, `typing/${user.uid}`)) // Limpiar el estado de escritura al desmontar el componente
+        remove(ref(rtdb, `typing/${conversationId}/${user.uid}`)) // Limpiar el estado de escritura al desmontar el componente
       }
     }
   }, [user, conversationId])
@@ -77,15 +92,15 @@ const UserMessages = ({ conversationId }) => {
     await addMessage(conversationId, user.uid, message) // Usar la función addMessage
 
     setMessage('')
-    remove(ref(rtdb, `typing/${user.uid}`)) // Limpiar el estado de escritura al enviar el mensaje
+    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`)) // Limpiar el estado de escritura al enviar el mensaje
   }
 
   const handleTyping = () => {
-    set(ref(rtdb, `typing/${user.uid}`), conversationId)
+    set(ref(rtdb, `typing/${conversationId}/${user.uid}`), true)
   }
 
   const handleBlur = () => {
-    remove(ref(rtdb, `typing/${user.uid}`)) // Limpiar el estado de escritura al perder el foco
+    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`)) // Limpiar el estado de escritura al perder el foco
   }
 
   const handleKeyDown = e => {

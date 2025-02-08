@@ -11,6 +11,7 @@ import {
   where,
   orderBy
 } from './firebase'
+import { auth } from './firebase'
 
 const conversationsCollectionName = 'conversations'
 const messagesCollectionName = 'messages'
@@ -68,7 +69,7 @@ export const addMessage = async (conversationId, senderId, text) => {
   await updateConversation(conversationIdToUse, {
     lastMessage: text,
     lastMessageTimestamp: new Date(),
-    read: false // Mark the conversation as unread
+    read: senderId === auth.currentUser.uid // Mark the conversation as read if the sender is the current user
   })
 
   return data.id
@@ -108,8 +109,6 @@ export const getMessagesByConversation = async conversationId => {
   )
   return getArrayFromCollection(result)
 }
-
-// Other existing functions...
 
 // CREATE ALBUM
 export const createAlbum = async obj => {

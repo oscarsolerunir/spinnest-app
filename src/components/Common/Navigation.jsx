@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, signOut, db } from '../../services/firebase'
+import { auth, signOut } from '../../services/firebase'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import { db } from '../../services/firebase'
 import styled from 'styled-components'
 
 const NavContainer = styled.nav`
@@ -40,8 +41,8 @@ const Navigation = () => {
   useEffect(() => {
     if (user) {
       const q = query(
-        collection(db, 'messages'),
-        where('recipientId', '==', user.uid),
+        collection(db, 'conversations'),
+        where('participants', 'array-contains', user.uid),
         where('read', '==', false)
       )
 

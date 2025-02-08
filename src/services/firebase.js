@@ -18,7 +18,7 @@ import {
   where,
   onSnapshot,
   documentId,
-  orderBy // Asegúrate de importar orderBy
+  orderBy
 } from 'firebase/firestore'
 import { getDatabase } from 'firebase/database'
 
@@ -51,6 +51,6 @@ export {
   where,
   onSnapshot,
   documentId,
-  orderBy, // Asegúrate de exportar orderBy
-  signOut
+  orderBy,
+  signOut // Asegúrate de exportar signOut
 }
