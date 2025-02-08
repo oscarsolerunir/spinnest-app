@@ -35,7 +35,7 @@ const AlbumDetails = () => {
   // Determine the previous page and button text
   const previousPage = location.state?.from || '/albums'
   const buttonText =
-    previousPage === '/' ? 'Ver todos los albums' : 'Ver mis album'
+    previousPage === '/' ? 'Ver todos los albums' : 'Ver mis albums'
 
   return (
     <AlbumDetailContainer>

@@ -4,26 +4,13 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import UserList from './UserList'
 
-const FollowersList = ({ userId }) => {
+const UsersList = ({ userId }) => {
   const [users, setUsers] = useState([])
-  const [followers, setFollowers] = useState([])
   const [following, setFollowing] = useState([])
 
   useEffect(() => {
     if (userId) {
       fetchUsers()
-
-      const qFollowers = query(
-        collection(db, 'follows'),
-        where('followingId', '==', userId)
-      )
-      const unsubscribeFollowers = onSnapshot(qFollowers, snapshot => {
-        const followersData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        setFollowers(followersData)
-      })
 
       const qFollowing = query(
         collection(db, 'follows'),
@@ -38,7 +25,6 @@ const FollowersList = ({ userId }) => {
       })
 
       return () => {
-        unsubscribeFollowers()
         unsubscribeFollowing()
       }
     }
@@ -68,8 +54,8 @@ const FollowersList = ({ userId }) => {
   return (
     <div>
       <UserList
-        title="Seguidores"
-        users={followers.map(f => users.find(u => u.id === f.followerId))}
+        title="Usuarios"
+        users={users}
         following={following}
         onFollow={handleFollow}
         onUnfollow={handleUnfollow}
@@ -78,4 +64,4 @@ const FollowersList = ({ userId }) => {
   )
 }
 
-export default FollowersList
+export default UsersList

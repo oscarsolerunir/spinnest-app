@@ -63,9 +63,9 @@ const ViewAlbum = ({
       <p>{album.year}</p>
       <p>{album.genre}</p>
       <p>{album.label}</p>
-      {showCollectedBy && <p>Collected by: {album.userName}</p>}
+      {showCollectedBy && <p>Añadido por: {album.userName}</p>}
       {confirmDeleteAlbum && (
-        <DeleteButton onClick={handleDeleteClick}>Delete</DeleteButton>
+        <DeleteButton onClick={handleDeleteClick}>Borrar</DeleteButton>
       )}
     </AlbumContainer>
   )

@@ -39,6 +39,8 @@ const Navigation = () => {
   const [unreadCount, setUnreadCount] = useState(0)
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
+  const [albumsCount, setAlbumsCount] = useState(0)
+  const [collectionsCount, setCollectionsCount] = useState(0)
 
   useEffect(() => {
     if (user) {
@@ -70,10 +72,30 @@ const Navigation = () => {
         setFollowingCount(snapshot.size)
       })
 
+      const qAlbums = query(
+        collection(db, 'albums'),
+        where('userId', '==', user.uid)
+      )
+
+      const unsubscribeAlbums = onSnapshot(qAlbums, snapshot => {
+        setAlbumsCount(snapshot.size)
+      })
+
+      const qCollections = query(
+        collection(db, 'collections'),
+        where('userId', '==', user.uid)
+      )
+
+      const unsubscribeCollections = onSnapshot(qCollections, snapshot => {
+        setCollectionsCount(snapshot.size)
+      })
+
       return () => {
         unsubscribeUnread()
         unsubscribeFollowers()
         unsubscribeFollowing()
+        unsubscribeAlbums()
+        unsubscribeCollections()
       }
     }
   }, [user])
@@ -93,13 +115,17 @@ const Navigation = () => {
       {user && (
         <ul>
           <li>
-            <Link to="/">Inicio</Link>
+            <Link to="/">Explorar</Link>
           </li>
           <li>
-            <Link to="/albums">Albums</Link>
+            <Link to="/albums">
+              Albums {albumsCount > 0 && `(${albumsCount})`}
+            </Link>
           </li>
           <li>
-            <Link to="/collections">Colecciones</Link>
+            <Link to="/collections">
+              Colecciones {collectionsCount > 0 && `(${collectionsCount})`}
+            </Link>
           </li>
           <li>
             <Link to="/messages">
