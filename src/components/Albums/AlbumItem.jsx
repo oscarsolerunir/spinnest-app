@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
 const AlbumContainer = styled.div`
   border: 1px solid #ddd;
@@ -38,11 +39,12 @@ const DeleteButton = styled.button`
   }
 `
 
-const AlbumDetailsPage = ({
+const AlbumItem = ({
   album,
   confirmDeleteAlbum,
   onClick,
-  showCollectedBy = true
+  showCollectedBy = true,
+  showDetailsLink = true // Default to true
 }) => {
   const handleDeleteClick = e => {
     e.stopPropagation()
@@ -64,6 +66,7 @@ const AlbumDetailsPage = ({
       <p>{album.genre}</p>
       <p>{album.label}</p>
       {showCollectedBy && <p>Añadido por: {album.userName}</p>}
+      {showDetailsLink && <Link to={`/album/${album.id}`}>Ver detalles</Link>}
       {confirmDeleteAlbum && (
         <DeleteButton onClick={handleDeleteClick}>Borrar</DeleteButton>
       )}
@@ -71,4 +74,4 @@ const AlbumDetailsPage = ({
   )
 }
 
-export default AlbumDetailsPage
+export default AlbumItem

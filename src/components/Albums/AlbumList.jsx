@@ -1,4 +1,4 @@
-import ViewAlbum from './ViewAlbum'
+import AlbumItem from './AlbumItem'
 import styled from 'styled-components'
 
 const ListContainer = styled.div`
@@ -13,22 +13,24 @@ const ListGrid = styled.div`
   gap: 20px;
 `
 
-const ListAlbums = ({
+const AlbumList = ({
   albums = [], // Default to an empty array if albums is undefined
   confirmDeleteAlbum,
   onClick,
-  showCollectedBy = true
+  showCollectedBy = true,
+  showDetailsLink = true // Default to true
 }) => {
   return (
     <ListContainer>
       <ListGrid>
         {albums.map(album => (
-          <ViewAlbum
+          <AlbumItem
             key={album.id}
             album={album}
             confirmDeleteAlbum={confirmDeleteAlbum}
             onClick={onClick}
             showCollectedBy={showCollectedBy}
+            showDetailsLink={showDetailsLink} // Pass the prop to AlbumItem
           />
         ))}
       </ListGrid>
@@ -36,4 +38,4 @@ const ListAlbums = ({
   )
 }
 
-export default ListAlbums
+export default AlbumList

@@ -15,7 +15,7 @@ import {
   where
 } from 'firebase/firestore'
 
-const MessagesList = () => {
+const UserConversationsPage = () => {
   const [user] = useAuthState(auth)
   const [conversations, setConversations] = useState([])
   const navigate = useNavigate()
@@ -95,4 +95,4 @@ const MessagesList = () => {
   )
 }
 
-export default MessagesList
+export default UserConversationsPage

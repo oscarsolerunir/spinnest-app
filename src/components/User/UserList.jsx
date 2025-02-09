@@ -145,7 +145,6 @@ const UserList = ({ userId, filterType }) => {
 
   return (
     <div>
-      <h2>Usuarios</h2>
       {filteredUsersList.length > 0 ? (
         <ul>
           {filteredUsersList.map(u => (

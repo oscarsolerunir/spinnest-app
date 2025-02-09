@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getAlbums, getCollections } from '../services/api'
-import ListAlbums from '../components/Albums/ListAlbums'
+import AlbumList from '../components/Albums/AlbumList'
 import ListCollections from '../components/Collections/ListCollections'
 import UserList from '../components/User/UserList'
 import { useNavigate } from 'react-router-dom'
@@ -39,25 +39,26 @@ const ExplorePage = () => {
     })
   }
 
-  const handleAlbumClick = id => {
-    navigate(`/album/${id}`, { state: { from: '/' } })
-  }
-
   const handleCollectionClick = id => {
     navigate(`/collection/${id}`, { state: { from: '/' } })
   }
 
   return (
     <div>
-      <h1>Todos los álbums</h1>
-      <ListAlbums albums={albums} onClick={handleAlbumClick} />
-      <h1>Todas las colecciones</h1>
+      <h1>Explorar</h1>
+      <h2>Todos los álbums</h2>
+      {albums.length > 0 ? (
+        <AlbumList albums={albums} />
+      ) : (
+        <p>No hay álbums disponibles.</p>
+      )}
+      <h2>Todas las colecciones</h2>
       <ListCollections
         collections={collections}
         onClick={handleCollectionClick}
         allUsers
       />
-      <h1>Todos los usuarios</h1>
+      <h2>Todos los usuarios</h2>
       <UserList userId={user?.uid} />
     </div>
   )

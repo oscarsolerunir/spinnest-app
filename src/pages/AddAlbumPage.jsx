@@ -16,7 +16,19 @@ const AddAlbumPage = () => {
     albumYear,
     albumGenre,
     albumLabel,
-    albumImage
+    albumImage,
+    albumCountry,
+    albumReleased,
+    albumNotes,
+    albumFormats,
+    albumLowestPrice,
+    albumTracklist,
+    albumVideos,
+    albumStyles,
+    albumRating,
+    albumRatingCount,
+    albumCredits,
+    albumDiscogsUrl
   }) => {
     if (!user) {
       alert('You must be logged in to upload an album')
@@ -42,12 +54,13 @@ const AddAlbumPage = () => {
     try {
       const existingAlbum = await getAlbumById(albumTitle)
       if (existingAlbum) {
-        // Si el álbum ya existe, solo actualizamos el campo userIds
+        // Si el álbum ya existe, solo actualizamos los campos userIds y userNames
         await updateAlbum(existingAlbum.id, {
-          userIds: [...existingAlbum.userIds, user.uid]
+          userIds: [...existingAlbum.userIds, user.uid],
+          userNames: [...existingAlbum.userNames, userName]
         })
       } else {
-        // Si el álbum no existe, lo creamos con el campo userIds
+        // Si el álbum no existe, lo creamos con los campos userIds y userNames
         await createAlbum({
           name: albumTitle,
           artist: albumArtist,
@@ -55,9 +68,21 @@ const AddAlbumPage = () => {
           genre: albumGenre,
           label: albumLabel,
           image: imageUrl || '', // Ensure image field is not undefined
+          country: albumCountry,
+          released: albumReleased,
+          notes: albumNotes,
+          formats: albumFormats.split(',').map(format => format.trim()), // Ensure formats is an array
+          lowest_price: albumLowestPrice,
+          tracklist: albumTracklist.split(',').map(track => track.trim()), // Ensure tracklist is an array
+          videos: albumVideos,
+          styles: albumStyles.split(',').map(style => style.trim()), // Ensure styles is an array
+          rating: albumRating,
+          rating_count: albumRatingCount,
+          credits: albumCredits,
+          discogs_url: albumDiscogsUrl,
           createdAt: new Date().toISOString(), // Add createdAt property
           userIds: [user.uid], // Associate album with user
-          userName // Add userName
+          userNames: [userName] // Add userNames
         })
       }
 

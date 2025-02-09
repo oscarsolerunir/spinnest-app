@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { createCollection, getAlbumsByUser } from '../../services/api'
-import { useUser } from '../../providers/UserContext'
-import CollectionForm from '../../components/Collections/CollectionForm'
+import { createCollection, getAlbumsByUser } from '../services/api'
+import { useUser } from '../providers/UserContext'
+import CollectionForm from '../components/Collections/CollectionForm'
 
-const AddCollection = () => {
+const AddCollectionPage = () => {
   const { user } = useUser()
   const [userAlbums, setUserAlbums] = useState([])
   const [loading, setLoading] = useState(true)
@@ -71,4 +71,4 @@ const AddCollection = () => {
   )
 }
 
-export default AddCollection
+export default AddCollectionPage

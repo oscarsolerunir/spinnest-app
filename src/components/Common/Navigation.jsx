@@ -169,6 +169,9 @@ const Navigation = () => {
             <Link to="/">Explorar</Link>
           </li>
           <li>
+            <Link to="/feed">Feed {newContent && '¡Nuevos!'}</Link>
+          </li>
+          <li>
             <Link to="/albums">
               Albums {albumsCount > 0 && `(${albumsCount})`}
             </Link>
@@ -192,9 +195,6 @@ const Navigation = () => {
             <Link to="/following">
               Siguiendo {followingCount > 0 && `(${followingCount})`}
             </Link>
-          </li>
-          <li>
-            <Link to="/feed">Feed {newContent && '¡Nuevos!'}</Link>
           </li>
           <li>
             <Link to="/wishlist">

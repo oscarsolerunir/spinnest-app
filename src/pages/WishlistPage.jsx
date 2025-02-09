@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import { getWishlist } from '../services/api'
-import ListAlbums from '../components/Albums/ListAlbums'
+import AlbumList from '../components/Albums/AlbumList'
 
 const WishlistPage = () => {
   const [albums, setAlbums] = useState([])
@@ -18,7 +18,7 @@ const WishlistPage = () => {
     <div>
       <h1>Mi Wishlist</h1>
       {albums.length > 0 ? (
-        <ListAlbums albums={albums} />
+        <AlbumList albums={albums} />
       ) : (
         <p>Aún no has añadido ningún álbum a la wishlist.</p>
       )}

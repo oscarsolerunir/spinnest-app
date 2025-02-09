@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { getAlbumsByUser, getCollectionsByUser } from '../services/api'
-import ListAlbums from '../components/Albums/ListAlbums'
+import AlbumList from '../components/Albums/AlbumList'
 import ListCollections from '../components/Collections/ListCollections'
 
 const FeedPage = () => {
@@ -87,7 +87,7 @@ const FeedPage = () => {
       <h1>Feed</h1>
       <h2>Álbums</h2>
       {albums.length > 0 ? (
-        <ListAlbums albums={albums} />
+        <AlbumList albums={albums} />
       ) : (
         <p>No hay álbums disponibles.</p>
       )}

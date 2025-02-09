@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { searchAlbums, getAlbumDetails } from '../../services/discogs'
-import ListAlbums from './ListAlbums'
+import AlbumList from './AlbumList'
 import styled from 'styled-components'
 
 const Form = styled.form`
@@ -51,7 +51,28 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         albumYear: albumDetails.year,
         albumGenre: albumDetails.genres.join(', '),
         albumLabel: albumDetails.labels.map(label => label.name).join(', '),
-        albumImage: albumDetails.images[0]?.uri
+        albumImage: albumDetails.images[0]?.uri,
+        albumCountry: albumDetails.country,
+        albumReleased: albumDetails.released,
+        albumNotes: albumDetails.notes,
+        albumFormats: albumDetails.formats
+          .map(format => format.name)
+          .join(', '),
+        albumLowestPrice: albumDetails.lowest_price,
+        albumTracklist: albumDetails.tracklist
+          .map(track => track.title)
+          .join(', '),
+        albumVideos: albumDetails.videos.map(video => ({
+          title: video.title,
+          uri: video.uri
+        })),
+        albumStyles: albumDetails.styles ? albumDetails.styles.join(', ') : '', // Ensure albumStyles is defined
+        albumRating: albumDetails.community.rating.average,
+        albumRatingCount: albumDetails.community.rating.count,
+        albumCredits: albumDetails.extraartists
+          .map(artist => artist.name)
+          .join(', '),
+        albumDiscogsUrl: albumDetails.uri
       })
     } catch (error) {
       console.error('Error getting album details:', error)
@@ -69,7 +90,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         onChange={e => setArtist(e.target.value)}
       />
       {searchResults.length > 0 && (
-        <ListAlbums
+        <AlbumList
           albums={searchResults.map(result => ({
             id: result.id,
             name: result.title,
@@ -81,6 +102,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
           confirmDeleteAlbum={null}
           onClick={onSelectAlbum}
           showCollectedBy={false} // No mostrar "Collected by: " en los resultados de búsqueda
+          showDetailsLink={false} // No mostrar "Ver detalles" en los resultados de búsqueda
         />
       )}
     </Form>

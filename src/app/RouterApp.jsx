@@ -6,15 +6,15 @@ import Home from '../pages/Home'
 import AddAlbumPage from '../pages/AddAlbumPage'
 import AlbumDetailsPage from '../pages/AlbumDetailsPage'
 import UserAlbumsPage from '../pages/UserAlbumsPage'
-import AddCollection from '../pages/Collections/AddCollection'
+import AddCollectionPage from '../pages/AddCollectionPage'
 import EditCollection from '../pages/Collections/EditCollection'
 import ViewCollectionPage from '../pages/Collections/ViewCollection'
-import ViewUserCollections from '../pages/Collections/ViewUserCollections'
+import UserCollectionsPage from '../pages/UserCollectionsPage'
 import Login from '../components/Auth/Login'
 import Register from '../components/Auth/Register'
 import UserProfile from '../pages/Profile/UserProfile'
 import EditProfile from '../pages/Profile/EditProfile'
-import MessagesPage from '../pages/MessagesPage'
+import UserConversationsPage from '../pages/UserConversationsPage'
 import UserMessagesPage from '../pages/UserMessagesPage'
 import FollowersPage from '../pages/FollowersPage'
 import FollowingPage from '../pages/FollowingPage'
@@ -54,7 +54,7 @@ const RouterApp = () => {
               path="/add-collection"
               element={
                 <PrivateRoute>
-                  <AddCollection />
+                  <AddCollectionPage />
                 </PrivateRoute>
               }
             />
@@ -78,7 +78,7 @@ const RouterApp = () => {
               path="/collections"
               element={
                 <PrivateRoute>
-                  <ViewUserCollections />
+                  <UserCollectionsPage />
                 </PrivateRoute>
               }
             />
@@ -104,7 +104,7 @@ const RouterApp = () => {
               path="/messages"
               element={
                 <PrivateRoute>
-                  <MessagesPage />
+                  <UserConversationsPage />
                 </PrivateRoute>
               }
             />
