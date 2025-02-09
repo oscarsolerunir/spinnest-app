@@ -4,7 +4,11 @@ import ExplorePage from './ExplorePage'
 import Login from '../components/Auth/Login'
 
 const Home = () => {
-  const [user] = useAuthState(auth)
+  const [user, loading] = useAuthState(auth)
+
+  if (loading) {
+    return <div>Cargando...</div>
+  }
 
   return <div>{user ? <ExplorePage /> : <Login />}</div>
 }

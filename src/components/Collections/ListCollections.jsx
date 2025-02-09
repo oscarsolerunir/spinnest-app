@@ -1,33 +1,37 @@
 import { useEffect, useState } from 'react'
-import { getCollectionsByUser } from '../../services/api'
+import { getCollectionsByUser, getCollections } from '../../services/api'
 import ItemCollection from './ItemCollection'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../services/firebase'
 
-const ListCollections = ({ userId, collections, onClick }) => {
+const ListCollections = ({ userId, collections, onClick, allUsers }) => {
   const [collectionsState, setCollectionsState] = useState(collections || [])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [currentUser] = useAuthState(auth)
 
   useEffect(() => {
-    if (userId) {
-      const fetchCollections = async () => {
-        try {
-          const data = await getCollectionsByUser(userId)
-          setCollectionsState(data)
-        } catch (error) {
-          console.error('Error fetching collections:', error)
-          setError(
-            'Hubo un error al cargar las colecciones. Por favor, inténtalo de nuevo.'
-          )
-        } finally {
-          setLoading(false)
+    const fetchCollections = async () => {
+      try {
+        let data = []
+        if (allUsers) {
+          data = await getCollections()
+        } else if (userId) {
+          data = await getCollectionsByUser(userId)
         }
+        setCollectionsState(data)
+      } catch (error) {
+        console.error('Error fetching collections:', error)
+        setError(
+          'Hubo un error al cargar las colecciones. Por favor, inténtalo de nuevo.'
+        )
+      } finally {
+        setLoading(false)
       }
-
-      fetchCollections()
-    } else {
-      setLoading(false)
     }
-  }, [userId])
+
+    fetchCollections()
+  }, [userId, allUsers])
 
   if (loading) {
     return <p>Cargando...</p>
@@ -37,8 +41,8 @@ const ListCollections = ({ userId, collections, onClick }) => {
     return <p style={{ color: 'red' }}>{error}</p>
   }
 
-  if (collectionsState.length === 0) {
-    return <p>No tienes colecciones.</p>
+  if (!collectionsState || collectionsState.length === 0) {
+    return <p>No hay colecciones disponibles.</p>
   }
 
   return (
@@ -48,6 +52,7 @@ const ListCollections = ({ userId, collections, onClick }) => {
           key={collection.id}
           collection={collection}
           onClick={onClick}
+          currentUser={currentUser}
         />
       ))}
     </div>

@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../services/firebase'
 
 const CollectionCard = styled.div`
   border: 1px solid #ddd;
@@ -21,10 +23,13 @@ const CollectionTitle = styled.h3`
 
 const ItemCollection = ({ collection }) => {
   const navigate = useNavigate()
+  const [currentUser] = useAuthState(auth)
 
   const handleClick = () => {
     navigate(`/collection/${collection.id}`)
   }
+
+  const isOwner = currentUser && currentUser.uid === collection.userId
 
   return (
     <CollectionCard onClick={handleClick}>
@@ -38,6 +43,16 @@ const ItemCollection = ({ collection }) => {
       </ul>
       <CollectionTitle>{collection.name}</CollectionTitle>
       <p>{collection.description}</p>
+      {isOwner && (
+        <button
+          onClick={e => {
+            e.stopPropagation()
+            navigate(`/edit-collection/${collection.id}`)
+          }}
+        >
+          Editar Colección
+        </button>
+      )}
     </CollectionCard>
   )
 }

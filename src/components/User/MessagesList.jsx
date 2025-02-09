@@ -75,18 +75,22 @@ const MessagesList = () => {
   return (
     <div>
       <h2>Mensajes</h2>
-      <ul>
-        {conversations.map(convo => (
-          <li
-            key={convo.id}
-            onClick={() => handleConversationClick(convo.id)}
-            style={{ fontWeight: convo.read ? 'normal' : 'bold' }} // Indicador visual para conversaciones no leídas
-          >
-            <strong>{convo.userName}</strong> - {convo.lastMessage} -{' '}
-            {convo.read ? 'Leído' : 'No leído'}
-          </li>
-        ))}
-      </ul>
+      {conversations.length > 0 ? (
+        <ul>
+          {conversations.map(convo => (
+            <li
+              key={convo.id}
+              onClick={() => handleConversationClick(convo.id)}
+              style={{ fontWeight: convo.read ? 'normal' : 'bold' }} // Indicador visual para conversaciones no leídas
+            >
+              <strong>{convo.userName}</strong> - {convo.lastMessage} -{' '}
+              {convo.read ? 'Leído' : 'No leído'}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Aún no has recibido ningún mensaje.</p>
+      )}
     </div>
   )
 }

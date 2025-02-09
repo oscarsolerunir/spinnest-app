@@ -38,7 +38,7 @@ const DeleteButton = styled.button`
   }
 `
 
-const ViewAlbum = ({
+const AlbumDetailsPage = ({
   album,
   confirmDeleteAlbum,
   onClick,
@@ -71,4 +71,4 @@ const ViewAlbum = ({
   )
 }
 
-export default ViewAlbum
+export default AlbumDetailsPage

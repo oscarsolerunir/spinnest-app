@@ -36,7 +36,15 @@ const firebaseApp = initializeApp(firebaseConfig)
 export const db = getFirestore(firebaseApp)
 export const auth = getAuth(firebaseApp)
 export const rtdb = getDatabase(firebaseApp) // Inicializar Realtime Database
+
+// Configurar la persistencia de la autenticación
 setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log('Persistencia de autenticación configurada correctamente')
+  })
+  .catch(error => {
+    console.error('Error configurando la persistencia de autenticación:', error)
+  })
 
 // Exportar los módulos necesarios
 export {

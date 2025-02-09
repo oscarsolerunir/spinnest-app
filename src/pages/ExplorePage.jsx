@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { getAlbums, getCollections } from '../services/api'
 import ListAlbums from '../components/Albums/ListAlbums'
 import ListCollections from '../components/Collections/ListCollections'
+import UserList from '../components/User/UserList'
 import { useNavigate } from 'react-router-dom'
-import AllUsersList from '../components/User/AllUsersList'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 
@@ -55,8 +55,10 @@ const ExplorePage = () => {
       <ListCollections
         collections={collections}
         onClick={handleCollectionClick}
+        allUsers
       />
-      {user && <AllUsersList userId={user.uid} />}
+      <h1>Todos los usuarios</h1>
+      <UserList userId={user?.uid} />
     </div>
   )
 }

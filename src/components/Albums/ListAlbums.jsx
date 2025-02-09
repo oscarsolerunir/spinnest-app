@@ -14,7 +14,7 @@ const ListGrid = styled.div`
 `
 
 const ListAlbums = ({
-  albums,
+  albums = [], // Default to an empty array if albums is undefined
   confirmDeleteAlbum,
   onClick,
   showCollectedBy = true

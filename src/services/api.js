@@ -13,12 +13,13 @@ import {
 } from './firebase'
 import { auth } from './firebase'
 
+const albumsCollectionName = 'albums'
+const collectionsCollectionName = 'collections'
 const conversationsCollectionName = 'conversations'
 const messagesCollectionName = 'messages'
-const collectionsCollectionName = 'collections'
-const usersCollectionName = 'users'
 const followsCollectionName = 'follows'
-const albumsCollectionName = 'albums'
+const usersCollectionName = 'users'
+const wishlistCollectionName = 'wishlist'
 
 // Helper function to convert Firestore collection to array
 const getArrayFromCollection = collection => {
@@ -139,7 +140,9 @@ export const getAlbums = async () => {
 // READ ALBUMS BY USER
 export const getAlbumsByUser = async userId => {
   const colRef = collection(db, albumsCollectionName)
-  const result = await getDocs(query(colRef, where('userId', '==', userId)))
+  const result = await getDocs(
+    query(colRef, where('userIds', 'array-contains', userId))
+  )
   return getArrayFromCollection(result)
 }
 
@@ -246,4 +249,27 @@ export const getUserById = async userId => {
   } else {
     throw new Error('No se ha encontrado el usuario')
   }
+}
+
+// ADD TO WISHLIST
+export const addToWishlist = async (userId, album) => {
+  const colRef = collection(db, wishlistCollectionName)
+  await addDoc(colRef, {
+    userId,
+    albumId: album.id,
+    albumName: album.name,
+    albumArtist: album.artist,
+    albumYear: album.year,
+    albumGenre: album.genre,
+    albumLabel: album.label,
+    albumImage: album.image,
+    addedAt: new Date()
+  })
+}
+
+// GET WISHLIST
+export const getWishlist = async userId => {
+  const colRef = collection(db, wishlistCollectionName)
+  const result = await getDocs(query(colRef, where('userId', '==', userId)))
+  return getArrayFromCollection(result)
 }

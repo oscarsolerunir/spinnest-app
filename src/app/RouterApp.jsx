@@ -3,9 +3,9 @@ import { UserProvider } from '../providers/UserContext'
 import PrivateRoute from '../components/Common/PrivateRoute'
 import DefaultLayout from '../layouts/Default'
 import Home from '../pages/Home'
-import AddAlbum from '../pages/Albums/AddAlbum'
-import ViewAlbum from '../pages/Albums/ViewAlbum'
-import ViewUserAlbums from '../pages/Albums/ViewUserAlbums'
+import AddAlbumPage from '../pages/AddAlbumPage'
+import AlbumDetailsPage from '../pages/AlbumDetailsPage'
+import UserAlbumsPage from '../pages/UserAlbumsPage'
 import AddCollection from '../pages/Collections/AddCollection'
 import EditCollection from '../pages/Collections/EditCollection'
 import ViewCollectionPage from '../pages/Collections/ViewCollection'
@@ -20,6 +20,7 @@ import FollowersPage from '../pages/FollowersPage'
 import FollowingPage from '../pages/FollowingPage'
 import UserPage from '../pages/UserPage'
 import FeedPage from '../pages/FeedPage'
+import WishlistPage from '../pages/WishlistPage'
 
 const RouterApp = () => {
   return (
@@ -36,7 +37,7 @@ const RouterApp = () => {
               path="/add-album"
               element={
                 <PrivateRoute>
-                  <AddAlbum />
+                  <AddAlbumPage />
                 </PrivateRoute>
               }
             />
@@ -44,11 +45,11 @@ const RouterApp = () => {
               path="/albums"
               element={
                 <PrivateRoute>
-                  <ViewUserAlbums />
+                  <UserAlbumsPage />
                 </PrivateRoute>
               }
             />
-            <Route path="/album/:id" element={<ViewAlbum />} />
+            <Route path="/album/:id" element={<AlbumDetailsPage />} />
             <Route
               path="/add-collection"
               element={
@@ -112,6 +113,14 @@ const RouterApp = () => {
               element={
                 <PrivateRoute>
                   <UserMessagesPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <PrivateRoute>
+                  <WishlistPage />
                 </PrivateRoute>
               }
             />

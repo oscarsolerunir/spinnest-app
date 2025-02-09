@@ -47,6 +47,7 @@ const Navigation = () => {
   const [followingCount, setFollowingCount] = useState(0)
   const [albumsCount, setAlbumsCount] = useState(0)
   const [collectionsCount, setCollectionsCount] = useState(0)
+  const [wishlistCount, setWishlistCount] = useState(0)
   const [newContent, setNewContent] = useState(false)
 
   useEffect(() => {
@@ -97,11 +98,25 @@ const Navigation = () => {
         setCollectionsCount(snapshot.size)
       })
 
+      const qWishlist = query(
+        collection(db, 'wishlist'),
+        where('userId', '==', user.uid)
+      )
+
+      const unsubscribeWishlist = onSnapshot(qWishlist, snapshot => {
+        setWishlistCount(snapshot.size)
+      })
+
       const checkNewContent = async () => {
         const followingSnapshot = await getDocs(qFollowing)
         const followingIds = followingSnapshot.docs.map(
           doc => doc.data().followingId
         )
+
+        if (followingIds.length === 0) {
+          setNewContent(false)
+          return
+        }
 
         const albumsSnapshot = await getDocs(
           query(collection(db, 'albums'), where('userId', 'in', followingIds))
@@ -131,6 +146,7 @@ const Navigation = () => {
         unsubscribeFollowing()
         unsubscribeAlbums()
         unsubscribeCollections()
+        unsubscribeWishlist()
       }
     }
   }, [user])
@@ -179,6 +195,11 @@ const Navigation = () => {
           </li>
           <li>
             <Link to="/feed">Feed {newContent && '¡Nuevos!'}</Link>
+          </li>
+          <li>
+            <Link to="/wishlist">
+              Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+            </Link>
           </li>
           <li>
             <Link to="/profile">Perfil</Link>

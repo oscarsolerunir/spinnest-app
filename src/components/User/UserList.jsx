@@ -12,9 +12,10 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import { useNavigate } from 'react-router-dom'
 
-const UsersList = ({ userId }) => {
+const UserList = ({ userId, filterType }) => {
   const [users, setUsers] = useState([])
   const [following, setFollowing] = useState([])
+  const [followers, setFollowers] = useState([])
   const [userAlbums, setUserAlbums] = useState({})
   const [userCollections, setUserCollections] = useState({})
   const navigate = useNavigate()
@@ -35,8 +36,21 @@ const UsersList = ({ userId }) => {
         setFollowing(followingData)
       })
 
+      const qFollowers = query(
+        collection(db, 'follows'),
+        where('followingId', '==', userId)
+      )
+      const unsubscribeFollowers = onSnapshot(qFollowers, snapshot => {
+        const followersData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setFollowers(followersData)
+      })
+
       return () => {
         unsubscribeFollowing()
+        unsubscribeFollowers()
       }
     }
   }, [userId])
@@ -112,50 +126,77 @@ const UsersList = ({ userId }) => {
     navigate(`/user/${userId}`)
   }
 
+  const filteredUsers = () => {
+    switch (filterType) {
+      case 'followers':
+        return followers
+          .map(f => users.find(u => u.id === f.followerId))
+          .filter(Boolean)
+      case 'following':
+        return following
+          .map(f => users.find(u => u.id === f.followingId))
+          .filter(Boolean)
+      default:
+        return users
+    }
+  }
+
+  const filteredUsersList = filteredUsers()
+
   return (
     <div>
       <h2>Usuarios</h2>
-      <ul>
-        {users.map(u => (
-          <li
-            key={u.id}
-            onClick={() => handleUserClick(u.id)}
-            style={{ cursor: 'pointer' }}
-          >
-            {u.name} - {userAlbums[u.id] || 0} álbums y{' '}
-            {userCollections[u.id] || 0} colecciones
-            {following.some(f => f.followingId === u.id) ? (
-              <button
-                onClick={e => {
-                  e.stopPropagation()
-                  handleUnfollow(u.id)
-                }}
-              >
-                Dejar de seguir
-              </button>
-            ) : (
-              <button
-                onClick={e => {
-                  e.stopPropagation()
-                  handleFollow(u.id)
-                }}
-              >
-                Seguir
-              </button>
-            )}
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                handleSendMessage(u.id)
-              }}
+      {filteredUsersList.length > 0 ? (
+        <ul>
+          {filteredUsersList.map(u => (
+            <li
+              key={u.id}
+              onClick={() => handleUserClick(u.id)}
+              style={{ cursor: 'pointer' }}
             >
-              Enviar mensaje
-            </button>
-          </li>
-        ))}
-      </ul>
+              {u.name} - {userAlbums[u.id] || 0} álbums y{' '}
+              {userCollections[u.id] || 0} colecciones
+              {following.some(f => f.followingId === u.id) ? (
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleUnfollow(u.id)
+                  }}
+                >
+                  Dejar de seguir
+                </button>
+              ) : (
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleFollow(u.id)
+                  }}
+                >
+                  Seguir
+                </button>
+              )}
+              <button
+                onClick={e => {
+                  e.stopPropagation()
+                  handleSendMessage(u.id)
+                }}
+              >
+                Enviar mensaje
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>
+          {filterType === 'followers'
+            ? 'Aún no tienes seguidores.'
+            : filterType === 'following'
+            ? 'Aún no sigues a ningún usuario.'
+            : 'No se encontraron usuarios.'}
+        </p>
+      )}
     </div>
   )
 }
 
-export default UsersList
+export default UserList

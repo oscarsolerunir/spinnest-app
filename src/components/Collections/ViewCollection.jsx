@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { getCollectionById } from '../../services/api'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../services/firebase'
 
 const ViewCollection = () => {
   const { id } = useParams()
   const [collection, setCollection] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [currentUser] = useAuthState(auth)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -39,6 +42,8 @@ const ViewCollection = () => {
     return <p>No se encontró la colección.</p>
   }
 
+  const isOwner = currentUser && currentUser.uid === collection.userId
+
   return (
     <div>
       <h1>{collection.name}</h1>
@@ -58,9 +63,11 @@ const ViewCollection = () => {
           </li>
         ))}
       </ul>
-      <button onClick={() => navigate(`/edit-collection/${id}`)}>
-        Editar Colección
-      </button>
+      {isOwner && (
+        <button onClick={() => navigate(`/edit-collection/${id}`)}>
+          Editar Colección
+        </button>
+      )}
     </div>
   )
 }
