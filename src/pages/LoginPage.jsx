@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../../services/firebase'
+import { auth } from '../services/firebase'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-const Login = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -72,4 +72,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginPage

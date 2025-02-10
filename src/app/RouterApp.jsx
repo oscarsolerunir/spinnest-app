@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { UserProvider } from '../providers/UserContext'
 import PrivateRoute from '../components/Common/PrivateRoute'
 import DefaultLayout from '../layouts/Default'
-import Home from '../pages/Home'
+import HomePage from '../pages/HomePage'
 import AddAlbumPage from '../pages/AddAlbumPage'
 import AlbumDetailsPage from '../pages/AlbumDetailsPage'
 import UserAlbumsPage from '../pages/UserAlbumsPage'
@@ -10,8 +10,8 @@ import AddCollectionPage from '../pages/AddCollectionPage'
 import EditCollection from '../pages/Collections/EditCollection'
 import ViewCollectionPage from '../pages/Collections/ViewCollection'
 import UserCollectionsPage from '../pages/UserCollectionsPage'
-import Login from '../components/Auth/Login'
-import Register from '../components/Auth/Register'
+import LoginPage from '../pages/LoginPage'
+import RegisterPage from '../pages/RegisterPage'
 import UserProfile from '../pages/Profile/UserProfile'
 import EditProfile from '../pages/Profile/EditProfile'
 import UserConversationsPage from '../pages/UserConversationsPage'
@@ -28,7 +28,7 @@ const RouterApp = () => {
       <Router>
         <DefaultLayout>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/followers" element={<FollowersPage />} />
             <Route path="/following" element={<FollowingPage />} />
             <Route path="/user/:userId" element={<UserPage />} />
@@ -82,8 +82,8 @@ const RouterApp = () => {
                 </PrivateRoute>
               }
             />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route
               path="/profile"
               element={

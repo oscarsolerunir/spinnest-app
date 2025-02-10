@@ -1,16 +1,16 @@
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import ExplorePage from './ExplorePage'
-import Login from '../components/Auth/Login'
+import LoginPage from './LoginPage'
 
-const Home = () => {
+const HomePage = () => {
   const [user, loading] = useAuthState(auth)
 
   if (loading) {
     return <div>Cargando...</div>
   }
 
-  return <div>{user ? <ExplorePage /> : <Login />}</div>
+  return <div>{user ? <ExplorePage /> : <LoginPage />}</div>
 }
 
-export default Home
+export default HomePage
