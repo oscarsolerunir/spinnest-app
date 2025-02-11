@@ -39,21 +39,71 @@ const DeleteButton = styled.button`
   }
 `
 
+const WishlistButton = styled.button`
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`
+
 const AlbumItem = ({
   album,
+  userId,
+  isInWishlist = false,
   confirmDeleteAlbum,
+  handleAddToWishlist,
+  handleRemoveFromWishlist,
   onClick,
   showCollectedBy = true,
-  showDetailsLink = true // Default to true
+  showDetailsLink = true
 }) => {
+  const isOwnAlbum = album.userIds && album.userIds.includes(userId)
+
   const handleDeleteClick = e => {
     e.stopPropagation()
-    confirmDeleteAlbum(album.id)
+    if (confirmDeleteAlbum) {
+      confirmDeleteAlbum(album.id)
+    }
   }
 
   const handleClick = () => {
     if (onClick) {
       onClick(album.id)
+    }
+  }
+
+  const handleWishlistClick = async e => {
+    e.stopPropagation()
+    console.log('handleWishlistClick ejecutado:', album.name) // 🚀 Verificar si el evento se dispara
+
+    try {
+      if (isInWishlist) {
+        if (typeof handleRemoveFromWishlist === 'function') {
+          console.log('Intentando eliminar de wishlist:', album.name)
+          await handleRemoveFromWishlist(album)
+          console.log('Álbum eliminado de la wishlist con éxito.')
+        } else {
+          console.error('❌ handleRemoveFromWishlist no está definido.')
+        }
+      } else {
+        if (typeof handleAddToWishlist === 'function') {
+          console.log('Intentando añadir a wishlist:', album.name)
+          await handleAddToWishlist(album)
+          console.log('Álbum añadido a la wishlist con éxito.')
+        } else {
+          console.error('❌ handleAddToWishlist no está definido.')
+        }
+      }
+    } catch (error) {
+      console.error(`⚠️ Error en wishlist:`, error)
     }
   }
 
@@ -65,10 +115,17 @@ const AlbumItem = ({
       <p>{album.year}</p>
       <p>{album.genre}</p>
       <p>{album.label}</p>
-      {showCollectedBy && <p>Añadido por: {album.userName}</p>}
+      {showCollectedBy && album.userNames && (
+        <p>Añadido por: {album.userNames.join(', ')}</p>
+      )}
       {showDetailsLink && <Link to={`/album/${album.id}`}>Ver detalles</Link>}
       {confirmDeleteAlbum && (
         <DeleteButton onClick={handleDeleteClick}>Borrar</DeleteButton>
+      )}
+      {!isOwnAlbum && (
+        <WishlistButton onClick={handleWishlistClick}>
+          {isInWishlist ? 'Eliminar de mi wishlist' : 'Añadir a wishlist'}
+        </WishlistButton>
       )}
     </AlbumContainer>
   )

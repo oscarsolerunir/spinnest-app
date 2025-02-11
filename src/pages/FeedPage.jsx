@@ -10,13 +10,14 @@ import {
 } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { getAlbumsByUser, getCollectionsByUser } from '../services/api'
-import AlbumList from '../components/Albums/AlbumList'
+import AlbumItem from '../components/Albums/AlbumItem'
 import ListCollections from '../components/Collections/ListCollections'
 
 const FeedPage = () => {
   const [albums, setAlbums] = useState([])
   const [collections, setCollections] = useState([])
   const [following, setFollowing] = useState([])
+  const [wishlist] = useState([])
   const [currentUser] = useAuthState(auth)
 
   useEffect(() => {
@@ -87,7 +88,18 @@ const FeedPage = () => {
       <h1>Feed</h1>
       <h2>Álbums</h2>
       {albums.length > 0 ? (
-        <AlbumList albums={albums} />
+        <div>
+          {albums.map(album => (
+            <AlbumItem
+              key={album.id}
+              album={album}
+              userId={currentUser?.uid}
+              wishlist={wishlist}
+              handleAddToWishlist={() => {}}
+              handleRemoveFromWishlist={() => {}}
+            />
+          ))}
+        </div>
       ) : (
         <p>No hay álbums disponibles.</p>
       )}

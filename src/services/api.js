@@ -180,7 +180,7 @@ export const getCollections = async () => {
 
 // READ COLLECTIONS BY USER
 export const getCollectionsByUser = async userId => {
-  const colRef = collection(db, 'collections')
+  const colRef = collection(db, collectionsCollectionName)
   const result = await getDocs(query(colRef, where('userId', '==', userId)))
   return getArrayFromCollection(result)
 }
@@ -242,7 +242,7 @@ export const getUsers = async () => {
 
 // GET USER BY ID
 export const getUserById = async userId => {
-  const docRef = doc(db, 'users', userId)
+  const docRef = doc(db, usersCollectionName, userId)
   const result = await getDoc(docRef)
   if (result.exists()) {
     return { id: result.id, ...result.data() }
@@ -253,17 +253,38 @@ export const getUserById = async userId => {
 
 // ADD TO WISHLIST
 export const addToWishlist = async (userId, album) => {
+  console.log('📡 Enviando álbum a Firebase:', album)
+
   const colRef = collection(db, wishlistCollectionName)
-  await addDoc(colRef, {
-    userId,
-    albumId: album.id,
-    albumName: album.name,
-    albumArtist: album.artist,
-    albumYear: album.year,
-    albumGenre: album.genre,
-    albumLabel: album.label,
-    albumImage: album.image,
-    addedAt: new Date()
+  try {
+    const docRef = await addDoc(colRef, {
+      userId,
+      albumId: album.id,
+      albumName: album.name,
+      albumArtist: album.artist,
+      albumYear: album.year,
+      albumGenre: album.genre,
+      albumLabel: album.label,
+      albumImage: album.image,
+      addedAt: new Date()
+    })
+    console.log('✅ Álbum añadido a Firebase con ID:', docRef.id)
+  } catch (error) {
+    console.error('❌ Error añadiendo a Firebase:', error)
+  }
+}
+
+// REMOVE FROM WISHLIST
+export const removeFromWishlist = async (userId, albumId) => {
+  const colRef = collection(db, wishlistCollectionName)
+  const q = query(
+    colRef,
+    where('userId', '==', userId),
+    where('albumId', '==', albumId)
+  )
+  const result = await getDocs(q)
+  result.forEach(async doc => {
+    await deleteDoc(doc.ref)
   })
 }
 
@@ -271,5 +292,9 @@ export const addToWishlist = async (userId, album) => {
 export const getWishlist = async userId => {
   const colRef = collection(db, wishlistCollectionName)
   const result = await getDocs(query(colRef, where('userId', '==', userId)))
-  return getArrayFromCollection(result)
+
+  const wishlistData = result.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  console.log('📥 Wishlist obtenida de Firebase:', wishlistData)
+
+  return wishlistData
 }

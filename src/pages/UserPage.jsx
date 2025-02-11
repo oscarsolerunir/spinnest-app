@@ -12,7 +12,7 @@ import {
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import AlbumList from '../components/Albums/AlbumList'
+import AlbumItem from '../components/Albums/AlbumItem'
 import ListCollections from '../components/Collections/ListCollections'
 import { useNavigate } from 'react-router-dom'
 
@@ -135,7 +135,17 @@ const UserPage = () => {
       <button onClick={handleSendMessage}>Enviar mensaje</button>
       <h2>Álbums</h2>
       {albums.length > 0 ? (
-        <AlbumList albums={albums} />
+        <div>
+          {albums.map(album => (
+            <AlbumItem
+              key={album.id}
+              album={album}
+              userId={currentUser?.uid}
+              handleAddToWishlist={() => {}}
+              handleRemoveFromWishlist={() => {}}
+            />
+          ))}
+        </div>
       ) : (
         <p>El usuario aún no ha añadido álbums.</p>
       )}

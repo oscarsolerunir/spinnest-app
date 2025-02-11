@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getAlbums, getCollections } from '../services/api'
-import AlbumList from '../components/Albums/AlbumList'
+import AlbumItem from '../components/Albums/AlbumItem'
 import ListCollections from '../components/Collections/ListCollections'
 import UserList from '../components/User/UserList'
 import { useNavigate } from 'react-router-dom'
@@ -10,14 +10,14 @@ import { auth } from '../services/firebase'
 const ExplorePage = () => {
   const [albums, setAlbums] = useState([])
   const [collections, setCollections] = useState([])
+  const [wishlist] = useState([])
   const navigate = useNavigate()
+  const [user] = useAuthState(auth)
 
   useEffect(() => {
     handleGetAlbums()
     handleGetCollections()
   }, [])
-
-  const [user] = useAuthState(auth)
 
   const handleGetAlbums = () => {
     getAlbums().then(data => {
@@ -48,7 +48,18 @@ const ExplorePage = () => {
       <h1>Explorar</h1>
       <h2>Todos los álbums</h2>
       {albums.length > 0 ? (
-        <AlbumList albums={albums} />
+        <div>
+          {albums.map(album => (
+            <AlbumItem
+              key={album.id}
+              album={album}
+              userId={user?.uid}
+              wishlist={wishlist}
+              handleAddToWishlist={() => {}}
+              handleRemoveFromWishlist={() => {}}
+            />
+          ))}
+        </div>
       ) : (
         <p>No hay álbums disponibles.</p>
       )}

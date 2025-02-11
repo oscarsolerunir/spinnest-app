@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { searchAlbums, getAlbumDetails } from '../../services/discogs'
-import AlbumList from './AlbumList'
+import AlbumItem from './AlbumItem'
 import styled from 'styled-components'
 
 const Form = styled.form`
@@ -90,20 +90,28 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         onChange={e => setArtist(e.target.value)}
       />
       {searchResults.length > 0 && (
-        <AlbumList
-          albums={searchResults.map(result => ({
-            id: result.id,
-            name: result.title,
-            artist: result.artist,
-            year: result.year,
-            genre: result.genre,
-            image: result.cover_image
-          }))}
-          confirmDeleteAlbum={null}
-          onClick={onSelectAlbum}
-          showCollectedBy={false} // No mostrar "Collected by: " en los resultados de búsqueda
-          showDetailsLink={false} // No mostrar "Ver detalles" en los resultados de búsqueda
-        />
+        <div>
+          {searchResults.map(result => (
+            <AlbumItem
+              key={result.id}
+              album={{
+                id: result.id,
+                name: result.title,
+                artist: result.artist,
+                year: result.year,
+                genre: result.genre,
+                image: result.cover_image
+              }}
+              userAlbumIds={[]} // No user albums in search results
+              wishlist={[]} // No wishlist in search results
+              handleAddToWishlist={() => {}}
+              handleRemoveFromWishlist={() => {}}
+              onClick={onSelectAlbum}
+              showCollectedBy={false} // No mostrar "Collected by: " en los resultados de búsqueda
+              showDetailsLink={false} // No mostrar "Ver detalles" en los resultados de búsqueda
+            />
+          ))}
+        </div>
       )}
     </Form>
   )
