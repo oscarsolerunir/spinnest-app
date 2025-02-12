@@ -1,57 +1,42 @@
 import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
-import {
-  getWishlist,
-  addToWishlist,
-  removeFromWishlist,
-  addToMyAlbums,
-  removeFromMyAlbums
-} from '../services/api'
+import { getWishlist, removeFromWishlist } from '../services/api'
 import AlbumItem from '../components/Albums/AlbumItem'
 
 const WishlistPage = () => {
-  const [wishlist, setWishlist] = useState([])
+  const [albums, setAlbums] = useState([])
   const [currentUser] = useAuthState(auth)
 
   useEffect(() => {
     if (currentUser) {
-      getWishlist(currentUser.uid).then(setWishlist)
+      getWishlist(currentUser.uid).then(data => {
+        console.log('📥 Wishlist obtenida de Firebase:', data)
+        setAlbums(data)
+      })
     }
-  }, [currentUser])
-
-  const handleAddToWishlist = async album => {
-    try {
-      await addToWishlist(currentUser.uid, album)
-      setWishlist(prevWishlist => [...prevWishlist, { albumDetails: album }])
-    } catch (error) {
-      console.error('Error añadiendo álbum a wishlist:', error)
-    }
-  }
+  }, [currentUser]) // 🔹 Asegurar que se recarga cuando cambia el usuario
 
   const handleRemoveFromWishlist = async album => {
     try {
       await removeFromWishlist(currentUser.uid, album.id)
-      setWishlist(prevWishlist =>
-        prevWishlist.filter(item => item.albumDetails.id !== album.id)
-      )
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
     } catch (error) {
-      console.error('Error eliminando álbum de wishlist:', error)
+      console.error('❌ Error al eliminar de wishlist:', error)
     }
   }
 
   return (
     <div>
       <h1>Mi Wishlist</h1>
-      {wishlist.length > 0 ? (
+      {albums.length > 0 ? (
         <div>
-          {wishlist.map(item => (
+          {albums.map(item => (
             <AlbumItem
               key={item.id}
               album={item.albumDetails} // 🔹 Se asegura de que tenga los detalles completos del álbum
               userId={currentUser?.uid}
               isInWishlist={true}
-              handleAddToWishlist={handleAddToWishlist}
               handleRemoveFromWishlist={handleRemoveFromWishlist}
             />
           ))}

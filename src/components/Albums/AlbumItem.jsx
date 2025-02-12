@@ -1,14 +1,8 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import {
-  addToWishlist,
-  removeFromWishlist,
-  addToMyAlbums,
-  removeFromMyAlbums
-} from '../../services/api'
+import { useWishlist } from '../../providers/WishlistContext' // Importa el contexto
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
-import { useState } from 'react'
 
 const AlbumContainer = styled.div`
   border: 1px solid #ddd;
@@ -58,16 +52,13 @@ const AlbumItem = ({
   showDetailsLink = true
 }) => {
   const [currentUser] = useAuthState(auth)
-  const [wishlistState, setWishlistState] = useState(
-    Array.isArray(album?.wishlistUserIds) &&
-      album.wishlistUserIds.includes(currentUser?.uid)
-  )
-  const [myAlbumsState, setMyAlbumsState] = useState(isInMyAlbums)
-
-  if (!album) return null // 🔹 Evita errores si `album` es undefined
+  const { wishlist, addToWishlistContext, removeFromWishlistContext } =
+    useWishlist() // Usa el contexto global
 
   const isOwnAlbum =
     Array.isArray(album.userIds) && album.userIds.includes(userId)
+
+  const isInWishlist = wishlist.some(item => item.id === album.id)
 
   const handleDeleteClick = e => {
     e.stopPropagation()
@@ -84,14 +75,15 @@ const AlbumItem = ({
     }
 
     try {
-      if (wishlistState) {
+      if (isInWishlist) {
         await removeFromWishlist(currentUser.uid, album.id)
+        removeFromWishlistContext(album.id)
         console.log('✅ Álbum eliminado de la wishlist con éxito.')
       } else {
         await addToWishlist(currentUser.uid, album)
+        addToWishlistContext(album)
         console.log('✅ Álbum añadido a la wishlist con éxito.')
       }
-      setWishlistState(!wishlistState) // 🔹 Actualiza el estado
     } catch (error) {
       console.error('⚠️ Error en wishlist:', error)
     }
@@ -105,14 +97,13 @@ const AlbumItem = ({
     }
 
     try {
-      if (myAlbumsState) {
+      if (isInMyAlbums) {
         await removeFromMyAlbums(currentUser.uid, album.id)
         console.log('✅ Álbum eliminado de mis albums con éxito.')
       } else {
         await addToMyAlbums(currentUser.uid, album)
         console.log('✅ Álbum añadido a mis albums con éxito.')
       }
-      setMyAlbumsState(!myAlbumsState) // 🔹 Actualiza el estado
     } catch (error) {
       console.error('⚠️ Error en mis albums:', error)
     }
@@ -141,10 +132,10 @@ const AlbumItem = ({
       {!isOwnAlbum && (
         <>
           <Button onClick={handleWishlistClick} color="#4caf50">
-            {wishlistState ? 'Eliminar de mi wishlist' : 'Añadir a wishlist'}
+            {isInWishlist ? 'Eliminar de mi wishlist' : 'Añadir a wishlist'}
           </Button>
           <Button onClick={handleMyAlbumsClick} color="#2196f3">
-            {myAlbumsState ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
+            {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
           </Button>
         </>
       )}
