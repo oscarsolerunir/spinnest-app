@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { getAlbumById } from '../services/api'
+import { useParams, useNavigate } from 'react-router-dom'
+import { getAlbumById, deleteAlbumById } from '../services/api'
+import { auth } from '../services/firebase'
 import styled from 'styled-components'
 
 const AlbumContainer = styled.div`
@@ -19,13 +20,34 @@ const AlbumTitle = styled.h3`
   margin: 10px 0;
 `
 
+const DeleteButton = styled.button`
+  background-color: red;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: darkred;
+  }
+`
+
 const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [album, setAlbum] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [userId, setUserId] = useState(null)
 
   useEffect(() => {
+    const currentUser = auth.currentUser
+    if (currentUser) {
+      setUserId(currentUser.uid)
+    }
+
     const fetchAlbum = async () => {
       try {
         const albumData = await getAlbumById(id)
@@ -41,17 +63,25 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
     fetchAlbum()
   }, [id])
 
-  if (loading) {
-    return <p>Loading...</p>
+  const handleDeleteAlbum = async () => {
+    const confirmDelete = window.confirm(
+      '¿Seguro que quieres eliminar este álbum de tu colección?'
+    )
+    if (!confirmDelete) return
+
+    try {
+      await deleteAlbumById(id, userId)
+      alert('Álbum eliminado correctamente.')
+      navigate('/') // Redirigir al home después de eliminar
+    } catch (error) {
+      console.error('Error deleting album:', error)
+      setError('Error deleting album. Please try again.')
+    }
   }
 
-  if (error) {
-    return <p style={{ color: 'red' }}>{error}</p>
-  }
-
-  if (!album) {
-    return <p>Album not found.</p>
-  }
+  if (loading) return <p>Loading...</p>
+  if (error) return <p style={{ color: 'red' }}>{error}</p>
+  if (!album) return <p>Álbum no encontrado.</p>
 
   return (
     <AlbumContainer>
@@ -96,7 +126,18 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
           ))}
         </div>
       )}
-      {showCollectedBy && <p>Añadido por: {album.userNames.join(', ')}</p>}
+      {showCollectedBy && (
+        <p>
+          Añadido por: {album.userNames ? album.userNames.join(', ') : 'N/A'}
+        </p>
+      )}
+
+      {/* Mostrar el botón solo si el usuario ha añadido el álbum */}
+      {album.userIds.includes(userId) && (
+        <DeleteButton onClick={handleDeleteAlbum}>
+          Eliminar de mis álbumes
+        </DeleteButton>
+      )}
     </AlbumContainer>
   )
 }

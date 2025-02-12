@@ -18,11 +18,12 @@ import {
   getAuth,
   setPersistence,
   browserLocalPersistence,
-  onAuthStateChanged, // Importar onAuthStateChanged
+  onAuthStateChanged,
   signOut
 } from 'firebase/auth'
 import { getDatabase } from 'firebase/database'
 
+// 📌 Configuración de Firebase (asegúrate de que las variables de entorno estén definidas)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY || '',
   authDomain: import.meta.env.VITE_AUTH_DOMAIN || '',
@@ -33,12 +34,13 @@ const firebaseConfig = {
   databaseURL: import.meta.env.VITE_DATABASE_URL || ''
 }
 
+// 📌 Inicializar Firebase
 const firebaseApp = initializeApp(firebaseConfig)
 export const db = getFirestore(firebaseApp)
 export const auth = getAuth(firebaseApp)
 export const rtdb = getDatabase(firebaseApp) // Inicializar Realtime Database
 
-// Configurar la persistencia de la autenticación
+// 📌 Configurar la persistencia de autenticación
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
     console.log('✅ Persistencia de autenticación configurada correctamente')
@@ -50,16 +52,16 @@ setPersistence(auth, browserLocalPersistence)
     )
   })
 
-// 🔍 Escuchar cambios en la autenticación
+// 📌 Escuchar cambios en la autenticación en tiempo real
 onAuthStateChanged(auth, user => {
   if (user) {
     console.log('✅ Usuario autenticado:', user)
   } else {
-    console.warn('⚠️ No hay usuario autenticado. Es necesario iniciar sesión.')
+    console.warn('⚠️ No hay usuario autenticado.')
   }
 })
 
-// Exportar los módulos necesarios
+// 📌 Exportar los módulos necesarios
 export {
   collection,
   doc,
@@ -75,3 +77,9 @@ export {
   orderBy,
   signOut
 }
+
+// Hacer accesible en la consola del navegador
+window.auth = auth
+window.db = db
+window.getDocs = getDocs
+window.collection = collection

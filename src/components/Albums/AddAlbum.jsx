@@ -45,37 +45,42 @@ const AddAlbum = ({ handleSaveAlbum }) => {
   const onSelectAlbum = async id => {
     try {
       const albumDetails = await getAlbumDetails(id)
+      console.log('📀 Detalles del álbum:', albumDetails) // Debugging log
+
       handleSaveAlbum({
-        albumTitle: albumDetails.title,
-        albumArtist: albumDetails.artists_sort,
-        albumYear: albumDetails.year,
-        albumGenre: albumDetails.genres.join(', '),
-        albumLabel: albumDetails.labels.map(label => label.name).join(', '),
-        albumImage: albumDetails.images[0]?.uri,
-        albumCountry: albumDetails.country,
-        albumReleased: albumDetails.released,
-        albumNotes: albumDetails.notes,
-        albumFormats: albumDetails.formats
-          .map(format => format.name)
-          .join(', '),
-        albumLowestPrice: albumDetails.lowest_price,
-        albumTracklist: albumDetails.tracklist
-          .map(track => track.title)
-          .join(', '),
-        albumVideos: albumDetails.videos.map(video => ({
-          title: video.title,
-          uri: video.uri
-        })),
-        albumStyles: albumDetails.styles ? albumDetails.styles.join(', ') : '', // Ensure albumStyles is defined
-        albumRating: albumDetails.community.rating.average,
-        albumRatingCount: albumDetails.community.rating.count,
-        albumCredits: albumDetails.extraartists
-          .map(artist => artist.name)
-          .join(', '),
-        albumDiscogsUrl: albumDetails.uri
+        albumTitle: albumDetails.title || 'Desconocido',
+        albumArtist: albumDetails.artists_sort || 'Desconocido',
+        albumYear: albumDetails.year || 'Desconocido',
+        albumGenre: albumDetails.genres?.join(', ') || 'Desconocido',
+        albumLabel:
+          albumDetails.labels?.map(label => label.name).join(', ') ||
+          'Desconocido',
+        albumImage: albumDetails.images?.[0]?.uri || '',
+        albumCountry: albumDetails.country || 'Desconocido',
+        albumReleased: albumDetails.released || 'Desconocido',
+        albumNotes: albumDetails.notes || 'Sin notas',
+        albumFormats:
+          albumDetails.formats?.map(format => format.name).join(', ') ||
+          'Desconocido',
+        albumLowestPrice: albumDetails.lowest_price || 0,
+        albumTracklist:
+          albumDetails.tracklist?.map(track => track.title).join(', ') ||
+          'No disponible',
+        albumVideos:
+          albumDetails.videos?.map(video => ({
+            title: video.title,
+            uri: video.uri
+          })) || [],
+        albumStyles: albumDetails.styles?.join(', ') || 'Desconocido',
+        albumRating: albumDetails.community?.rating?.average || 0,
+        albumRatingCount: albumDetails.community?.rating?.count || 0,
+        albumCredits:
+          albumDetails.extraartists?.map(artist => artist.name).join(', ') ||
+          'No disponible',
+        albumDiscogsUrl: albumDetails.uri || ''
       })
     } catch (error) {
-      console.error('Error getting album details:', error)
+      console.error('❌ Error getting album details:', error)
     }
   }
 

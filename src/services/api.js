@@ -125,9 +125,57 @@ export const updateAlbum = async (id, obj) => {
 }
 
 // DELETE ALBUM
-export const deleteAlbum = async id => {
-  const docRef = doc(db, albumsCollectionName, id)
-  await deleteDoc(docRef)
+export const deleteAlbum = async (albumId, userId) => {
+  const albumRef = doc(db, albumsCollectionName, albumId)
+
+  try {
+    const albumSnap = await getDoc(albumRef)
+
+    if (!albumSnap.exists()) {
+      console.error('El álbum no existe')
+      return
+    }
+
+    const albumData = albumSnap.data()
+    const updatedUserIds = albumData.userIds.filter(id => id !== userId)
+
+    if (updatedUserIds.length === 0) {
+      await deleteDoc(albumRef) // Eliminar si no quedan usuarios
+      console.log('Álbum eliminado de la base de datos')
+    } else {
+      await updateDoc(albumRef, { userIds: updatedUserIds }) // Actualizar lista de usuarios
+      console.log('Álbum eliminado del usuario pero no de la base de datos')
+    }
+  } catch (error) {
+    console.error('Error al eliminar el álbum:', error)
+  }
+}
+
+// DELETE ALBUM BY ID
+export const deleteAlbumById = async (albumId, userId) => {
+  const albumRef = doc(db, albumsCollectionName, albumId)
+
+  try {
+    const albumSnap = await getDoc(albumRef)
+
+    if (!albumSnap.exists()) {
+      console.error('El álbum no existe')
+      return
+    }
+
+    const albumData = albumSnap.data()
+    const updatedUserIds = albumData.userIds.filter(id => id !== userId)
+
+    if (updatedUserIds.length === 0) {
+      await deleteDoc(albumRef) // Eliminar si no quedan usuarios
+      console.log('Álbum eliminado de la base de datos')
+    } else {
+      await updateDoc(albumRef, { userIds: updatedUserIds }) // Actualizar lista de usuarios
+      console.log('Álbum eliminado del usuario pero no de la base de datos')
+    }
+  } catch (error) {
+    console.error('Error al eliminar el álbum:', error)
+  }
 }
 
 // READ ALBUMS
