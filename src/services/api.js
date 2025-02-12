@@ -114,47 +114,59 @@ export const getMessagesByConversation = async conversationId => {
 // ADD TO MY ALBUMS
 export const addToMyAlbums = async (userId, album) => {
   const colRef = collection(db, albumsCollectionName)
-  const albumDoc = await getDoc(doc(colRef, album.id))
+  const albumRef = doc(colRef, album.id)
+  const albumDoc = await getDoc(albumRef)
 
   if (albumDoc.exists()) {
     const albumData = albumDoc.data()
-    await updateDoc(doc(colRef, album.id), {
-      userIds: [...albumData.userIds, userId],
-      userNames: [
-        ...albumData.userNames,
-        auth.currentUser.displayName || 'Unknown User'
-      ]
-    })
+    if (!albumData.userIds.includes(userId)) {
+      await updateDoc(albumRef, {
+        userIds: [...albumData.userIds, userId],
+        userNames: [
+          ...albumData.userNames,
+          auth.currentUser.displayName || 'Unknown User'
+        ]
+      })
+    }
   } else {
-    await addDoc(colRef, {
+    await setDoc(albumRef, {
       ...album,
       userIds: [userId],
       userNames: [auth.currentUser.displayName || 'Unknown User'],
       addedAt: new Date()
     })
   }
+
+  console.log(`✅ Álbum añadido a mis albums: ${album.name}`)
 }
 
 // REMOVE FROM MY ALBUMS
 export const removeFromMyAlbums = async (userId, albumId) => {
-  const colRef = collection(db, albumsCollectionName)
-  const albumDoc = await getDoc(doc(colRef, albumId))
+  const albumRef = doc(db, albumsCollectionName, albumId)
+  const albumSnap = await getDoc(albumRef)
 
-  if (albumDoc.exists()) {
-    const albumData = albumDoc.data()
-    const updatedUserIds = albumData.userIds.filter(id => id !== userId)
-    const updatedUserNames = albumData.userNames.filter(
-      name => name !== auth.currentUser.displayName
+  if (!albumSnap.exists()) {
+    console.error('🚨 El álbum no existe en la base de datos.')
+    return
+  }
+
+  const albumData = albumSnap.data()
+  const updatedUserIds = albumData.userIds.filter(id => id !== userId)
+  const updatedUserNames = albumData.userNames.filter(
+    name => name !== auth.currentUser.displayName
+  )
+
+  if (updatedUserIds.length === 0) {
+    await deleteDoc(albumRef)
+    console.log(`🗑️ Álbum eliminado de la base de datos: ${albumId}`)
+  } else {
+    await updateDoc(albumRef, {
+      userIds: updatedUserIds,
+      userNames: updatedUserNames
+    })
+    console.log(
+      `🚀 Álbum eliminado del usuario pero sigue en la base de datos: ${albumId}`
     )
-
-    if (updatedUserIds.length === 0) {
-      await deleteDoc(doc(colRef, albumId))
-    } else {
-      await updateDoc(doc(colRef, albumId), {
-        userIds: updatedUserIds,
-        userNames: updatedUserNames
-      })
-    }
   }
 }
 
@@ -434,69 +446,81 @@ export const getUserById = async userId => {
 
 // ADD TO WISHLIST
 export const addToWishlist = async (userId, album) => {
-  const colRef = collection(db, wishlistCollectionName)
-  const albumDoc = await getDoc(doc(colRef, album.id))
+  if (!userId) {
+    console.error('❌ Error: usuario no autenticado')
+    return
+  }
 
-  if (albumDoc.exists()) {
-    const albumData = albumDoc.data()
-    await updateDoc(doc(colRef, album.id), {
-      userIds: [...albumData.userIds, userId],
-      userNames: [
-        ...albumData.userNames,
-        auth.currentUser.displayName || 'Unknown User'
-      ]
-    })
-  } else {
-    await addDoc(colRef, {
-      ...album,
-      userIds: [userId],
-      userNames: [auth.currentUser.displayName || 'Unknown User'],
+  const colRef = collection(db, 'wishlist')
+  try {
+    const docRef = await addDoc(colRef, {
+      userId, // 🔹 Asegura que este campo se envíe correctamente
+      albumId: album.id,
+      albumName: album.name,
+      albumArtist: album.artist,
+      albumYear: album.year,
+      albumGenre: album.genre,
+      albumLabel: album.label,
+      albumImage: album.image,
       addedAt: new Date()
     })
+
+    console.log('✅ Álbum añadido a wishlist con ID:', docRef.id)
+  } catch (error) {
+    console.error('❌ Error añadiendo a wishlist:', error)
   }
 }
 
 // REMOVE FROM WISHLIST
 export const removeFromWishlist = async (userId, albumId) => {
   const colRef = collection(db, wishlistCollectionName)
-  const albumDoc = await getDoc(doc(colRef, albumId))
+  const q = query(
+    colRef,
+    where('userId', '==', userId),
+    where('albumId', '==', albumId)
+  )
+  const result = await getDocs(q)
 
-  if (albumDoc.exists()) {
-    const albumData = albumDoc.data()
-    const updatedUserIds = albumData.userIds.filter(id => id !== userId)
-    const updatedUserNames = albumData.userNames.filter(
-      name => name !== auth.currentUser.displayName
-    )
-
-    if (updatedUserIds.length === 0) {
-      await deleteDoc(doc(colRef, albumId))
-    } else {
-      await updateDoc(doc(colRef, albumId), {
-        userIds: updatedUserIds,
-        userNames: updatedUserNames
-      })
-    }
+  if (result.empty) {
+    console.log('⚠️ El álbum no estaba en la wishlist.')
+    return
   }
+
+  result.forEach(async doc => {
+    await deleteDoc(doc.ref)
+    console.log(`🗑️ Álbum eliminado de la wishlist: ${albumId}`)
+  })
 }
 
 // GET WISHLIST BY USER
 export const getWishlist = async userId => {
   if (!userId) {
-    userId = auth.currentUser?.uid // Intentar obtener el ID desde Firebase Auth
-    if (!userId) {
-      console.error('❌ Error: usuario no autenticado')
-      return []
-    }
+    console.error('❌ Error: usuario no autenticado')
+    return []
   }
 
-  const colRef = collection(db, wishlistCollectionName)
+  const colRef = collection(db, 'wishlist')
   const result = await getDocs(query(colRef, where('userId', '==', userId)))
 
-  const wishlistData = getArrayFromCollection(result)
-  console.log(
-    `📥 Wishlist del usuario ${userId} obtenida de Firebase:`,
-    wishlistData
+  const wishlistData = await Promise.all(
+    result.docs.map(async wishlistDoc => {
+      const wishlistItem = { id: wishlistDoc.id, ...wishlistDoc.data() }
+
+      // 🔹 Obtener los detalles completos del álbum desde "albums"
+      const albumRef = doc(db, 'albums', wishlistItem.albumId)
+      const albumSnap = await getDoc(albumRef)
+
+      if (albumSnap.exists()) {
+        return { ...wishlistItem, albumDetails: albumSnap.data() }
+      } else {
+        console.warn(
+          `🚨 Álbum no encontrado en Firestore: ${wishlistItem.albumId}`
+        )
+        return wishlistItem // Devuelve solo la wishlist si el álbum ya no existe
+      }
+    })
   )
 
+  console.log('📥 Wishlist obtenida de Firebase:', wishlistData)
   return wishlistData
 }

@@ -11,67 +11,48 @@ import {
 import AlbumItem from '../components/Albums/AlbumItem'
 
 const WishlistPage = () => {
-  const [albums, setAlbums] = useState([])
+  const [wishlist, setWishlist] = useState([])
   const [currentUser] = useAuthState(auth)
 
   useEffect(() => {
     if (currentUser) {
-      getWishlist(currentUser.uid).then(data => setAlbums(data))
+      getWishlist(currentUser.uid).then(setWishlist)
     }
   }, [currentUser])
 
   const handleAddToWishlist = async album => {
     try {
       await addToWishlist(currentUser.uid, album)
-      setAlbums(prevAlbums => [...prevAlbums, album])
+      setWishlist(prevWishlist => [...prevWishlist, { albumDetails: album }])
     } catch (error) {
-      console.error('Error adding album to wishlist:', error)
+      console.error('Error añadiendo álbum a wishlist:', error)
     }
   }
 
   const handleRemoveFromWishlist = async album => {
     try {
       await removeFromWishlist(currentUser.uid, album.id)
-      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+      setWishlist(prevWishlist =>
+        prevWishlist.filter(item => item.albumDetails.id !== album.id)
+      )
     } catch (error) {
-      console.error('Error removing album from wishlist:', error)
-    }
-  }
-
-  const handleAddToMyAlbums = async album => {
-    try {
-      await addToMyAlbums(currentUser.uid, album)
-      setAlbums(prevAlbums => [...prevAlbums, album])
-    } catch (error) {
-      console.error('Error adding album to my albums:', error)
-    }
-  }
-
-  const handleRemoveFromMyAlbums = async album => {
-    try {
-      await removeFromMyAlbums(currentUser.uid, album.id)
-      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
-    } catch (error) {
-      console.error('Error removing album from my albums:', error)
+      console.error('Error eliminando álbum de wishlist:', error)
     }
   }
 
   return (
     <div>
       <h1>Mi Wishlist</h1>
-      {albums.length > 0 ? (
+      {wishlist.length > 0 ? (
         <div>
-          {albums.map(album => (
+          {wishlist.map(item => (
             <AlbumItem
-              key={album.id}
-              album={album}
+              key={item.id}
+              album={item.albumDetails} // 🔹 Se asegura de que tenga los detalles completos del álbum
               userId={currentUser?.uid}
-              isInWishlist={true} // Indicar que el álbum está en la wishlist
-              isInMyAlbums={false} // Indicar si el álbum está en "mis albums"
+              isInWishlist={true}
               handleAddToWishlist={handleAddToWishlist}
               handleRemoveFromWishlist={handleRemoveFromWishlist}
-              handleAddToMyAlbums={handleAddToMyAlbums}
-              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
             />
           ))}
         </div>
