@@ -7,13 +7,25 @@ import { getCollectionsByUser } from '../services/api'
 
 const UserCollectionsPage = () => {
   const [collections, setCollections] = useState([])
-  const user = useAuthState(auth)
+  const [user] = useAuthState(auth) // Desestructura correctamente el usuario
 
   useEffect(() => {
-    if (user) {
-      getCollectionsByUser(user.uid).then(data => setCollections(data))
+    if (!user?.uid) return // Evita ejecutar si el usuario no está autenticado
+
+    console.log(`📡 Obteniendo colecciones para el usuario: ${user.uid}`)
+
+    const fetchCollections = async () => {
+      try {
+        const data = await getCollectionsByUser(user.uid)
+        setCollections(data)
+        console.log(`📚 Colecciones obtenidas de Firebase:`, data)
+      } catch (error) {
+        console.error('❌ Error obteniendo colecciones:', error)
+      }
     }
-  }, [user])
+
+    fetchCollections()
+  }, [user?.uid]) // Se ejecuta solo cuando el `user.uid` cambia
 
   return (
     <div>
@@ -21,7 +33,7 @@ const UserCollectionsPage = () => {
       {collections.length > 0 ? (
         <ListCollections collections={collections} />
       ) : (
-        <p>No has añadido ningún álbum todavía.</p>
+        <p>No has añadido ninguna colección todavía.</p>
       )}
       <Link to="/add-collection">
         <button>Añadir colección</button>

@@ -2,25 +2,53 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /users/{userId} {
-      allow read, write: if request.auth != null;
+    // 🔹 Permitir solo acceso autenticado
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
+    // 🔹 Permitir acceso solo al propietario del documento
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // 📀 ALBUMS: Leer si está autenticado, escribir solo si el usuario está en la lista de userIds
     match /albums/{albumId} {
-      allow read, write: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid in resource.data.userIds;
     }
 
-    match /collections/{collectionId} {
-      allow read, write: if request.auth != null;
-    }
-
-    // 🔥 **CORRECCIÓN PARA `wishlist`**
+    // 💾 WISHLIST: Cada usuario solo puede modificar su propia wishlist
     match /wishlist/{wishlistId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
     }
 
+    // 📚 COLLECTIONS: Solo el usuario que la creó puede modificarla
+    match /collections/{collectionId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    // 📩 CONVERSATIONS: Solo los usuarios en `participants` pueden acceder
+    match /conversations/{conversationId} {
+      allow read, write: if isAuthenticated() && request.auth.uid in resource.data.participants;
+    }
+
+    // 📝 MESSAGES: Solo los participantes de la conversación pueden acceder
+    match /messages/{messageId} {
+      allow read, write: if isAuthenticated() && request.auth.uid in resource.data.participants;
+    }
+
+    // 🏠 USERS: Cada usuario solo puede leer su perfil y editar su propio documento
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // 👥 FOLLOWS: Solo el usuario autenticado puede seguir/dejar de seguir a otros
     match /follows/{followId} {
-      allow read, write: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(resource.data.followerId);
     }
   }
 }
