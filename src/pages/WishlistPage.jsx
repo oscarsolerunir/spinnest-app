@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
-import { getWishlist, addToWishlist, removeFromWishlist } from '../services/api'
+import {
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+  addToMyAlbums,
+  removeFromMyAlbums
+} from '../services/api'
 import AlbumItem from '../components/Albums/AlbumItem'
 
 const WishlistPage = () => {
@@ -16,41 +22,39 @@ const WishlistPage = () => {
 
   const handleAddToWishlist = async album => {
     try {
-      console.log('🔄 Intentando añadir a wishlist:', album.name)
       await addToWishlist(currentUser.uid, album)
-
-      console.log('🔄 Obteniendo wishlist actualizada...')
-      const updatedWishlist = await getWishlist(currentUser.uid)
-
-      console.log('✅ Nueva wishlist recibida:', updatedWishlist)
-
-      if (updatedWishlist.length > 0) {
-        setAlbums(updatedWishlist) // Actualiza el estado con la nueva lista
-      } else {
-        console.warn('⚠️ No se recibieron datos nuevos de Firebase.')
-      }
+      setAlbums(prevAlbums => [...prevAlbums, album])
     } catch (error) {
-      console.error('❌ Error añadiendo a wishlist:', error)
+      console.error('Error adding album to wishlist:', error)
     }
   }
 
   const handleRemoveFromWishlist = async album => {
     try {
       await removeFromWishlist(currentUser.uid, album.id)
-
-      // Obtener la wishlist actualizada después de eliminar el álbum
-      const updatedWishlist = await getWishlist(currentUser.uid)
-      setAlbums(updatedWishlist)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
     } catch (error) {
       console.error('Error removing album from wishlist:', error)
     }
   }
 
-  console.log('handleAddToWishlist en WishlistPage:', handleAddToWishlist)
-  console.log(
-    'handleRemoveFromWishlist en WishlistPage:',
-    handleRemoveFromWishlist
-  )
+  const handleAddToMyAlbums = async album => {
+    try {
+      await addToMyAlbums(currentUser.uid, album)
+      setAlbums(prevAlbums => [...prevAlbums, album])
+    } catch (error) {
+      console.error('Error adding album to my albums:', error)
+    }
+  }
+
+  const handleRemoveFromMyAlbums = async album => {
+    try {
+      await removeFromMyAlbums(currentUser.uid, album.id)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+    } catch (error) {
+      console.error('Error removing album from my albums:', error)
+    }
+  }
 
   return (
     <div>
@@ -63,8 +67,11 @@ const WishlistPage = () => {
               album={album}
               userId={currentUser?.uid}
               isInWishlist={true} // Indicar que el álbum está en la wishlist
+              isInMyAlbums={false} // Indicar si el álbum está en "mis albums"
               handleAddToWishlist={handleAddToWishlist}
               handleRemoveFromWishlist={handleRemoveFromWishlist}
+              handleAddToMyAlbums={handleAddToMyAlbums}
+              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
             />
           ))}
         </div>

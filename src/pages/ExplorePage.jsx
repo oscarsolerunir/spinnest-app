@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import { getAlbums, getCollections } from '../services/api'
+import {
+  getAlbums,
+  getCollections,
+  addToWishlist,
+  removeFromWishlist,
+  addToMyAlbums,
+  removeFromMyAlbums
+} from '../services/api'
 import AlbumItem from '../components/Albums/AlbumItem'
 import ListCollections from '../components/Collections/ListCollections'
 import UserList from '../components/User/UserList'
@@ -43,6 +50,42 @@ const ExplorePage = () => {
     navigate(`/collection/${id}`, { state: { from: '/' } })
   }
 
+  const handleAddToWishlist = async album => {
+    try {
+      await addToWishlist(user.uid, album)
+      setAlbums(prevAlbums => [...prevAlbums, album])
+    } catch (error) {
+      console.error('Error adding album to wishlist:', error)
+    }
+  }
+
+  const handleRemoveFromWishlist = async album => {
+    try {
+      await removeFromWishlist(user.uid, album.id)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+    } catch (error) {
+      console.error('Error removing album from wishlist:', error)
+    }
+  }
+
+  const handleAddToMyAlbums = async album => {
+    try {
+      await addToMyAlbums(user.uid, album)
+      setAlbums(prevAlbums => [...prevAlbums, album])
+    } catch (error) {
+      console.error('Error adding album to my albums:', error)
+    }
+  }
+
+  const handleRemoveFromMyAlbums = async album => {
+    try {
+      await removeFromMyAlbums(user.uid, album.id)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+    } catch (error) {
+      console.error('Error removing album from my albums:', error)
+    }
+  }
+
   return (
     <div>
       <h1>Explorar</h1>
@@ -55,8 +98,10 @@ const ExplorePage = () => {
               album={album}
               userId={user?.uid}
               wishlist={wishlist}
-              handleAddToWishlist={() => {}}
-              handleRemoveFromWishlist={() => {}}
+              handleAddToWishlist={handleAddToWishlist}
+              handleRemoveFromWishlist={handleRemoveFromWishlist}
+              handleAddToMyAlbums={handleAddToMyAlbums}
+              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
             />
           ))}
         </div>

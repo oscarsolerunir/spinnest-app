@@ -9,7 +9,14 @@ import {
   doc
 } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
-import { getAlbumsByUser, getCollectionsByUser } from '../services/api'
+import {
+  getAlbumsByUser,
+  getCollectionsByUser,
+  addToWishlist,
+  removeFromWishlist,
+  addToMyAlbums,
+  removeFromMyAlbums
+} from '../services/api'
 import AlbumItem from '../components/Albums/AlbumItem'
 import ListCollections from '../components/Collections/ListCollections'
 
@@ -83,6 +90,42 @@ const FeedPage = () => {
     fetchFeedData()
   }, [following, currentUser])
 
+  const handleAddToWishlist = async album => {
+    try {
+      await addToWishlist(currentUser.uid, album)
+      setAlbums(prevAlbums => [...prevAlbums, album])
+    } catch (error) {
+      console.error('Error adding album to wishlist:', error)
+    }
+  }
+
+  const handleRemoveFromWishlist = async album => {
+    try {
+      await removeFromWishlist(currentUser.uid, album.id)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+    } catch (error) {
+      console.error('Error removing album from wishlist:', error)
+    }
+  }
+
+  const handleAddToMyAlbums = async album => {
+    try {
+      await addToMyAlbums(currentUser.uid, album)
+      setAlbums(prevAlbums => [...prevAlbums, album])
+    } catch (error) {
+      console.error('Error adding album to my albums:', error)
+    }
+  }
+
+  const handleRemoveFromMyAlbums = async album => {
+    try {
+      await removeFromMyAlbums(currentUser.uid, album.id)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+    } catch (error) {
+      console.error('Error removing album from my albums:', error)
+    }
+  }
+
   return (
     <div>
       <h1>Feed</h1>
@@ -95,8 +138,10 @@ const FeedPage = () => {
               album={album}
               userId={currentUser?.uid}
               wishlist={wishlist}
-              handleAddToWishlist={() => {}}
-              handleRemoveFromWishlist={() => {}}
+              handleAddToWishlist={handleAddToWishlist}
+              handleRemoveFromWishlist={handleRemoveFromWishlist}
+              handleAddToMyAlbums={handleAddToMyAlbums}
+              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
             />
           ))}
         </div>

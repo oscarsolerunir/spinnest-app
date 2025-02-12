@@ -131,6 +131,12 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
           Añadido por: {album.userNames ? album.userNames.join(', ') : 'N/A'}
         </p>
       )}
+      {showCollectedBy && (
+        <p>
+          En wishlist de:{' '}
+          {album.wishlistUserNames ? album.wishlistUserNames.join(', ') : 'N/A'}
+        </p>
+      )}
 
       {/* Mostrar el botón solo si el usuario ha añadido el álbum */}
       {album.userIds.includes(userId) && (

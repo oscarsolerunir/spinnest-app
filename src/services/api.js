@@ -111,6 +111,100 @@ export const getMessagesByConversation = async conversationId => {
   return getArrayFromCollection(result)
 }
 
+// ADD TO MY ALBUMS
+export const addToMyAlbums = async (userId, album) => {
+  const colRef = collection(db, albumsCollectionName)
+  const albumDoc = await getDoc(doc(colRef, album.id))
+
+  if (albumDoc.exists()) {
+    const albumData = albumDoc.data()
+    await updateDoc(doc(colRef, album.id), {
+      userIds: [...albumData.userIds, userId],
+      userNames: [
+        ...albumData.userNames,
+        auth.currentUser.displayName || 'Unknown User'
+      ]
+    })
+  } else {
+    await addDoc(colRef, {
+      ...album,
+      userIds: [userId],
+      userNames: [auth.currentUser.displayName || 'Unknown User'],
+      addedAt: new Date()
+    })
+  }
+}
+
+// REMOVE FROM MY ALBUMS
+export const removeFromMyAlbums = async (userId, albumId) => {
+  const colRef = collection(db, albumsCollectionName)
+  const albumDoc = await getDoc(doc(colRef, albumId))
+
+  if (albumDoc.exists()) {
+    const albumData = albumDoc.data()
+    const updatedUserIds = albumData.userIds.filter(id => id !== userId)
+    const updatedUserNames = albumData.userNames.filter(
+      name => name !== auth.currentUser.displayName
+    )
+
+    if (updatedUserIds.length === 0) {
+      await deleteDoc(doc(colRef, albumId))
+    } else {
+      await updateDoc(doc(colRef, albumId), {
+        userIds: updatedUserIds,
+        userNames: updatedUserNames
+      })
+    }
+  }
+}
+
+// ADD TO WISHLIST
+export const addToWishlist = async (userId, album) => {
+  const colRef = collection(db, wishlistCollectionName)
+  const albumDoc = await getDoc(doc(colRef, album.id))
+
+  if (albumDoc.exists()) {
+    const albumData = albumDoc.data()
+    await updateDoc(doc(colRef, album.id), {
+      userIds: [...albumData.userIds, userId],
+      userNames: [
+        ...albumData.userNames,
+        auth.currentUser.displayName || 'Unknown User'
+      ]
+    })
+  } else {
+    await addDoc(colRef, {
+      ...album,
+      userIds: [userId],
+      userNames: [auth.currentUser.displayName || 'Unknown User'],
+      addedAt: new Date()
+    })
+  }
+}
+
+// REMOVE FROM WISHLIST
+export const removeFromWishlist = async (userId, albumId) => {
+  const colRef = collection(db, wishlistCollectionName)
+  const albumDoc = await getDoc(doc(colRef, albumId))
+
+  if (albumDoc.exists()) {
+    const albumData = albumDoc.data()
+    const updatedUserIds = albumData.userIds.filter(id => id !== userId)
+    const updatedUserNames = albumData.userNames.filter(
+      name => name !== auth.currentUser.displayName
+    )
+
+    if (updatedUserIds.length === 0) {
+      await deleteDoc(doc(colRef, albumId))
+    } else {
+      await updateDoc(doc(colRef, albumId), {
+        userIds: updatedUserIds,
+        userNames: updatedUserNames
+      })
+    }
+  }
+}
+
 // CREATE ALBUM
 export const createAlbum = async obj => {
   const colRef = collection(db, albumsCollectionName)
@@ -300,41 +394,41 @@ export const getUserById = async userId => {
 }
 
 // ADD TO WISHLIST
-export const addToWishlist = async (userId, album) => {
-  console.log('📡 Enviando álbum a Firebase:', album)
+// export const addToWishlist = async (userId, album) => {
+//   console.log('📡 Enviando álbum a Firebase:', album)
 
-  const colRef = collection(db, wishlistCollectionName)
-  try {
-    const docRef = await addDoc(colRef, {
-      userId,
-      albumId: album.id,
-      albumName: album.name,
-      albumArtist: album.artist,
-      albumYear: album.year,
-      albumGenre: album.genre,
-      albumLabel: album.label,
-      albumImage: album.image,
-      addedAt: new Date()
-    })
-    console.log('✅ Álbum añadido a Firebase con ID:', docRef.id)
-  } catch (error) {
-    console.error('❌ Error añadiendo a Firebase:', error)
-  }
-}
+//   const colRef = collection(db, wishlistCollectionName)
+//   try {
+//     const docRef = await addDoc(colRef, {
+//       userId,
+//       albumId: album.id,
+//       albumName: album.name,
+//       albumArtist: album.artist,
+//       albumYear: album.year,
+//       albumGenre: album.genre,
+//       albumLabel: album.label,
+//       albumImage: album.image,
+//       addedAt: new Date()
+//     })
+//     console.log('✅ Álbum añadido a Firebase con ID:', docRef.id)
+//   } catch (error) {
+//     console.error('❌ Error añadiendo a Firebase:', error)
+//   }
+// }
 
 // REMOVE FROM WISHLIST
-export const removeFromWishlist = async (userId, albumId) => {
-  const colRef = collection(db, wishlistCollectionName)
-  const q = query(
-    colRef,
-    where('userId', '==', userId),
-    where('albumId', '==', albumId)
-  )
-  const result = await getDocs(q)
-  result.forEach(async doc => {
-    await deleteDoc(doc.ref)
-  })
-}
+// export const removeFromWishlist = async (userId, albumId) => {
+//   const colRef = collection(db, wishlistCollectionName)
+//   const q = query(
+//     colRef,
+//     where('userId', '==', userId),
+//     where('albumId', '==', albumId)
+//   )
+//   const result = await getDocs(q)
+//   result.forEach(async doc => {
+//     await deleteDoc(doc.ref)
+//   })
+// }
 
 // GET WISHLIST
 export const getWishlist = async userId => {

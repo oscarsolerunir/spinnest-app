@@ -1,5 +1,13 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
+import {
+  addToWishlist,
+  removeFromWishlist,
+  addToMyAlbums,
+  removeFromMyAlbums
+} from '../../services/api'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../services/firebase'
 
 const AlbumContainer = styled.div`
   border: 1px solid #ddd;
@@ -54,18 +62,31 @@ const WishlistButton = styled.button`
   }
 `
 
+const MyAlbumsButton = styled.button`
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #1976d2;
+  }
+`
+
 const AlbumItem = ({
   album,
   userId,
   isInWishlist = false,
+  isInMyAlbums = false,
   confirmDeleteAlbum,
-  handleAddToWishlist,
-  handleRemoveFromWishlist,
-  onClick,
   showCollectedBy = true,
   showDetailsLink = true
 }) => {
-  const isOwnAlbum = album.userIds && album.userIds.includes(userId)
+  const [currentUser] = useAuthState(auth)
 
   const handleDeleteClick = e => {
     e.stopPropagation()
@@ -74,41 +95,44 @@ const AlbumItem = ({
     }
   }
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick(album.id)
-    }
-  }
-
   const handleWishlistClick = async e => {
     e.stopPropagation()
-    console.log('handleWishlistClick ejecutado:', album.name) // 🚀 Verificar si el evento se dispara
+    console.log('handleWishlistClick ejecutado:', album.name)
 
     try {
       if (isInWishlist) {
-        if (typeof handleRemoveFromWishlist === 'function') {
-          console.log('Intentando eliminar de wishlist:', album.name)
-          await handleRemoveFromWishlist(album)
-          console.log('Álbum eliminado de la wishlist con éxito.')
-        } else {
-          console.error('❌ handleRemoveFromWishlist no está definido.')
-        }
+        await removeFromWishlist(currentUser.uid, album.id)
+        console.log('Álbum eliminado de la wishlist con éxito.')
       } else {
-        if (typeof handleAddToWishlist === 'function') {
-          console.log('Intentando añadir a wishlist:', album.name)
-          await handleAddToWishlist(album)
-          console.log('Álbum añadido a la wishlist con éxito.')
-        } else {
-          console.error('❌ handleAddToWishlist no está definido.')
-        }
+        await addToWishlist(currentUser.uid, album)
+        console.log('Álbum añadido a la wishlist con éxito.')
       }
     } catch (error) {
       console.error(`⚠️ Error en wishlist:`, error)
     }
   }
 
+  const handleMyAlbumsClick = async e => {
+    e.stopPropagation()
+    console.log('handleMyAlbumsClick ejecutado:', album.name)
+
+    try {
+      if (isInMyAlbums) {
+        await removeFromMyAlbums(currentUser.uid, album.id)
+        console.log('Álbum eliminado de mis albums con éxito.')
+      } else {
+        await addToMyAlbums(currentUser.uid, album)
+        console.log('Álbum añadido a mis albums con éxito.')
+      }
+    } catch (error) {
+      console.error(`⚠️ Error en mis albums:`, error)
+    }
+  }
+
+  const isOwnAlbum = currentUser && currentUser.uid === userId
+
   return (
-    <AlbumContainer onClick={handleClick}>
+    <AlbumContainer>
       <AlbumImage src={album.image} alt={album.name} />
       <AlbumTitle>{album.name}</AlbumTitle>
       <p>{album.artist}</p>
@@ -118,14 +142,22 @@ const AlbumItem = ({
       {showCollectedBy && album.userNames && (
         <p>Añadido por: {album.userNames.join(', ')}</p>
       )}
+      {showCollectedBy && album.wishlistUserNames && (
+        <p>En wishlist de: {album.wishlistUserNames.join(', ')}</p>
+      )}
       {showDetailsLink && <Link to={`/album/${album.id}`}>Ver detalles</Link>}
       {confirmDeleteAlbum && (
         <DeleteButton onClick={handleDeleteClick}>Borrar</DeleteButton>
       )}
       {!isOwnAlbum && (
-        <WishlistButton onClick={handleWishlistClick}>
-          {isInWishlist ? 'Eliminar de mi wishlist' : 'Añadir a wishlist'}
-        </WishlistButton>
+        <>
+          <WishlistButton onClick={handleWishlistClick}>
+            {isInWishlist ? 'Eliminar de mi wishlist' : 'Añadir a wishlist'}
+          </WishlistButton>
+          <MyAlbumsButton onClick={handleMyAlbumsClick}>
+            {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
+          </MyAlbumsButton>
+        </>
       )}
     </AlbumContainer>
   )
