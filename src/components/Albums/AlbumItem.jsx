@@ -1,12 +1,7 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import {
-  addToWishlist,
-  removeFromWishlist,
-  addToMyAlbums,
-  removeFromMyAlbums
-} from '../../services/api'
+import { addToMyAlbums, removeFromMyAlbums } from '../../services/api'
 import { auth } from '../../services/firebase'
 import { useState } from 'react'
 
@@ -52,7 +47,7 @@ const Button = styled.button`
 const AlbumItem = ({
   album,
   userId,
-  confirmDeleteAlbum,
+  handleRemoveFromMyAlbums, // 🔹 Recibimos la función desde ExplorePage
   showCollectedBy = true,
   showDetailsLink = true
 }) => {
@@ -60,16 +55,13 @@ const AlbumItem = ({
   const [isInMyAlbums, setIsInMyAlbums] = useState(
     album.userIds?.includes(currentUser?.uid) || false
   )
-  const [isInWishlist, setIsInWishlist] = useState(
-    album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
-  )
 
   if (!album || !album.id || !album.name) {
     console.error('⚠️ Error: El álbum es inválido:', album)
     return null
   }
 
-  // Normalización de datos para evitar errores
+  // Normalización de datos
   const albumArtist = album.artist || 'Artista desconocido'
   const albumYear = album.year || 'Año desconocido'
   const albumGenre = Array.isArray(album.genre)
@@ -79,53 +71,45 @@ const AlbumItem = ({
     ? album.label.join(', ')
     : album.label || 'Sello desconocido'
 
-  const handleDeleteClick = e => {
-    e.preventDefault() // ⛔ Evitar recarga de la página
-    e.stopPropagation()
-    if (confirmDeleteAlbum) {
-      confirmDeleteAlbum(album.id)
-    }
-  }
-
-  const handleWishlistClick = async e => {
-    e.preventDefault() // ⛔ Evitar recarga de la página
-    e.stopPropagation()
-    if (!currentUser?.uid) {
-      console.error('❌ Error: usuario no autenticado.')
-      return
-    }
-
-    try {
-      if (isInWishlist) {
-        await removeFromWishlist(currentUser.uid, album.id)
-        setIsInWishlist(false)
-        console.log('✅ Álbum eliminado de la wishlist con éxito.')
-      } else {
-        await addToWishlist(currentUser.uid, album)
-        setIsInWishlist(true)
-        console.log('✅ Álbum añadido a la wishlist con éxito.')
-      }
-    } catch (error) {
-      console.error('⚠️ Error en wishlist:', error)
-    }
-  }
-
   const handleMyAlbumsClick = async e => {
-    e.preventDefault() // ⛔ Evitar recarga de la página
     e.stopPropagation()
+    e.preventDefault()
+
     if (!currentUser?.uid) {
       console.error('❌ Error: usuario no autenticado.')
       return
     }
 
-    try {
-      if (isInMyAlbums) {
-        await removeFromMyAlbums(currentUser.uid, album.id, setIsInMyAlbums)
-      } else {
-        await addToMyAlbums(currentUser.uid, album, setIsInMyAlbums)
+    if (isInMyAlbums) {
+      const confirmDelete = window.confirm(
+        '¿Seguro que quieres eliminar este álbum de tu colección?'
+      )
+      if (!confirmDelete) return
+
+      console.log(
+        `🗑️ Eliminando álbum ID: ${album.id} para usuario: ${currentUser.uid}`
+      )
+
+      try {
+        await removeFromMyAlbums(currentUser.uid, album.id)
+        setIsInMyAlbums(false)
+        handleRemoveFromMyAlbums(album.id) // 🔹 Elimina de ExplorePage
+        console.log('✅ Álbum eliminado de mis albums con éxito.')
+      } catch (error) {
+        console.error('⚠️ Error eliminando álbum:', error)
       }
-    } catch (error) {
-      console.error('⚠️ Error en mis albums:', error)
+    } else {
+      console.log(
+        `📀 Añadiendo álbum ID: ${album.id} para usuario: ${currentUser.uid}`
+      )
+
+      try {
+        await addToMyAlbums(currentUser.uid, album)
+        setIsInMyAlbums(true)
+        console.log('✅ Álbum añadido a mis albums con éxito.')
+      } catch (error) {
+        console.error('⚠️ Error añadiendo álbum:', error)
+      }
     }
   }
 
@@ -138,25 +122,8 @@ const AlbumItem = ({
       <p>{albumGenre}</p>
       <p>{albumLabel}</p>
 
-      {showCollectedBy && album.userNames && (
-        <p>Añadido por: {album.userNames.join(', ')}</p>
-      )}
-
-      {showCollectedBy && album.isInWishlistOfUserNames && (
-        <p>En wishlist de: {album.isInWishlistOfUserNames.join(', ')}</p>
-      )}
-
       {showDetailsLink && <Link to={`/album/${album.id}`}>Ver detalles</Link>}
 
-      {confirmDeleteAlbum && (
-        <Button onClick={handleDeleteClick} color="#ff4d4d">
-          Borrar
-        </Button>
-      )}
-
-      <Button onClick={handleWishlistClick} color="#4caf50">
-        {isInWishlist ? 'Eliminar de mi wishlist' : 'Añadir a wishlist'}
-      </Button>
       <Button onClick={handleMyAlbumsClick} color="#2196f3">
         {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
       </Button>

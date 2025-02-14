@@ -28,7 +28,7 @@ const ExplorePage = () => {
 
   const handleGetAlbums = () => {
     getAlbums().then(data => {
-      // Sort albums by createdAt in descending order
+      // Ordenar álbumes por fecha de creación en orden descendente
       const sortedAlbums = data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       )
@@ -38,7 +38,7 @@ const ExplorePage = () => {
 
   const handleGetCollections = () => {
     getCollections().then(data => {
-      // Sort collections by createdAt in descending order
+      // Ordenar colecciones por fecha de creación en orden descendente
       const sortedCollections = data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       )
@@ -50,39 +50,26 @@ const ExplorePage = () => {
     navigate(`/collection/${id}`, { state: { from: '/' } })
   }
 
-  const handleAddToWishlist = async album => {
-    try {
-      await addToWishlist(user.uid, album)
-      setAlbums(prevAlbums => [...prevAlbums, album])
-    } catch (error) {
-      console.error('Error adding album to wishlist:', error)
-    }
-  }
-
-  const handleRemoveFromWishlist = async album => {
-    try {
-      await removeFromWishlist(user.uid, album.id)
-      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
-    } catch (error) {
-      console.error('Error removing album from wishlist:', error)
-    }
-  }
-
+  // ✅ Funciones reactivas
   const handleAddToMyAlbums = async album => {
     try {
       await addToMyAlbums(user.uid, album)
-      setAlbums(prevAlbums => [...prevAlbums, album])
+      setAlbums(prevAlbums =>
+        prevAlbums.map(a =>
+          a.id === album.id ? { ...a, isInMyAlbums: true } : a
+        )
+      )
     } catch (error) {
-      console.error('Error adding album to my albums:', error)
+      console.error('❌ Error añadiendo álbum a mis albums:', error)
     }
   }
 
-  const handleRemoveFromMyAlbums = async album => {
+  const handleRemoveFromMyAlbums = async albumId => {
     try {
-      await removeFromMyAlbums(user.uid, album.id)
-      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== album.id))
+      await removeFromMyAlbums(user.uid, albumId)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== albumId)) // 🔹 Ahora desaparece sin recargar
     } catch (error) {
-      console.error('Error removing album from my albums:', error)
+      console.error('❌ Error eliminando álbum de mis albums:', error)
     }
   }
 
@@ -97,11 +84,8 @@ const ExplorePage = () => {
               key={album.id}
               album={album}
               userId={user?.uid}
-              wishlist={wishlist}
-              handleAddToWishlist={handleAddToWishlist}
-              handleRemoveFromWishlist={handleRemoveFromWishlist}
               handleAddToMyAlbums={handleAddToMyAlbums}
-              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
+              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums} // 🔹 Se pasa la función para eliminar
             />
           ))}
         </div>

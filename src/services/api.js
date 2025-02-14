@@ -169,7 +169,10 @@ export const addToMyAlbums = async (userId, album, updateState) => {
 // REMOVE FROM MY ALBUMS
 export const removeFromMyAlbums = async (userId, albumId, updateState) => {
   try {
-    const albumRef = doc(db, 'albums', albumId)
+    const albumIdStr = String(albumId) // ✅ Asegurar que el ID es string
+    console.log(`🗑️ Eliminando álbum ID: ${albumIdStr} para usuario: ${userId}`)
+
+    const albumRef = doc(db, 'albums', albumIdStr)
     const albumDoc = await getDoc(albumRef)
 
     if (!albumDoc.exists()) {
@@ -178,8 +181,10 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
     }
 
     const albumData = albumDoc.data()
-    const userIds = albumData.userIds || []
-    const userNames = albumData.userNames || []
+    const userIds = Array.isArray(albumData.userIds) ? albumData.userIds : []
+    const userNames = Array.isArray(albumData.userNames)
+      ? albumData.userNames
+      : []
 
     if (!userIds.includes(userId)) {
       console.warn('⚠️ El usuario no tiene este álbum en su colección.')
@@ -188,14 +193,12 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
 
     const updatedUserIds = userIds.filter(id => id !== userId)
     const updatedUserNames = userNames.filter(
-      name => name !== userNames[userIds.indexOf(userId)]
+      (_, i) => i !== userIds.indexOf(userId)
     )
 
     if (updatedUserIds.length === 0) {
       await deleteDoc(albumRef)
-      console.log(
-        '🗑️ Álbum eliminado de Firestore porque ningún usuario lo tiene.'
-      )
+      console.log('🗑️ Álbum eliminado completamente de Firestore.')
     } else {
       await updateDoc(albumRef, {
         userIds: updatedUserIds,
@@ -204,7 +207,7 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
       console.log('✅ Álbum eliminado de la colección del usuario.')
     }
 
-    if (updateState) updateState(false) // 🔄 Cambia el botón automáticamente a "Añadir a mis albums"
+    if (updateState) updateState(albumIdStr) // 🔄 Llamar a la función para actualizar la UI
   } catch (error) {
     console.error('❌ Error eliminando álbum de mis albums:', error)
   }

@@ -7,7 +7,6 @@ import AlbumItem from '../components/Albums/AlbumItem'
 
 const UserAlbumsPage = () => {
   const [albums, setAlbums] = useState([])
-  const [wishlist] = useState([])
   const [user] = useAuthState(auth)
 
   useEffect(() => {
@@ -17,6 +16,11 @@ const UserAlbumsPage = () => {
       })
     }
   }, [user])
+
+  // 🆕 Nueva función para actualizar la lista tras eliminar un álbum
+  const handleRemoveFromMyAlbums = albumId => {
+    setAlbums(prevAlbums => prevAlbums.filter(album => album.id !== albumId))
+  }
 
   return (
     <div>
@@ -28,9 +32,7 @@ const UserAlbumsPage = () => {
               key={album.id}
               album={album}
               userId={user?.uid}
-              wishlist={wishlist}
-              handleAddToWishlist={() => {}}
-              handleRemoveFromWishlist={() => {}}
+              updateAlbumsList={handleRemoveFromMyAlbums} // 🔹 Pasamos la función
             />
           ))}
         </div>
