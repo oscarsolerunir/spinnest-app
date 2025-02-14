@@ -35,12 +35,28 @@ const AddAlbumPage = () => {
       return
     }
 
+    if (!albumArtist || albumArtist === 'Desconocido') {
+      console.error(
+        '⚠️ Error: No se puede guardar un álbum sin artista:',
+        albumTitle
+      )
+      alert('Error: No se puede añadir el álbum sin un artista.')
+      return
+    }
+
+    console.log('📀 Intentando guardar álbum:', {
+      albumTitle,
+      albumArtist,
+      albumYear,
+      albumGenre
+    })
+
     let imageUrl = ''
     if (albumImage && typeof albumImage !== 'string') {
       try {
         imageUrl = await uploadImageToS3(albumImage)
       } catch (error) {
-        console.error('Error uploading image:', error)
+        console.error('❌ Error subiendo imagen:', error)
         return
       }
     } else {
@@ -52,46 +68,53 @@ const AddAlbumPage = () => {
     const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
 
     try {
-      const existingAlbum = await getAlbumById(albumTitle)
+      // ✅ Mejor obtener el álbum por ID (en lugar de `albumTitle`)
+      const existingAlbum = await getAlbumById(albumDiscogsUrl)
       if (existingAlbum) {
-        // Si el álbum ya existe, solo actualizamos los campos userIds y userNames
+        console.log('🔄 Álbum ya existe en Firebase, actualizando usuario...')
         await updateAlbum(existingAlbum.id, {
           userIds: [...existingAlbum.userIds, user.uid],
           userNames: [...existingAlbum.userNames, userName]
         })
       } else {
-        // Si el álbum no existe, lo creamos con los campos userIds y userNames
+        console.log('🆕 Creando nuevo álbum en Firebase...')
         await createAlbum({
           name: albumTitle,
           artist: albumArtist,
           year: albumYear,
-          genre: albumGenre,
-          label: albumLabel,
-          image: imageUrl || '', // Ensure image field is not undefined
-          country: albumCountry,
-          released: albumReleased,
-          notes: albumNotes,
-          formats: albumFormats.split(',').map(format => format.trim()), // Ensure formats is an array
-          lowest_price: albumLowestPrice,
-          tracklist: albumTracklist.split(',').map(track => track.trim()), // Ensure tracklist is an array
-          videos: albumVideos,
-          styles: albumStyles.split(',').map(style => style.trim()), // Ensure styles is an array
-          rating: albumRating,
-          rating_count: albumRatingCount,
-          credits: albumCredits,
-          discogs_url: albumDiscogsUrl,
-          createdAt: new Date().toISOString(), // Add createdAt property
-          userIds: [user.uid], // Associate album with user
-          userNames: [userName] // Add userNames
+          genre: albumGenre || 'Desconocido',
+          label: albumLabel || 'Desconocido',
+          image: imageUrl || '', // Evita `undefined`
+          country: albumCountry || 'Desconocido',
+          released: albumReleased || 'Desconocido',
+          notes: albumNotes || 'Sin notas',
+          formats: albumFormats
+            ? albumFormats.split(',').map(format => format.trim())
+            : [],
+          lowest_price: albumLowestPrice || 0,
+          tracklist: albumTracklist
+            ? albumTracklist.split(',').map(track => track.trim())
+            : [],
+          videos: albumVideos || [],
+          styles: albumStyles
+            ? albumStyles.split(',').map(style => style.trim())
+            : [],
+          rating: albumRating || 0,
+          rating_count: albumRatingCount || 0,
+          credits: albumCredits || 'No disponible',
+          discogs_url: albumDiscogsUrl || '',
+          createdAt: new Date().toISOString(),
+          userIds: [user.uid],
+          userNames: [userName]
         })
       }
 
-      alert('Album added successfully')
+      alert('✅ Álbum añadido correctamente')
       navigate('/albums')
     } catch (error) {
-      console.error('Error creating album:', error)
+      console.error('❌ Error creando álbum:', error)
       alert(
-        `Hubo un error al añadir el álbum. Por favor, inténtalo de nuevo. Error: ${error.message}`
+        `Hubo un error al añadir el álbum. Inténtalo de nuevo. Error: ${error.message}`
       )
     }
   }

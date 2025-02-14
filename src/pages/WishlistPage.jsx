@@ -10,12 +10,15 @@ const WishlistPage = () => {
 
   useEffect(() => {
     if (currentUser) {
-      getWishlist(currentUser.uid).then(data => {
+      const fetchWishlist = async () => {
+        const data = await getWishlist(currentUser.uid)
         console.log('📥 Wishlist obtenida de Firebase:', data)
         setAlbums(data)
-      })
+      }
+
+      fetchWishlist()
     }
-  }, [currentUser]) // 🔹 Asegurar que se recarga cuando cambia el usuario
+  }, [currentUser])
 
   const handleRemoveFromWishlist = async album => {
     try {
@@ -31,13 +34,15 @@ const WishlistPage = () => {
       <h1>Mi Wishlist</h1>
       {albums.length > 0 ? (
         <div>
-          {albums.map(item => (
+          {albums.map(album => (
             <AlbumItem
-              key={item.id}
-              album={item.albumDetails} // 🔹 Se asegura de que tenga los detalles completos del álbum
+              key={album.id}
+              album={album}
               userId={currentUser?.uid}
-              isInWishlist={true}
               handleRemoveFromWishlist={handleRemoveFromWishlist}
+              handleAddToWishlist={() => {}}
+              handleRemoveFromMyAlbums={() => {}}
+              handleAddToMyAlbums={() => {}}
             />
           ))}
         </div>

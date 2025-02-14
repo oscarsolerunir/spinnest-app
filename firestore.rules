@@ -2,58 +2,39 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 🔹 Función para verificar si un usuario está autenticado
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // 🔹 Función para verificar si el usuario actual es el propietario del documento
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    // 📀 ALBUMS: Leer si está autenticado, escribir solo si el usuario está en `userIds`
-    match /albums/{albumId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && albumId in request.auth.token.albumIds;
-      allow update, delete: if isAuthenticated() && request.auth.uid in resource.data.userIds;
-    }
+ match /albums/{albumId} {
+  allow read: if isAuthenticated();
+  allow create, update: if isAuthenticated();
+  allow delete: if isAuthenticated() && request.auth.uid in resource.data.userIds;
+}
 
-    // 💾 WISHLIST: Cada usuario solo puede modificar su propia wishlist
-    match /wishlist/{wishlistId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && (
-        !exists(/databases/$(database)/documents/wishlist/$(wishlistId)) || 
-        resource.data.userId == request.auth.uid
-      );
-    }
 
-    // 📚 COLLECTIONS: Solo el usuario que la creó puede modificarla
     match /collections/{collectionId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && isOwner(resource.data.userId);
     }
 
-    // 📩 CONVERSATIONS: Solo los participantes pueden acceder
     match /conversations/{conversationId} {
-      allow read, write: if isAuthenticated() &&
-        request.auth.uid in resource.data.participants;
+      allow read, write: if isAuthenticated() && request.auth.uid in resource.data.participants;
     }
 
-    // 📝 MESSAGES: Solo los participantes de la conversación pueden acceder
     match /messages/{messageId} {
-      allow read, write: if isAuthenticated() &&
-        exists(/databases/$(database)/documents/conversations/$(resource.data.conversationId)) &&
-        request.auth.uid in get(/databases/$(database)/documents/conversations/$(resource.data.conversationId)).data.participants;
+      allow read, write: if isAuthenticated() && exists(/databases/$(database)/documents/conversations/$(resource.data.conversationId)) && request.auth.uid in get(/databases/$(database)/documents/conversations/$(resource.data.conversationId)).data.participants;
     }
 
-    // 🏠 USERS: Cada usuario solo puede ver y modificar su propio perfil
     match /users/{userId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && isOwner(userId);
     }
 
-    // 👥 FOLLOWS: Solo el usuario autenticado puede seguir/dejar de seguir a otros
     match /follows/{followId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && request.auth.uid == resource.data.followerId;

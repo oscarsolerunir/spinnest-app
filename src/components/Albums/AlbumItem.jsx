@@ -1,7 +1,12 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import { useWishlist } from '../../providers/WishlistContext' // Importa el contexto
 import { useAuthState } from 'react-firebase-hooks/auth'
+import {
+  addToWishlist,
+  removeFromWishlist,
+  addToMyAlbums,
+  removeFromMyAlbums
+} from '../../services/api'
 import { auth } from '../../services/firebase'
 
 const AlbumContainer = styled.div`
@@ -49,16 +54,29 @@ const AlbumItem = ({
   isInMyAlbums = false,
   confirmDeleteAlbum,
   showCollectedBy = true,
-  showDetailsLink = true
+  showDetailsLink = true,
+  handleRemoveFromWishlist,
+  handleAddToWishlist,
+  handleRemoveFromMyAlbums,
+  handleAddToMyAlbums
 }) => {
   const [currentUser] = useAuthState(auth)
-  const { wishlist, addToWishlistContext, removeFromWishlistContext } =
-    useWishlist() // Usa el contexto global
 
-  const isOwnAlbum =
-    Array.isArray(album.userIds) && album.userIds.includes(userId)
+  // 🚨 Verificar que el álbum tiene los datos necesarios
+  if (!album || !album.id || !album.name) {
+    console.error('⚠️ Error: El álbum es inválido:', album)
+    return null
+  }
 
-  const isInWishlist = wishlist.some(item => item.id === album.id)
+  // 🛠️ Normalizar datos para evitar errores
+  const albumArtist = album.artist || 'Artista desconocido'
+  const albumYear = album.year || 'Año desconocido'
+  const albumGenre = Array.isArray(album.genre)
+    ? album.genre.join(', ')
+    : album.genre || 'Género desconocido'
+  const albumLabel = Array.isArray(album.label)
+    ? album.label.join(', ')
+    : album.label || 'Sello desconocido'
 
   const handleDeleteClick = e => {
     e.stopPropagation()
@@ -77,11 +95,11 @@ const AlbumItem = ({
     try {
       if (isInWishlist) {
         await removeFromWishlist(currentUser.uid, album.id)
-        removeFromWishlistContext(album.id)
+        handleRemoveFromWishlist(album)
         console.log('✅ Álbum eliminado de la wishlist con éxito.')
       } else {
         await addToWishlist(currentUser.uid, album)
-        addToWishlistContext(album)
+        handleAddToWishlist(album)
         console.log('✅ Álbum añadido a la wishlist con éxito.')
       }
     } catch (error) {
@@ -96,12 +114,22 @@ const AlbumItem = ({
       return
     }
 
+    console.log('🛠️ Click en "Añadir a mis albums" para:', album)
+
+    const confirmAdd = window.confirm(
+      '¿Seguro que quieres añadir este álbum a tus albums?'
+    )
+    if (!confirmAdd) return
+
     try {
+      console.log('🚀 Enviando álbum a la función addToMyAlbums:', album)
       if (isInMyAlbums) {
         await removeFromMyAlbums(currentUser.uid, album.id)
+        handleRemoveFromMyAlbums(album)
         console.log('✅ Álbum eliminado de mis albums con éxito.')
       } else {
         await addToMyAlbums(currentUser.uid, album)
+        handleAddToMyAlbums(album)
         console.log('✅ Álbum añadido a mis albums con éxito.')
       }
     } catch (error) {
@@ -109,26 +137,38 @@ const AlbumItem = ({
     }
   }
 
+  const isOwnAlbum =
+    Array.isArray(album.userIds) && album.userIds.includes(userId)
+
+  const isInWishlist =
+    Array.isArray(album.isInWishlistOfUserIds) &&
+    album.isInWishlistOfUserIds.includes(currentUser?.uid)
+
   return (
     <AlbumContainer>
       <AlbumImage src={album.image} alt={album.name} />
       <AlbumTitle>{album.name}</AlbumTitle>
-      <p>{album.artist}</p>
-      <p>{album.year}</p>
-      <p>{album.genre}</p>
-      <p>{album.label}</p>
+      <p>{albumArtist}</p>
+      <p>{albumYear}</p>
+      <p>{albumGenre}</p>
+      <p>{albumLabel}</p>
+
       {showCollectedBy && album.userNames && (
         <p>Añadido por: {album.userNames.join(', ')}</p>
       )}
-      {showCollectedBy && album.wishlistUserNames && (
-        <p>En wishlist de: {album.wishlistUserNames.join(', ')}</p>
+
+      {showCollectedBy && album.isInWishlistOfUserNames && (
+        <p>En wishlist de: {album.isInWishlistOfUserNames.join(', ')}</p>
       )}
+
       {showDetailsLink && <Link to={`/album/${album.id}`}>Ver detalles</Link>}
+
       {confirmDeleteAlbum && (
         <Button onClick={handleDeleteClick} color="#ff4d4d">
           Borrar
         </Button>
       )}
+
       {!isOwnAlbum && (
         <>
           <Button onClick={handleWishlistClick} color="#4caf50">
