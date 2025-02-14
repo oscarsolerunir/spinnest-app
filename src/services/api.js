@@ -9,7 +9,8 @@ import {
   addDoc,
   query,
   where,
-  orderBy
+  orderBy,
+  setDoc
 } from './firebase'
 import { auth } from './firebase'
 
@@ -112,7 +113,7 @@ export const getMessagesByConversation = async conversationId => {
 }
 
 // ADD TO MY ALBUMS
-export const addToMyAlbums = async (userId, album) => {
+export const addToMyAlbums = async (userId, album, updateState) => {
   try {
     if (!userId || !album || !album.id) {
       console.error('❌ Error: userId o album.id no son válidos:', {
@@ -122,7 +123,7 @@ export const addToMyAlbums = async (userId, album) => {
       return
     }
 
-    console.log('📀 addToMyAlbums ejecutándose con:', album)
+    console.log('📀 Intentando añadir álbum a mis albums:', album)
 
     const albumRef = doc(db, 'albums', String(album.id))
     const albumDoc = await getDoc(albumRef)
@@ -134,6 +135,7 @@ export const addToMyAlbums = async (userId, album) => {
       console.log(
         '🔄 El álbum ya existe en Firestore, actualizando usuarios...'
       )
+
       const existingData = albumDoc.data()
       const userIds = existingData.userIds || []
       const userNames = existingData.userNames || []
@@ -151,42 +153,60 @@ export const addToMyAlbums = async (userId, album) => {
       console.log(`🆕 Creando nuevo álbum (${album.id}) en Firestore.`)
       await setDoc(albumRef, {
         ...album,
-        artist: album.artist || 'Desconocido', // 🔹 Si `artist` es undefined, se asigna 'Desconocido'
-        genre: album.genre || 'Desconocido',
-        label: album.label || 'Desconocido',
         userIds: [userId],
         userNames: [userName],
         addedAt: new Date().toISOString()
       })
       console.log('✅ Álbum añadido correctamente a Firestore.')
     }
+
+    if (updateState) updateState(true) // 🔄 Cambia el botón automáticamente a "Eliminar de mis albums"
   } catch (error) {
     console.error('❌ Error añadiendo álbum a mis albums:', error)
   }
 }
 
 // REMOVE FROM MY ALBUMS
-export const removeFromMyAlbums = async (userId, albumId) => {
-  const albumRef = doc(db, albumsCollectionName, albumId)
-  const albumDoc = await getDoc(albumRef)
+export const removeFromMyAlbums = async (userId, albumId, updateState) => {
+  try {
+    const albumRef = doc(db, 'albums', albumId)
+    const albumDoc = await getDoc(albumRef)
 
-  if (albumDoc.exists()) {
+    if (!albumDoc.exists()) {
+      console.error('❌ Error: El álbum no existe en Firestore.')
+      return
+    }
+
     const albumData = albumDoc.data()
     const userIds = albumData.userIds || []
     const userNames = albumData.userNames || []
-    const userDoc = await getDoc(doc(db, 'users', userId))
-    const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
+
+    if (!userIds.includes(userId)) {
+      console.warn('⚠️ El usuario no tiene este álbum en su colección.')
+      return
+    }
+
     const updatedUserIds = userIds.filter(id => id !== userId)
-    const updatedUserNames = userNames.filter(name => name !== userName)
+    const updatedUserNames = userNames.filter(
+      name => name !== userNames[userIds.indexOf(userId)]
+    )
 
     if (updatedUserIds.length === 0) {
       await deleteDoc(albumRef)
+      console.log(
+        '🗑️ Álbum eliminado de Firestore porque ningún usuario lo tiene.'
+      )
     } else {
       await updateDoc(albumRef, {
         userIds: updatedUserIds,
         userNames: updatedUserNames
       })
+      console.log('✅ Álbum eliminado de la colección del usuario.')
     }
+
+    if (updateState) updateState(false) // 🔄 Cambia el botón automáticamente a "Añadir a mis albums"
+  } catch (error) {
+    console.error('❌ Error eliminando álbum de mis albums:', error)
   }
 }
 
