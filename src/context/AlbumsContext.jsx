@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { getAlbumsByUser } from '../services/api'
+import { getAlbums, getAlbumsByUser } from '../services/api'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 
@@ -15,12 +15,24 @@ export const AlbumsProvider = ({ children }) => {
     }
   }, [currentUser])
 
+  // 🔹 Obtiene los álbumes del usuario autenticado
   const fetchUserAlbums = async () => {
+    if (!currentUser) return
     try {
       const userAlbums = await getAlbumsByUser(currentUser.uid)
       setAlbums(userAlbums)
     } catch (error) {
-      console.error('Error fetching user albums:', error)
+      console.error('❌ Error fetching user albums:', error)
+    }
+  }
+
+  // 🔹 Obtiene los álbumes de todos los usuarios (para ExplorePage)
+  const fetchAllAlbums = async () => {
+    try {
+      const allAlbums = await getAlbums()
+      setAlbums(allAlbums)
+    } catch (error) {
+      console.error('❌ Error fetching all albums:', error)
     }
   }
 
@@ -34,7 +46,7 @@ export const AlbumsProvider = ({ children }) => {
 
   return (
     <AlbumsContext.Provider
-      value={{ albums, addAlbum, removeAlbum, fetchUserAlbums }}
+      value={{ albums, addAlbum, removeAlbum, fetchUserAlbums, fetchAllAlbums }}
     >
       {children}
     </AlbumsContext.Provider>

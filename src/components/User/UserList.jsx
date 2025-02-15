@@ -56,36 +56,49 @@ const UserList = ({ userId, filterType }) => {
   }, [userId])
 
   const fetchUsers = async () => {
-    const data = await getUsers()
-    setUsers(data.filter(u => u.id !== userId))
+    try {
+      console.log('🔍 Obteniendo lista de usuarios...')
+      const data = await getUsers()
+      console.log('📋 Usuarios obtenidos:', data)
 
-    // Fetch albums and collections for each user
-    const albumsPromises = data.map(async user => {
-      const albums = await getAlbumsByUser(user.id)
-      return { userId: user.id, count: albums.length }
-    })
+      if (!data || data.length === 0) {
+        console.warn('⚠️ No se encontraron usuarios en la base de datos.')
+        setUsers([])
+        return
+      }
 
-    const collectionsPromises = data.map(async user => {
-      const collections = await getCollectionsByUser(user.id)
-      return { userId: user.id, count: collections.length }
-    })
+      setUsers(data.filter(u => u.id !== userId))
 
-    const albumsData = await Promise.all(albumsPromises)
-    const collectionsData = await Promise.all(collectionsPromises)
+      // Obtener albums y colecciones para cada usuario
+      const albumsPromises = data.map(async user => {
+        const albums = await getAlbumsByUser(user.id)
+        return { userId: user.id, count: albums.length }
+      })
 
-    const albumsMap = {}
-    const collectionsMap = {}
+      const collectionsPromises = data.map(async user => {
+        const collections = await getCollectionsByUser(user.id)
+        return { userId: user.id, count: collections.length }
+      })
 
-    albumsData.forEach(item => {
-      albumsMap[item.userId] = item.count
-    })
+      const albumsData = await Promise.all(albumsPromises)
+      const collectionsData = await Promise.all(collectionsPromises)
 
-    collectionsData.forEach(item => {
-      collectionsMap[item.userId] = item.count
-    })
+      const albumsMap = {}
+      const collectionsMap = {}
 
-    setUserAlbums(albumsMap)
-    setUserCollections(collectionsMap)
+      albumsData.forEach(item => {
+        albumsMap[item.userId] = item.count
+      })
+
+      collectionsData.forEach(item => {
+        collectionsMap[item.userId] = item.count
+      })
+
+      setUserAlbums(albumsMap)
+      setUserCollections(collectionsMap)
+    } catch (error) {
+      console.error('❌ Error obteniendo usuarios:', error)
+    }
   }
 
   const handleFollow = async followingId => {

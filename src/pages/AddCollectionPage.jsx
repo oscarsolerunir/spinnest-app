@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createCollection, getAlbumsByUser } from '../services/api'
-import { useUser } from '../providers/UserContext'
+import { useUser } from '../context/UserContext'
 import CollectionForm from '../components/Collections/CollectionForm'
 
 const AddCollectionPage = () => {

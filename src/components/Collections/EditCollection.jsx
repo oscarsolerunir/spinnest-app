@@ -6,7 +6,7 @@ import {
   deleteCollection,
   getAlbumsByUser
 } from '../../services/api'
-import { useUser } from '../../providers/UserContext'
+import { useUser } from '../../context/UserContext'
 import CollectionForm from './CollectionForm'
 
 const EditCollection = () => {
