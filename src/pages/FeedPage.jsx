@@ -9,142 +9,126 @@ import {
   doc
 } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
-import {
-  getAlbumsByUser,
-  getCollectionsByUser,
-  addToWishlist,
-  removeFromWishlist,
-  addToMyAlbums,
-  removeFromMyAlbums
-} from '../services/api'
+import { getAlbumsByUser, getCollectionsByUser } from '../services/api'
 import AlbumsList from '../components/Albums/AlbumsList'
 import ListCollections from '../components/Collections/ListCollections'
 
 const FeedPage = () => {
-  const [albums, setAlbums] = useState([]) // Ahora es un estado local
+  const [albums, setAlbums] = useState([])
   const [collections, setCollections] = useState([])
   const [following, setFollowing] = useState([])
-  const [wishlist, setWishlist] = useState([])
+  const [loadingCollections, setLoadingCollections] = useState(true) // Estado para mostrar carga
   const [currentUser] = useAuthState(auth)
 
   useEffect(() => {
-    if (currentUser?.uid) {
-      const qFollowing = query(
-        collection(db, 'follows'),
-        where('followerId', '==', currentUser.uid)
-      )
-      const unsubscribeFollowing = onSnapshot(qFollowing, snapshot => {
-        const followingData = snapshot.docs.map(doc => ({
-          id: doc.data().followingId
-        }))
-        setFollowing(followingData)
-      })
+    if (!currentUser?.uid) return
 
-      return () => {
-        unsubscribeFollowing()
-      }
-    }
+    const qFollowing = query(
+      collection(db, 'follows'),
+      where('followerId', '==', currentUser.uid)
+    )
+
+    const unsubscribeFollowing = onSnapshot(qFollowing, snapshot => {
+      const followingData = snapshot.docs.map(doc => ({
+        id: doc.data().followingId
+      }))
+      setFollowing(followingData)
+    })
+
+    return () => unsubscribeFollowing()
   }, [currentUser])
 
   useEffect(() => {
     const fetchFeedData = async () => {
-      if (following.length > 0) {
-        const followingIds = following.map(f => f.id)
-
-        const albumsPromises = followingIds.map(async userId => {
-          return await getAlbumsByUser(userId)
-        })
-
-        const collectionsPromises = followingIds.map(async userId => {
-          return await getCollectionsByUser(userId)
-        })
-
-        const albumsData = (await Promise.all(albumsPromises)).flat()
-        const collectionsData = (await Promise.all(collectionsPromises)).flat()
-
-        setAlbums(albumsData)
-        setCollections(collectionsData)
-
-        albumsData.forEach(async album => {
-          if (!album.viewedBy?.includes(currentUser?.uid)) {
-            const albumRef = doc(db, 'albums', album.id)
-            await updateDoc(albumRef, {
-              viewedBy: [...(album.viewedBy || []), currentUser.uid]
-            })
-          }
-        })
-
-        collectionsData.forEach(async collection => {
-          if (!collection.viewedBy?.includes(currentUser?.uid)) {
-            const collectionRef = doc(db, 'collections', collection.id)
-            await updateDoc(collectionRef, {
-              viewedBy: [...(collection.viewedBy || []), currentUser.uid]
-            })
-          }
-        })
-      } else {
-        setAlbums([]) // Vaciar si no hay usuarios seguidos
+      if (following.length === 0) {
+        setAlbums([])
         setCollections([])
+        setLoadingCollections(false)
+        return
       }
+
+      const followingIds = following.map(f => f.id)
+
+      const albumsPromises = followingIds.map(userId => getAlbumsByUser(userId))
+      const collectionsPromises = followingIds.map(userId =>
+        getCollectionsByUser(userId)
+      )
+
+      const albumsData = (await Promise.all(albumsPromises)).flat()
+      const collectionsData = (await Promise.all(collectionsPromises)).flat()
+
+      console.log('📚 Colecciones obtenidas en FeedPage:', collectionsData)
+
+      setAlbums(albumsData)
+      setCollections(collectionsData)
+      setLoadingCollections(false)
+
+      // Marcar álbumes como vistos en Firestore
+      albumsData.forEach(async album => {
+        if (album?.id) {
+          const viewedBy = Array.isArray(album.viewedBy) ? album.viewedBy : []
+          if (!viewedBy.includes(currentUser?.uid)) {
+            try {
+              const albumRef = doc(db, 'albums', String(album.id))
+              await updateDoc(albumRef, {
+                viewedBy: [...viewedBy, currentUser.uid]
+              })
+            } catch (error) {
+              console.error(
+                `🚨 Error al marcar álbum ${album.id} como visto:`,
+                error
+              )
+            }
+          }
+        }
+      })
+
+      // Marcar colecciones como vistas en Firestore
+      collectionsData.forEach(async collectionItem => {
+        if (collectionItem?.id) {
+          const viewedBy = Array.isArray(collectionItem.viewedBy)
+            ? collectionItem.viewedBy
+            : []
+          if (!viewedBy.includes(currentUser?.uid)) {
+            try {
+              const collectionRef = doc(
+                db,
+                'collections',
+                String(collectionItem.id)
+              )
+              await updateDoc(collectionRef, {
+                viewedBy: [...viewedBy, currentUser.uid]
+              })
+            } catch (error) {
+              console.error(
+                `🚨 Error al marcar colección ${collectionItem.id} como vista:`,
+                error
+              )
+            }
+          }
+        }
+      })
+
+      localStorage.setItem('feedVisited', 'true')
     }
 
     fetchFeedData()
   }, [following, currentUser])
-
-  const handleAddToWishlist = async album => {
-    try {
-      await addToWishlist(currentUser.uid, album)
-      setWishlist(prevWishlist => [...prevWishlist, album])
-    } catch (error) {
-      console.error('Error adding album to wishlist:', error)
-    }
-  }
-
-  const handleRemoveFromWishlist = async albumId => {
-    try {
-      await removeFromWishlist(currentUser.uid, albumId)
-      setWishlist(prevWishlist => prevWishlist.filter(a => a.id !== albumId))
-    } catch (error) {
-      console.error('Error removing album from wishlist:', error)
-    }
-  }
-
-  const handleAddToMyAlbums = async album => {
-    try {
-      await addToMyAlbums(currentUser.uid, album)
-      setAlbums(prevAlbums => [...prevAlbums, album])
-    } catch (error) {
-      console.error('Error adding album to my albums:', error)
-    }
-  }
-
-  const handleRemoveFromMyAlbums = async albumId => {
-    try {
-      await removeFromMyAlbums(currentUser.uid, albumId)
-      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== albumId))
-    } catch (error) {
-      console.error('Error removing album from my albums:', error)
-    }
-  }
 
   return (
     <div>
       <h1>Feed</h1>
       <h2>Álbums</h2>
       {albums.length > 0 ? (
-        <AlbumsList
-          albums={albums}
-          handleAddToWishlist={handleAddToWishlist}
-          handleRemoveFromWishlist={handleRemoveFromWishlist}
-          handleAddToMyAlbums={handleAddToMyAlbums}
-          handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
-        />
+        <AlbumsList albums={albums} />
       ) : (
         <p>No hay álbumes disponibles.</p>
       )}
 
       <h2>Colecciones</h2>
-      {collections.length > 0 ? (
+      {loadingCollections ? (
+        <p>Cargando colecciones...</p>
+      ) : collections.length > 0 ? (
         <ListCollections collections={collections} />
       ) : (
         <p>No hay colecciones disponibles.</p>

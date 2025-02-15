@@ -5,33 +5,48 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 
 const ListCollections = ({ userId, collections, onClick, allUsers }) => {
+  console.log('📂 Colecciones recibidas en ListCollections:', collections)
+  // Si se pasa collections, inicializamos con ella; de lo contrario, con un array vacío.
   const [collectionsState, setCollectionsState] = useState(collections || [])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [currentUser] = useAuthState(auth)
 
+  // Si se recibe la prop "collections", actualizamos el estado local.
   useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        let data = []
-        if (allUsers) {
-          data = await getCollections()
-        } else if (userId) {
-          data = await getCollectionsByUser(userId)
-        }
-        setCollectionsState(data)
-      } catch (error) {
-        console.error('Error fetching collections:', error)
-        setError(
-          'Hubo un error al cargar las colecciones. Por favor, inténtalo de nuevo.'
-        )
-      } finally {
-        setLoading(false)
-      }
+    if (collections) {
+      setCollectionsState(collections)
+      setLoading(false)
     }
+  }, [collections])
 
-    fetchCollections()
-  }, [userId, allUsers])
+  // Si no se recibe la prop "collections", hacemos la consulta con userId o allUsers.
+  useEffect(() => {
+    // Solo ejecutamos si NO se pasó la prop collections.
+    if (!collections) {
+      if (!userId && !allUsers) return // No hay criterios para la búsqueda.
+      const fetchCollections = async () => {
+        setLoading(true)
+        try {
+          let data = []
+          if (allUsers) {
+            data = await getCollections()
+          } else if (userId) {
+            data = await getCollectionsByUser(userId)
+          }
+          setCollectionsState(data)
+        } catch (error) {
+          console.error('Error fetching collections:', error)
+          setError(
+            'Hubo un error al cargar las colecciones. Por favor, inténtalo de nuevo.'
+          )
+        } finally {
+          setLoading(false)
+        }
+      }
+      fetchCollections()
+    }
+  }, [userId, allUsers, collections])
 
   if (loading) {
     return <p>Cargando...</p>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, signOut } from '../../services/firebase'
 import {
@@ -48,10 +48,13 @@ const Navigation = () => {
   const [albumsCount, setAlbumsCount] = useState(0)
   const [collectionsCount, setCollectionsCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
-  const [newContent, setNewContent] = useState(false)
+  const [newContent, setNewContent] = useState(
+    localStorage.getItem('feedVisited') === 'false'
+  )
+  const location = useLocation()
 
   useEffect(() => {
-    if (!user?.uid) return // 🛑 No ejecutar si no hay usuario autenticado
+    if (!user?.uid) return
 
     console.log('🔄 Cargando datos de navegación para el usuario:', user.uid)
 
@@ -113,51 +116,58 @@ const Navigation = () => {
       unsubscribes.push(unsubscribe)
     })
 
-    // 🔍 Verificar nuevos contenidos
-    const checkNewContent = async () => {
-      try {
-        const followingSnapshot = await getDocs(
-          query(collection(db, 'follows'), where('followerId', '==', user.uid))
-        )
-        const followingIds = followingSnapshot.docs.map(
-          doc => doc.data().followingId
-        )
+    // Escuchar cambios en los usuarios seguidos en tiempo real
+    const followingQuery = query(
+      collection(db, 'follows'),
+      where('followerId', '==', user.uid)
+    )
 
-        if (followingIds.length === 0) {
-          setNewContent(false)
-          return
-        }
-
-        // 🛠 Obtener nuevos álbumes y colecciones en una sola operación
-        const [albumsSnapshot, collectionsSnapshot] = await Promise.all([
-          getDocs(
-            query(
-              collection(db, 'albums'),
-              where('userIds', 'array-contains-any', followingIds)
-            )
-          ),
-          getDocs(
-            query(
-              collection(db, 'collections'),
-              where('userId', 'in', followingIds)
-            )
-          )
-        ])
-
-        const newAlbums = albumsSnapshot.docs.some(
-          doc => !doc.data().viewedBy?.includes(user.uid)
-        )
-        const newCollections = collectionsSnapshot.docs.some(
-          doc => !doc.data().viewedBy?.includes(user.uid)
-        )
-
-        setNewContent(newAlbums || newCollections)
-      } catch (error) {
-        console.error('⚠️ Error verificando nuevos contenidos:', error.message)
+    const unsubscribeFollowing = onSnapshot(followingQuery, snapshot => {
+      const followingIds = snapshot.docs.map(doc => doc.data().followingId)
+      if (followingIds.length === 0) {
+        setNewContent(false)
+        return
       }
-    }
 
-    checkNewContent()
+      // Escuchar cambios en álbumes de los usuarios seguidos
+      const albumsQuery = query(
+        collection(db, 'albums'),
+        where('userIds', 'array-contains-any', followingIds)
+      )
+
+      const unsubscribeAlbums = onSnapshot(albumsQuery, albumSnapshot => {
+        const hasNewAlbums = albumSnapshot.docs.some(
+          doc => !doc.data().viewedBy?.includes(user.uid)
+        )
+        if (hasNewAlbums) {
+          setNewContent(true)
+          localStorage.setItem('feedVisited', 'false')
+        }
+      })
+
+      // Escuchar cambios en colecciones de los usuarios seguidos
+      const collectionsQuery = query(
+        collection(db, 'collections'),
+        where('userId', 'in', followingIds)
+      )
+
+      const unsubscribeCollections = onSnapshot(
+        collectionsQuery,
+        collectionSnapshot => {
+          const hasNewCollections = collectionSnapshot.docs.some(
+            doc => !doc.data().viewedBy?.includes(user.uid)
+          )
+          if (hasNewCollections) {
+            setNewContent(true)
+            localStorage.setItem('feedVisited', 'false')
+          }
+        }
+      )
+
+      unsubscribes.push(unsubscribeAlbums, unsubscribeCollections)
+    })
+
+    unsubscribes.push(unsubscribeFollowing)
 
     return () => {
       console.log('♻️ Limpiando suscripciones de Firestore...')
@@ -165,13 +175,19 @@ const Navigation = () => {
     }
   }, [user])
 
+  // Desaparecer el mensaje "¡Nuevos!" al visitar el feed
+  useEffect(() => {
+    if (location.pathname === '/feed') {
+      localStorage.setItem('feedVisited', 'true')
+      setNewContent(false)
+    }
+  }, [location.pathname])
+
   const handleSignOut = async () => {
     try {
       await signOut(auth)
-      // Redirigir o mostrar mensaje de éxito
     } catch (error) {
       console.error('Error signing out:', error)
-      // Mostrar mensaje de error
     }
   }
 

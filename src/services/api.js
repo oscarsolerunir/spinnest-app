@@ -172,7 +172,8 @@ export const addToMyAlbums = async (userId, album, updateState) => {
         all_images: album.all_images || [],
         userIds: [userId],
         userNames: [userName],
-        addedAt: new Date().toISOString()
+        addedAt: new Date().toISOString(),
+        viewedBy: [] // Inicializamos viewedBy como un array vacío
       }
 
       console.log('📀 Guardando en Firebase:', completeAlbumData)
@@ -438,10 +439,19 @@ export const getCollectionsByUser = async userId => {
   console.log(`📡 Consultando colecciones en Firebase para usuario: ${userId}`)
 
   try {
-    const colRef = collection(db, 'collections') // 🔹 Asegura que 'collections' es el nombre correcto
+    // 🔹 Referencia a la colección "collections"
+    const colRef = collection(db, 'collections')
+
+    // 🔍 Consulta para obtener las colecciones del usuario por su userId
     const q = query(colRef, where('userId', '==', userId))
     const result = await getDocs(q)
 
+    if (result.empty) {
+      console.warn(`⚠️ No se encontraron colecciones para el usuario ${userId}`)
+      return []
+    }
+
+    // ✅ Mapear los resultados y devolver un array de colecciones
     const collectionsData = result.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
