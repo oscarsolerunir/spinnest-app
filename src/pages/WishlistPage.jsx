@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import { getWishlist, removeFromWishlist } from '../services/api'
-import AlbumItem from '../components/Albums/AlbumItem'
+import AlbumsList from '../components/Albums/AlbumsList'
 
 const WishlistPage = () => {
   const [albums, setAlbums] = useState([])
@@ -32,23 +32,11 @@ const WishlistPage = () => {
   return (
     <div>
       <h1>Mi Wishlist</h1>
-      {albums.length > 0 ? (
-        <div>
-          {albums.map(album => (
-            <AlbumItem
-              key={album.id}
-              album={album}
-              userId={currentUser?.uid}
-              handleRemoveFromWishlist={handleRemoveFromWishlist}
-              handleAddToWishlist={() => {}}
-              handleRemoveFromMyAlbums={() => {}}
-              handleAddToMyAlbums={() => {}}
-            />
-          ))}
-        </div>
-      ) : (
-        <p>Aún no has añadido ningún álbum a la wishlist.</p>
-      )}
+      <AlbumsList
+        albums={albums}
+        onRemove={handleRemoveFromWishlist}
+        showCollectedBy={false}
+      />
     </div>
   )
 }

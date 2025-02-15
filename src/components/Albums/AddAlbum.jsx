@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { searchAlbums, getAlbumDetails } from '../../services/discogs'
-import AlbumItem from './AlbumItem'
+import AlbumsList from '../Albums/AlbumsList'
 import styled from 'styled-components'
 
 const Form = styled.form`
@@ -54,14 +54,13 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         let formattedResults = results.map(album => ({
           id: album.id,
           name: album.title,
-          artist: 'Cargando...', // Se completará con getAlbumDetails
+          artist: 'Cargando...',
           year: album.year || 'Desconocido',
           genre: album.genre?.join(', ') || 'Desconocido',
-          label: 'Cargando...', // Se completará con getAlbumDetails
+          label: 'Cargando...',
           image: album.cover_image || ''
         }))
 
-        // 🔹 Obtener detalles completos para cada álbum usando Promise.all
         const detailedResults = await Promise.all(
           formattedResults.map(async album => {
             try {
@@ -72,7 +71,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
                 `❌ Error obteniendo detalles del álbum ${album.id}:`,
                 error
               )
-              return album // Devuelve el álbum con datos parciales si hay error
+              return album
             }
           })
         )
@@ -102,7 +101,6 @@ const AddAlbum = ({ handleSaveAlbum }) => {
       selectedAlbum
     )
 
-    // 🚀 Si faltan datos, obtenemos los detalles completos
     if (
       selectedAlbum.artist === 'Cargando...' ||
       !selectedAlbum.tracklist ||
@@ -123,7 +121,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
     }
 
     console.log('✅ Álbum listo para guardar en Firebase:', selectedAlbum)
-    handleSaveAlbum(selectedAlbum) // ✅ Ahora tiene todos los datos
+    handleSaveAlbum(selectedAlbum)
   }
 
   return (
@@ -140,17 +138,12 @@ const AddAlbum = ({ handleSaveAlbum }) => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {searchResults.length > 0 && (
-        <div>
-          {searchResults.map(result => (
-            <AlbumItem
-              key={result.id}
-              album={result}
-              onClick={() => onSelectAlbum(result.id)}
-              showCollectedBy={false}
-              showDetailsLink={false}
-            />
-          ))}
-        </div>
+        <AlbumsList
+          albums={searchResults}
+          showCollectedBy={false}
+          showDetailsLink={false}
+          onAlbumClick={onSelectAlbum}
+        />
       )}
     </Form>
   )

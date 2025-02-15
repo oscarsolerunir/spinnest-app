@@ -1,27 +1,26 @@
-import { useState, useEffect } from 'react'
-import { getAlbumsByUser, removeFromMyAlbums } from '../services/api'
+import { useEffect } from 'react'
+import { useAlbums } from '../context/AlbumsContext'
+import { removeFromMyAlbums } from '../services/api'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import { Link } from 'react-router-dom'
-import AlbumItem from '../components/Albums/AlbumItem'
+import AlbumsList from '../components/Albums/AlbumsList'
 
 const UserAlbumsPage = () => {
-  const [albums, setAlbums] = useState([])
+  const { albums, fetchUserAlbums, removeAlbum } = useAlbums()
   const [user] = useAuthState(auth)
 
   useEffect(() => {
     if (user) {
-      getAlbumsByUser(user.uid).then(data => {
-        setAlbums(data)
-      })
+      fetchUserAlbums()
     }
   }, [user])
 
-  // ✅ Hacerlo reactivo cuando un álbum es eliminado
+  // ✅ Función para eliminar álbum de manera reactiva
   const handleRemoveFromMyAlbums = async albumId => {
     try {
       await removeFromMyAlbums(user.uid, albumId)
-      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== albumId)) // 🔹 Eliminación reactiva
+      removeAlbum(albumId) // 🔹 Actualiza el estado global en AlbumsContext
     } catch (error) {
       console.error('❌ Error eliminando álbum de mis albums:', error)
     }
@@ -31,16 +30,10 @@ const UserAlbumsPage = () => {
     <div>
       <h1>Tus albums</h1>
       {albums.length > 0 ? (
-        <div>
-          {albums.map(album => (
-            <AlbumItem
-              key={album.id}
-              album={album}
-              userId={user?.uid}
-              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums} // 🔹 Ahora es reactivo
-            />
-          ))}
-        </div>
+        <AlbumsList
+          albums={albums}
+          handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
+        />
       ) : (
         <p>No has añadido ningún álbum todavía.</p>
       )}

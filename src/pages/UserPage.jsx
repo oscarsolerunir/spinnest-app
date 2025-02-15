@@ -7,12 +7,16 @@ import {
   followUser,
   unfollowUser,
   getConversationsByUser,
-  createConversation
+  createConversation,
+  addToWishlist,
+  removeFromWishlist,
+  addToMyAlbums,
+  removeFromMyAlbums
 } from '../services/api'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import AlbumItem from '../components/Albums/AlbumItem'
+import AlbumsList from '../components/Albums/AlbumsList'
 import ListCollections from '../components/Collections/ListCollections'
 import { useNavigate } from 'react-router-dom'
 
@@ -22,6 +26,7 @@ const UserPage = () => {
   const [albums, setAlbums] = useState([])
   const [collections, setCollections] = useState([])
   const [following, setFollowing] = useState([])
+  const [wishlist, setWishlist] = useState([])
   const [currentUser] = useAuthState(auth)
   const navigate = useNavigate()
 
@@ -77,6 +82,42 @@ const UserPage = () => {
       }
     }
   }, [currentUser])
+
+  const handleAddToWishlist = async album => {
+    try {
+      await addToWishlist(currentUser.uid, album)
+      setWishlist(prevWishlist => [...prevWishlist, album])
+    } catch (error) {
+      console.error('Error adding album to wishlist:', error)
+    }
+  }
+
+  const handleRemoveFromWishlist = async albumId => {
+    try {
+      await removeFromWishlist(currentUser.uid, albumId)
+      setWishlist(prevWishlist => prevWishlist.filter(a => a.id !== albumId))
+    } catch (error) {
+      console.error('Error removing album from wishlist:', error)
+    }
+  }
+
+  const handleAddToMyAlbums = async album => {
+    try {
+      await addToMyAlbums(currentUser.uid, album)
+      setAlbums(prevAlbums => [...prevAlbums, album])
+    } catch (error) {
+      console.error('Error adding album to my albums:', error)
+    }
+  }
+
+  const handleRemoveFromMyAlbums = async albumId => {
+    try {
+      await removeFromMyAlbums(currentUser.uid, albumId)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== albumId))
+    } catch (error) {
+      console.error('Error removing album from my albums:', error)
+    }
+  }
 
   const handleFollow = async () => {
     if (!currentUser || !currentUser.uid) return
@@ -135,19 +176,15 @@ const UserPage = () => {
       <button onClick={handleSendMessage}>Enviar mensaje</button>
       <h2>Álbums</h2>
       {albums.length > 0 ? (
-        <div>
-          {albums.map(album => (
-            <AlbumItem
-              key={album.id}
-              album={album}
-              userId={currentUser?.uid}
-              handleAddToWishlist={() => {}}
-              handleRemoveFromWishlist={() => {}}
-            />
-          ))}
-        </div>
+        <AlbumsList
+          albums={albums}
+          handleAddToWishlist={handleAddToWishlist}
+          handleRemoveFromWishlist={handleRemoveFromWishlist}
+          handleAddToMyAlbums={handleAddToMyAlbums}
+          handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
+        />
       ) : (
-        <p>El usuario aún no ha añadido álbums.</p>
+        <p>El usuario aún no ha añadido albums.</p>
       )}
       <h2>Colecciones</h2>
       {collections.length > 0 ? (
