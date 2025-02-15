@@ -51,64 +51,74 @@ const Navigation = () => {
   const [newContent, setNewContent] = useState(false)
 
   useEffect(() => {
-    if (user) {
-      const qUnread = query(
-        collection(db, 'conversations'),
-        where('participants', 'array-contains', user.uid),
-        where('read', '==', false)
+    if (!user?.uid) return // 🛑 No ejecutar si no hay usuario autenticado
+
+    console.log('🔄 Cargando datos de navegación para el usuario:', user.uid)
+
+    const unsubscribes = []
+
+    const queries = [
+      {
+        ref: query(
+          collection(db, 'conversations'),
+          where('participants', 'array-contains', user.uid),
+          where('read', '==', false)
+        ),
+        setState: setUnreadCount
+      },
+      {
+        ref: query(
+          collection(db, 'follows'),
+          where('followingId', '==', user.uid)
+        ),
+        setState: setFollowersCount
+      },
+      {
+        ref: query(
+          collection(db, 'follows'),
+          where('followerId', '==', user.uid)
+        ),
+        setState: setFollowingCount
+      },
+      {
+        ref: query(
+          collection(db, 'albums'),
+          where('userIds', 'array-contains', user.uid)
+        ),
+        setState: setAlbumsCount
+      },
+      {
+        ref: query(
+          collection(db, 'collections'),
+          where('userId', '==', user.uid)
+        ),
+        setState: setCollectionsCount
+      },
+      {
+        ref: query(collection(db, 'wishlist'), where('userId', '==', user.uid)),
+        setState: setWishlistCount
+      }
+    ]
+
+    queries.forEach(({ ref, setState }) => {
+      const unsubscribe = onSnapshot(
+        ref,
+        snapshot => {
+          setState(snapshot.size)
+        },
+        error => {
+          console.error(`⚠️ Error en Firestore (${ref.path}):`, error.message)
+        }
       )
+      unsubscribes.push(unsubscribe)
+    })
 
-      const unsubscribeUnread = onSnapshot(qUnread, snapshot => {
-        setUnreadCount(snapshot.size)
-      })
-
-      const qFollowers = query(
-        collection(db, 'follows'),
-        where('followingId', '==', user.uid)
-      )
-
-      const unsubscribeFollowers = onSnapshot(qFollowers, snapshot => {
-        setFollowersCount(snapshot.size)
-      })
-
-      const qFollowing = query(
-        collection(db, 'follows'),
-        where('followerId', '==', user.uid)
-      )
-
-      const unsubscribeFollowing = onSnapshot(qFollowing, snapshot => {
-        setFollowingCount(snapshot.size)
-      })
-
-      const qAlbums = query(
-        collection(db, 'albums'),
-        where('userIds', 'array-contains', user.uid)
-      )
-
-      const unsubscribeAlbums = onSnapshot(qAlbums, snapshot => {
-        setAlbumsCount(snapshot.size)
-      })
-
-      const qCollections = query(
-        collection(db, 'collections'),
-        where('userId', '==', user.uid)
-      )
-
-      const unsubscribeCollections = onSnapshot(qCollections, snapshot => {
-        setCollectionsCount(snapshot.size)
-      })
-
-      const qWishlist = query(
-        collection(db, 'wishlist'),
-        where('userId', '==', user.uid)
-      )
-
-      const unsubscribeWishlist = onSnapshot(qWishlist, snapshot => {
-        setWishlistCount(snapshot.size)
-      })
-
-      const checkNewContent = async () => {
-        const followingSnapshot = await getDocs(qFollowing)
+    // 🔍 Verificar nuevos contenidos
+    const checkNewContent = async () => {
+      try {
+        const followingSnapshot = await getDocs(
+          query(collection(db, 'follows'), where('followerId', '==', user.uid))
+        )
         const followingIds = followingSnapshot.docs.map(
           doc => doc.data().followingId
         )
@@ -118,15 +128,21 @@ const Navigation = () => {
           return
         }
 
-        const albumsSnapshot = await getDocs(
-          query(collection(db, 'albums'), where('userId', 'in', followingIds))
-        )
-        const collectionsSnapshot = await getDocs(
-          query(
-            collection(db, 'collections'),
-            where('userId', 'in', followingIds)
+        // 🛠 Obtener nuevos álbumes y colecciones en una sola operación
+        const [albumsSnapshot, collectionsSnapshot] = await Promise.all([
+          getDocs(
+            query(
+              collection(db, 'albums'),
+              where('userIds', 'array-contains-any', followingIds)
+            )
+          ),
+          getDocs(
+            query(
+              collection(db, 'collections'),
+              where('userId', 'in', followingIds)
+            )
           )
-        )
+        ])
 
         const newAlbums = albumsSnapshot.docs.some(
           doc => !doc.data().viewedBy?.includes(user.uid)
@@ -136,18 +152,16 @@ const Navigation = () => {
         )
 
         setNewContent(newAlbums || newCollections)
+      } catch (error) {
+        console.error('⚠️ Error verificando nuevos contenidos:', error.message)
       }
+    }
 
-      checkNewContent()
+    checkNewContent()
 
-      return () => {
-        unsubscribeUnread()
-        unsubscribeFollowers()
-        unsubscribeFollowing()
-        unsubscribeAlbums()
-        unsubscribeCollections()
-        unsubscribeWishlist()
-      }
+    return () => {
+      console.log('♻️ Limpiando suscripciones de Firestore...')
+      unsubscribes.forEach(unsub => unsub())
     }
   }, [user])
 
