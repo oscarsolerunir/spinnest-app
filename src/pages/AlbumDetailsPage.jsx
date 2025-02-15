@@ -77,7 +77,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
     try {
       await deleteAlbumById(id, userId)
       alert('Álbum eliminado correctamente.')
-      navigate('/') // Redirigir al home después de eliminar
+      navigate('/albums') // Redirigir al home después de eliminar
     } catch (error) {
       console.error('Error deleting album:', error)
       setError('Error deleting album. Please try again.')
