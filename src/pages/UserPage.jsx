@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   getAlbumsByUser,
-  getCollectionsByUser,
   getUserById,
   followUser,
   unfollowUser,
@@ -18,13 +17,11 @@ import { db, auth } from '../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import AlbumsList from '../components/Albums/AlbumsList'
 import ListCollections from '../components/Collections/ListCollections'
-import { useNavigate } from 'react-router-dom'
 
 const UserPage = () => {
   const { userId } = useParams()
   const [user, setUser] = useState(null)
   const [albums, setAlbums] = useState([])
-  const [collections, setCollections] = useState([])
   const [following, setFollowing] = useState([])
   const [wishlist, setWishlist] = useState([])
   const [currentUser] = useAuthState(auth)
@@ -49,18 +46,8 @@ const UserPage = () => {
       }
     }
 
-    const fetchCollections = async () => {
-      try {
-        const collectionsData = await getCollectionsByUser(userId)
-        setCollections(collectionsData)
-      } catch (error) {
-        console.error('Error fetching collections:', error)
-      }
-    }
-
     fetchUserData()
     fetchAlbums()
-    fetchCollections()
   }, [userId])
 
   useEffect(() => {
@@ -184,14 +171,10 @@ const UserPage = () => {
           handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
         />
       ) : (
-        <p>El usuario aún no ha añadido albums.</p>
+        <p>El usuario aún no ha añadido álbumes.</p>
       )}
       <h2>Colecciones</h2>
-      {collections.length > 0 ? (
-        <ListCollections collections={collections} />
-      ) : (
-        <p>El usuario aún no ha creado colecciones.</p>
-      )}
+      <ListCollections userId={userId} />
     </div>
   )
 }

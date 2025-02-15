@@ -431,20 +431,22 @@ export const getCollections = async () => {
 // GET COLLECTIONS BY USER
 export const getCollectionsByUser = async userId => {
   if (!userId) {
-    userId = auth.currentUser?.uid
-    if (!userId) {
-      console.error('❌ Error: usuario no autenticado')
-      return []
-    }
+    console.error('❌ Error: usuario no autenticado')
+    return []
   }
 
   console.log(`📡 Consultando colecciones en Firebase para usuario: ${userId}`)
 
   try {
-    const colRef = collection(db, collectionsCollectionName)
-    const result = await getDocs(query(colRef, where('userId', '==', userId)))
+    const colRef = collection(db, 'collections') // 🔹 Asegura que 'collections' es el nombre correcto
+    const q = query(colRef, where('userId', '==', userId))
+    const result = await getDocs(q)
 
-    const collectionsData = getArrayFromCollection(result)
+    const collectionsData = result.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+
     console.log(
       `📚 Colecciones del usuario ${userId} obtenidas de Firebase:`,
       collectionsData

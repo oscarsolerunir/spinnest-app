@@ -23,12 +23,15 @@ service cloud.firestore {
     // 🔹 Collections: acceso restringido solo al dueño
     match /collections/{collectionId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated(); // ✅ Permitir crear la colección
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId); // ✅ Solo el dueño puede modificar/eliminar
     }
 
     // 🔹 Conversations: Solo los participantes pueden leer/escribir
     match /conversations/{conversationId} {
-      allow read, write: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
     }
 
     // 🔹 Messages: Solo los participantes de la conversación pueden leer/escribir mensajes
