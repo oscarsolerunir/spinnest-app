@@ -51,7 +51,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         const results = await searchAlbums(artist)
         console.log('📀 Resultados de búsqueda:', results)
 
-        const formattedResults = results.map(album => ({
+        let formattedResults = results.map(album => ({
           id: album.id,
           name: album.title,
           artist: 'Cargando...', // Se completará con getAlbumDetails
@@ -61,28 +61,24 @@ const AddAlbum = ({ handleSaveAlbum }) => {
           image: album.cover_image || ''
         }))
 
-        setSearchResults(formattedResults)
-        searchCache.current[artist] = formattedResults
-
-        // 🔹 Obtener detalles completos para cada álbum
-        formattedResults.forEach(async (album, index) => {
-          try {
-            const details = await getAlbumDetails(album.id)
-            setSearchResults(prevResults =>
-              prevResults.map((item, idx) =>
-                idx === index
-                  ? {
-                      ...item,
-                      artist: details.artist, // Ahora tenemos el artista correcto
-                      label: details.label // Ahora tenemos el sello correcto
-                    }
-                  : item
+        // 🔹 Obtener detalles completos para cada álbum usando Promise.all
+        const detailedResults = await Promise.all(
+          formattedResults.map(async album => {
+            try {
+              const details = await getAlbumDetails(album.id)
+              return { ...album, ...details }
+            } catch (error) {
+              console.error(
+                `❌ Error obteniendo detalles del álbum ${album.id}:`,
+                error
               )
-            )
-          } catch (error) {
-            console.error('❌ Error obteniendo detalles del álbum:', error)
-          }
-        })
+              return album // Devuelve el álbum con datos parciales si hay error
+            }
+          })
+        )
+
+        setSearchResults(detailedResults)
+        searchCache.current[artist] = detailedResults
       } catch (error) {
         console.error('❌ Error buscando álbumes:', error)
         setError(
@@ -106,28 +102,28 @@ const AddAlbum = ({ handleSaveAlbum }) => {
       selectedAlbum
     )
 
-    // Si los datos no están completos, obtenemos los detalles desde Discogs
-    if (selectedAlbum.artist === 'Cargando...' || !selectedAlbum.tracklist) {
+    // 🚀 Si faltan datos, obtenemos los detalles completos
+    if (
+      selectedAlbum.artist === 'Cargando...' ||
+      !selectedAlbum.tracklist ||
+      selectedAlbum.tracklist.length === 0 ||
+      !selectedAlbum.country ||
+      !selectedAlbum.discogs_url ||
+      !selectedAlbum.formats ||
+      selectedAlbum.formats.length === 0
+    ) {
       console.log('🔍 Obteniendo detalles completos para el álbum:', id)
-      const completeAlbum = await getAlbumDetails(id)
-
-      // Reemplazar el álbum en `searchResults` con los datos completos
-      setSearchResults(prevResults =>
-        prevResults.map(album => (album.id === id ? completeAlbum : album))
-      )
-
-      console.log('✅ Datos completos obtenidos y reemplazados:', completeAlbum)
-
-      // Guardar el álbum con datos completos
-      handleSaveAlbum(completeAlbum)
-      return
+      try {
+        const albumDetails = await getAlbumDetails(id)
+        selectedAlbum = { ...selectedAlbum, ...albumDetails }
+      } catch (error) {
+        console.error('❌ No se pudo obtener detalles del álbum:', id, error)
+        return
+      }
     }
 
-    console.log(
-      '✅ Álbum ya tenía todos los datos, guardando directamente:',
-      selectedAlbum
-    )
-    handleSaveAlbum(selectedAlbum)
+    console.log('✅ Álbum listo para guardar en Firebase:', selectedAlbum)
+    handleSaveAlbum(selectedAlbum) // ✅ Ahora tiene todos los datos
   }
 
   return (
