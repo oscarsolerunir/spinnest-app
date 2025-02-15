@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { addToMyAlbums, removeFromMyAlbums } from '../../services/api'
 import { auth } from '../../services/firebase'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const AlbumContainer = styled.div`
   border: 1px solid #ddd;
@@ -47,15 +47,25 @@ const Button = styled.button`
 const AlbumItem = ({
   album,
   userId,
-  handleRemoveFromMyAlbums, // 🔹 Recibimos la función desde ExplorePage
+  handleRemoveFromMyAlbums, // Función para eliminar de "mis albums"
+  handleAddToWishlist, // Función para añadir a wishlist
+  handleRemoveFromWishlist, // Función para eliminar de wishlist
   showCollectedBy = true,
-  showDetailsLink = true
+  showDetailsLink = true,
+  showWishlistButton = true // Controla si se muestra el botón de wishlist
 }) => {
   const [currentUser] = useAuthState(auth)
+
+  // Estado para "mis albums" basado en album.userIds
   const [isInMyAlbums, setIsInMyAlbums] = useState(
     album.userIds?.includes(currentUser?.uid) || false
   )
+  // Estado para wishlist basado en album.isInWishlistOfUserIds
+  const [isInWishlist, setIsInWishlist] = useState(
+    album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
+  )
 
+  // Si el album o sus datos esenciales no existen, no se renderiza
   if (!album || !album.id || !album.name) {
     console.error('⚠️ Error: El álbum es inválido:', album)
     return null
@@ -71,6 +81,7 @@ const AlbumItem = ({
     ? album.label.join(', ')
     : album.label || 'Sello desconocido'
 
+  // Función para gestionar la acción en "Mis Albums"
   const handleMyAlbumsClick = async e => {
     e.stopPropagation()
     e.preventDefault()
@@ -93,7 +104,9 @@ const AlbumItem = ({
       try {
         await removeFromMyAlbums(currentUser.uid, album.id)
         setIsInMyAlbums(false)
-        handleRemoveFromMyAlbums(album.id) // 🔹 Elimina de ExplorePage
+        if (handleRemoveFromMyAlbums) {
+          handleRemoveFromMyAlbums(album.id)
+        }
         console.log('✅ Álbum eliminado de mis albums con éxito.')
       } catch (error) {
         console.error('⚠️ Error eliminando álbum:', error)
@@ -112,6 +125,49 @@ const AlbumItem = ({
       }
     }
   }
+
+  // Función para gestionar la acción de wishlist
+  const handleWishlistClick = async e => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    if (!currentUser?.uid) {
+      console.error('❌ Error: usuario no autenticado.')
+      return
+    }
+
+    if (isInWishlist) {
+      try {
+        if (handleRemoveFromWishlist) {
+          await handleRemoveFromWishlist(album.id)
+          setIsInWishlist(false)
+          console.log('✅ Álbum eliminado de la wishlist con éxito.')
+        }
+      } catch (error) {
+        console.error('⚠️ Error eliminando álbum de la wishlist:', error)
+      }
+    } else {
+      try {
+        if (handleAddToWishlist) {
+          await handleAddToWishlist(album)
+          setIsInWishlist(true)
+          console.log('✅ Álbum añadido a la wishlist con éxito.')
+        }
+      } catch (error) {
+        console.error('⚠️ Error añadiendo álbum a la wishlist:', error)
+      }
+    }
+  }
+
+  // Mostrar el botón de wishlist solo si:
+  // 1. Se habilita con la prop showWishlistButton.
+  // 2. Se han pasado las funciones correspondientes.
+  // 3. El álbum NO es propio (es decir, currentUser no es propietario).
+  const shouldShowWishlistButton =
+    showWishlistButton &&
+    handleAddToWishlist &&
+    handleRemoveFromWishlist &&
+    !(album.userIds && album.userIds.includes(currentUser?.uid))
 
   return (
     <AlbumContainer>
@@ -132,6 +188,12 @@ const AlbumItem = ({
       <Button onClick={handleMyAlbumsClick} color="#2196f3">
         {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
       </Button>
+
+      {shouldShowWishlistButton && (
+        <Button onClick={handleWishlistClick} color="#ff9800">
+          {isInWishlist ? 'Eliminar de wishlist' : 'Añadir a wishlist'}
+        </Button>
+      )}
     </AlbumContainer>
   )
 }

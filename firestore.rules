@@ -11,14 +11,19 @@ service cloud.firestore {
     }
 
     // 🔹 Albums: lectura para usuarios autenticados, escritura solo para propietarios
+    // o para modificaciones que se limiten a los campos de "viewedBy" y wishlist.
     match /albums/{albumId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
+        // Si el usuario es el dueño, puede actualizar todo
         request.auth.uid in resource.data.userIds ||
-        request.auth.uid in request.resource.data.userIds ||
-        // Si viewedBy es un array, se comprueba; si no, se permite (como si fuera vacío)
-        (resource.data.viewedBy is list ? !(request.auth.uid in resource.data.viewedBy) : true)
+        // Si no lo es, solo se permiten cambios en los campos de wishlist y viewedBy
+        request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          'viewedBy',
+          'isInWishlistOfUserIds',
+          'isInWishlistOfUserNames'
+        ])
       );
       allow delete: if isAuthenticated() && request.auth.uid in resource.data.userIds;
     }
@@ -68,7 +73,9 @@ service cloud.firestore {
 
     // 🔹 Wishlist: Solo el usuario dueño puede leer y modificar su wishlist
     match /wishlist/{wishlistId} {
-      allow read, write: if isAuthenticated() && isOwner(resource.data.userId);
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
   }
 }

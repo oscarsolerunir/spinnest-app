@@ -16,13 +16,11 @@ export const WishlistProvider = ({ children }) => {
   }, [currentUser])
 
   const addToWishlistContext = album => {
-    setWishlist(prevWishlist => [...prevWishlist, album])
+    setWishlist(prev => [...prev, album])
   }
 
   const removeFromWishlistContext = albumId => {
-    setWishlist(prevWishlist =>
-      prevWishlist.filter(album => album.id !== albumId)
-    )
+    setWishlist(prev => prev.filter(album => album.albumId !== albumId))
   }
 
   return (

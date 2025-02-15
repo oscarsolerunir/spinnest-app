@@ -536,66 +536,74 @@ export const getUserById = async userId => {
 }
 
 // ADD TO WISHLIST
-export const addToWishlist = async (userId, album) => {
-  const albumRef = doc(db, albumsCollectionName, album.id)
-  const albumDoc = await getDoc(albumRef)
-
-  const userDoc = await getDoc(doc(db, 'users', userId))
-  const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
-
-  if (albumDoc.exists()) {
-    const albumData = albumDoc.data()
-    const isInWishlistOfUserIds = albumData.isInWishlistOfUserIds || []
-    const isInWishlistOfUserNames = albumData.isInWishlistOfUserNames || []
-
-    if (!isInWishlistOfUserIds.includes(userId)) {
-      await updateDoc(albumRef, {
-        isInWishlistOfUserIds: [...isInWishlistOfUserIds, userId],
-        isInWishlistOfUserNames: [...isInWishlistOfUserNames, userName]
+export const addToWishlist = async (userId, album, updateState) => {
+  try {
+    if (!userId || !album || !album.id) {
+      console.error('❌ Error: userId o album.id no son válidos:', {
+        userId,
+        album
       })
+      return
     }
-  } else {
-    await addDoc(albumRef, {
-      ...album,
-      isInWishlistOfUserIds: [userId],
-      isInWishlistOfUserNames: [userName],
-      addedAt: new Date()
-    })
+
+    console.log('📀 Intentando añadir álbum a la wishlist:', album)
+
+    // Obtenemos el nombre del usuario
+    const userDocRef = doc(db, 'users', userId)
+    const userDoc = await getDoc(userDocRef)
+    const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
+
+    // Estructura de la entrada de wishlist
+    const wishlistItemData = {
+      albumId: album.id,
+      albumName: album.name,
+      albumArtist: album.artist,
+      albumYear: album.year,
+      albumGenre: album.genre,
+      albumLabel: album.label,
+      albumImage: album.image,
+      userId,
+      userName,
+      addedAt: new Date().toISOString()
+    }
+
+    // Añadir el documento a la colección "wishlist"
+    await addDoc(collection(db, wishlistCollectionName), wishlistItemData)
+    console.log('✅ Álbum añadido a la wishlist con éxito en Firestore.')
+    if (updateState) updateState(true)
+  } catch (error) {
+    console.error('❌ Error añadiendo a wishlist:', error)
   }
 }
 
 // REMOVE FROM WISHLIST
 export const removeFromWishlist = async (userId, albumId) => {
-  const albumRef = doc(db, albumsCollectionName, albumId)
-  const albumDoc = await getDoc(albumRef)
-
-  if (albumDoc.exists()) {
-    const albumData = albumDoc.data()
-    const isInWishlistOfUserIds = albumData.isInWishlistOfUserIds || []
-    const isInWishlistOfUserNames = albumData.isInWishlistOfUserNames || []
-    const userDoc = await getDoc(doc(db, 'users', userId))
-    const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
-    const updatedUserIds = isInWishlistOfUserIds.filter(id => id !== userId)
-    const updatedUserNames = isInWishlistOfUserNames.filter(
-      name => name !== userName
+  try {
+    const colRef = collection(db, wishlistCollectionName)
+    const q = query(
+      colRef,
+      where('userId', '==', userId),
+      where('albumId', '==', albumId)
     )
-
-    if (updatedUserIds.length === 0) {
-      await deleteDoc(albumRef)
-    } else {
-      await updateDoc(albumRef, {
-        isInWishlistOfUserIds: updatedUserIds,
-        isInWishlistOfUserNames: updatedUserNames
-      })
-    }
+    const snapshot = await getDocs(q)
+    snapshot.forEach(async docSnap => {
+      await deleteDoc(docSnap.ref)
+    })
+    console.log('✅ Álbum eliminado de la wishlist en Firestore.')
+  } catch (error) {
+    console.error('❌ Error eliminando de wishlist:', error)
   }
 }
 
-// GET WISHLIST BY USER
+// GET WISHLIST
 export const getWishlist = async userId => {
-  const colRef = collection(db, albumsCollectionName)
-  const result = await getDocs(
-    query(colRef, where('isInWishlistOfUserIds', 'array-contains', userId))
-  )
-  return getArrayFromCollection(result)
+  try {
+    const colRef = collection(db, wishlistCollectionName)
+    const q = query(colRef, where('userId', '==', userId))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error('❌ Error obteniendo wishlist:', error)
+    return []
+  }
 }
