@@ -351,30 +351,52 @@ export const getAlbumsByUser = async userId => {
 }
 
 // GET ALBUM BY ID
-export const getAlbumById = async albumId => {
-  const albumRef = doc(db, albumsCollectionName, albumId)
-  const albumSnap = await getDoc(albumRef)
-
-  if (!albumSnap.exists()) {
-    throw new Error('Álbum no encontrado')
+export const getAlbumById = async id => {
+  if (!id) {
+    console.error('❌ Error: ID no válido para getAlbumById')
+    return null
   }
 
-  const albumData = albumSnap.data()
+  try {
+    const albumRef = doc(db, 'albums', String(id))
+    const albumSnap = await getDoc(albumRef)
 
-  console.log('📀 Datos obtenidos de Firebase:', albumData)
+    if (!albumSnap.exists()) {
+      console.warn(`⚠️ Álbum con ID ${id} no encontrado en Firestore`)
+      return null
+    }
 
-  // Obtener los nombres de los usuarios de la wishlist
-  const wishlistRef = collection(db, wishlistCollectionName)
-  const wishlistSnap = await getDocs(
-    query(wishlistRef, where('id', '==', albumId))
-  )
-
-  const wishlistUserNames = wishlistSnap.docs.flatMap(
-    doc => doc.data().userNames
-  )
-
-  return { ...albumData, wishlistUserNames }
+    return albumSnap.data()
+  } catch (error) {
+    console.error('❌ Error obteniendo álbum de Firestore:', error)
+    return null
+  }
 }
+
+// export const getAlbumById = async albumId => {
+//   const albumRef = doc(db, albumsCollectionName, albumId)
+//   const albumSnap = await getDoc(albumRef)
+
+//   if (!albumSnap.exists()) {
+//     throw new Error('Álbum no encontrado')
+//   }
+
+//   const albumData = albumSnap.data()
+
+//   console.log('📀 Datos obtenidos de Firebase:', albumData)
+
+//   // Obtener los nombres de los usuarios de la wishlist
+//   const wishlistRef = collection(db, wishlistCollectionName)
+//   const wishlistSnap = await getDocs(
+//     query(wishlistRef, where('id', '==', albumId))
+//   )
+
+//   const wishlistUserNames = wishlistSnap.docs.flatMap(
+//     doc => doc.data().userNames
+//   )
+
+//   return { ...albumData, wishlistUserNames }
+// }
 
 // CREATE COLLECTION
 export const createCollection = async obj => {

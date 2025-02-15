@@ -122,7 +122,12 @@ const AlbumItem = ({
       <p>{albumGenre}</p>
       <p>{albumLabel}</p>
 
-      {showDetailsLink && <Link to={`/album/${album.id}`}>Ver detalles</Link>}
+      {showDetailsLink && (
+        <>
+          {console.log('🔗 ID del álbum en el Link:', album.id)}
+          <Link to={`/album/${album.id}`}>Ver detalles</Link>
+        </>
+      )}
 
       <Button onClick={handleMyAlbumsClick} color="#2196f3">
         {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}

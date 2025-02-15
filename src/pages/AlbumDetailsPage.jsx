@@ -43,6 +43,8 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   const [userId, setUserId] = useState(null)
 
   useEffect(() => {
+    console.log('🔍 ID recibido para buscar álbum:', id)
+
     const currentUser = auth.currentUser
     if (currentUser) {
       setUserId(currentUser.uid)
@@ -51,6 +53,9 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
     const fetchAlbum = async () => {
       try {
         const albumData = await getAlbumById(id)
+        if (!albumData) {
+          throw new Error('Álbum no encontrado en Firestore')
+        }
         setAlbum(albumData)
       } catch (error) {
         console.error('Error fetching album:', error)
@@ -87,32 +92,36 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
     <AlbumContainer>
       <AlbumImage src={album.image} alt={album.name} />
       <AlbumTitle>{album.name}</AlbumTitle>
-      <p>{album.artist}</p>
-      <p>{album.year}</p>
-      <p>{album.genre}</p>
-      <p>{album.label}</p>
-      <p>{album.country}</p>
-      <p>{album.released}</p>
-      <p>{album.notes}</p>
+      <p>{album.artist || 'Artista desconocido'}</p>
+      <p>{album.year || 'Año desconocido'}</p>
+      <p>{album.genre || 'Género desconocido'}</p>
+      <p>{album.label || 'Sello desconocido'}</p>
+      <p>{album.country || 'País desconocido'}</p>
+      <p>{album.released || 'Fecha de lanzamiento desconocida'}</p>
+      <p>{album.notes || 'Sin notas'}</p>
       <p>
         {Array.isArray(album.formats)
           ? album.formats.join(', ')
-          : album.formats}
+          : album.formats || 'Formato desconocido'}
       </p>
-      <p>{album.lowest_price ? `$${album.lowest_price}` : 'N/A'}</p>
       <p>
-        {Array.isArray(album.styles) ? album.styles.join(', ') : album.styles}
+        {album.lowest_price ? `$${album.lowest_price}` : 'Precio no disponible'}
       </p>
-      <p>Rating: {album.rating}</p>
-      <p>Rating Count: {album.rating_count}</p>
-      <p>Credits: {album.credits}</p>
+      <p>
+        {Array.isArray(album.styles)
+          ? album.styles.join(', ')
+          : album.styles || 'Estilos no disponibles'}
+      </p>
+      <p>Rating: {album.rating || 'Sin rating'}</p>
+      <p>Rating Count: {album.rating_count || 0}</p>
+      <p>Credits: {album.credits || 'Créditos no disponibles'}</p>
       <a href={album.discogs_url} target="_blank" rel="noopener noreferrer">
         View on Discogs
       </a>
       <ol>
         {Array.isArray(album.tracklist)
           ? album.tracklist.map((track, index) => <li key={index}>{track}</li>)
-          : album.tracklist}
+          : 'Sin lista de pistas'}
       </ol>
       {album.videos?.length > 0 && (
         <div>
@@ -138,8 +147,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         </p>
       )}
 
-      {/* Mostrar el botón solo si el usuario ha añadido el álbum */}
-      {album.userIds.includes(userId) && (
+      {album.userIds?.includes(userId) && (
         <DeleteButton onClick={handleDeleteAlbum}>
           Eliminar de mis álbumes
         </DeleteButton>
