@@ -82,7 +82,7 @@ const Navigation = () => {
 
       const qAlbums = query(
         collection(db, 'albums'),
-        where('userId', '==', user.uid)
+        where('userIds', 'array-contains', user.uid)
       )
 
       const unsubscribeAlbums = onSnapshot(qAlbums, snapshot => {
