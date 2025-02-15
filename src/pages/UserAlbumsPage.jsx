@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getAlbumsByUser } from '../services/api'
+import { getAlbumsByUser, removeFromMyAlbums } from '../services/api'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import { Link } from 'react-router-dom'
@@ -17,9 +17,14 @@ const UserAlbumsPage = () => {
     }
   }, [user])
 
-  // 🆕 Nueva función para actualizar la lista tras eliminar un álbum
-  const handleRemoveFromMyAlbums = albumId => {
-    setAlbums(prevAlbums => prevAlbums.filter(album => album.id !== albumId))
+  // ✅ Hacerlo reactivo cuando un álbum es eliminado
+  const handleRemoveFromMyAlbums = async albumId => {
+    try {
+      await removeFromMyAlbums(user.uid, albumId)
+      setAlbums(prevAlbums => prevAlbums.filter(a => a.id !== albumId)) // 🔹 Eliminación reactiva
+    } catch (error) {
+      console.error('❌ Error eliminando álbum de mis albums:', error)
+    }
   }
 
   return (
@@ -32,7 +37,7 @@ const UserAlbumsPage = () => {
               key={album.id}
               album={album}
               userId={user?.uid}
-              updateAlbumsList={handleRemoveFromMyAlbums} // 🔹 Pasamos la función
+              handleRemoveFromMyAlbums={handleRemoveFromMyAlbums} // 🔹 Ahora es reactivo
             />
           ))}
         </div>
