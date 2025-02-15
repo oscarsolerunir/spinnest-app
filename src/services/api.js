@@ -132,10 +132,7 @@ export const addToMyAlbums = async (userId, album, updateState) => {
     const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
 
     if (albumDoc.exists()) {
-      console.log(
-        '🔄 El álbum ya existe en Firestore, actualizando usuarios...'
-      )
-
+      console.log('🔄 Álbum ya existe en Firebase, actualizando usuarios...')
       const existingData = albumDoc.data()
       const userIds = existingData.userIds || []
       const userNames = existingData.userNames || []
@@ -151,16 +148,41 @@ export const addToMyAlbums = async (userId, album, updateState) => {
       }
     } else {
       console.log(`🆕 Creando nuevo álbum (${album.id}) en Firestore.`)
-      await setDoc(albumRef, {
-        ...album,
+
+      const completeAlbumData = {
+        id: album.id,
+        name: album.name || 'Desconocido',
+        artist: album.artist || 'Desconocido',
+        year: album.year || 'Desconocido',
+        genre: album.genre || 'Desconocido',
+        label: album.label || 'Desconocido',
+        country: album.country || 'Desconocido',
+        released: album.released || 'Desconocido',
+        notes: album.notes || 'Sin notas',
+        formats: album.formats || [],
+        lowest_price: album.lowest_price || 0,
+        tracklist: album.tracklist || [],
+        styles: album.styles || [],
+        rating: album.rating || 0,
+        rating_count: album.rating_count || 0,
+        credits: album.credits || 'No disponible',
+        discogs_url: album.discogs_url || '',
+        videos: album.videos || [],
+        image: album.image || '',
+        all_images: album.all_images || [],
         userIds: [userId],
         userNames: [userName],
         addedAt: new Date().toISOString()
-      })
+      }
+
+      console.log('📀 Guardando en Firebase:', completeAlbumData)
+
+      await setDoc(albumRef, completeAlbumData, { merge: true }) // 🔹 ¡Usar `merge: true` evita borrar datos existentes!
+
       console.log('✅ Álbum añadido correctamente a Firestore.')
     }
 
-    if (updateState) updateState(true) // 🔄 Cambia el botón automáticamente a "Eliminar de mis albums"
+    if (updateState) updateState(true)
   } catch (error) {
     console.error('❌ Error añadiendo álbum a mis albums:', error)
   }
@@ -172,7 +194,7 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
     const albumIdStr = String(albumId) // ✅ Asegurar que el ID es string
     console.log(`🗑️ Eliminando álbum ID: ${albumIdStr} para usuario: ${userId}`)
 
-    const albumRef = doc(db, 'albums', albumIdStr)
+    const albumRef = doc(db, albumsCollectionName, albumIdStr)
     const albumDoc = await getDoc(albumRef)
 
     if (!albumDoc.exists()) {
@@ -214,16 +236,32 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
 }
 
 // CREATE ALBUM
-export const createAlbum = async obj => {
-  const colRef = collection(db, albumsCollectionName)
-  const data = await addDoc(colRef, obj)
-  return data.id
+export const createAlbum = async album => {
+  try {
+    const albumRef = doc(db, albumsCollectionName, String(album.id))
+
+    // 🔹 Verificar que el objeto tiene todos los datos antes de guardarlo
+    console.log('📀 Guardando en Firebase:', album)
+
+    await setDoc(albumRef, album)
+
+    console.log('✅ Álbum guardado en Firebase correctamente')
+  } catch (error) {
+    console.error('❌ Error guardando álbum:', error)
+    throw error
+  }
 }
 
 // UPDATE ALBUM
-export const updateAlbum = async (id, obj) => {
-  const docRef = doc(db, albumsCollectionName, id)
-  await updateDoc(docRef, obj)
+export const updateAlbum = async (albumId, updates) => {
+  try {
+    const albumRef = doc(db, albumsCollectionName, String(albumId))
+    await updateDoc(albumRef, updates)
+    console.log('✅ Álbum actualizado en Firebase:', updates)
+  } catch (error) {
+    console.error('❌ Error actualizando álbum:', error)
+    throw error
+  }
 }
 
 // DELETE ALBUM
@@ -322,6 +360,8 @@ export const getAlbumById = async albumId => {
   }
 
   const albumData = albumSnap.data()
+
+  console.log('📀 Datos obtenidos de Firebase:', albumData)
 
   // Obtener los nombres de los usuarios de la wishlist
   const wishlistRef = collection(db, wishlistCollectionName)

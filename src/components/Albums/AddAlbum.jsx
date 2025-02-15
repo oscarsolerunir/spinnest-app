@@ -97,10 +97,36 @@ const AddAlbum = ({ handleSaveAlbum }) => {
     return () => clearTimeout(delaySearch)
   }, [artist])
 
-  const onSelectAlbum = id => {
-    const selectedAlbum = searchResults.find(album => album.id === id)
+  const onSelectAlbum = async id => {
+    let selectedAlbum = searchResults.find(album => album.id === id)
     if (!selectedAlbum) return
 
+    console.log(
+      '🔄 Verificando si el álbum tiene todos los datos antes de guardar...',
+      selectedAlbum
+    )
+
+    // Si los datos no están completos, obtenemos los detalles desde Discogs
+    if (selectedAlbum.artist === 'Cargando...' || !selectedAlbum.tracklist) {
+      console.log('🔍 Obteniendo detalles completos para el álbum:', id)
+      const completeAlbum = await getAlbumDetails(id)
+
+      // Reemplazar el álbum en `searchResults` con los datos completos
+      setSearchResults(prevResults =>
+        prevResults.map(album => (album.id === id ? completeAlbum : album))
+      )
+
+      console.log('✅ Datos completos obtenidos y reemplazados:', completeAlbum)
+
+      // Guardar el álbum con datos completos
+      handleSaveAlbum(completeAlbum)
+      return
+    }
+
+    console.log(
+      '✅ Álbum ya tenía todos los datos, guardando directamente:',
+      selectedAlbum
+    )
     handleSaveAlbum(selectedAlbum)
   }
 
