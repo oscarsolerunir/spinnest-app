@@ -25,6 +25,7 @@ const AlbumsList = ({
   showCollectedBy = true,
   showDetailsLink = true,
   showWishlistButton = true,
+  showMyAlbumsButton = true, // Nueva prop para controlar el botón de "Mis Albums"
   wishlistOnly = false // Nueva prop
 }) => {
   const { removeAlbum } = useAlbums()
@@ -60,6 +61,7 @@ const AlbumsList = ({
             showCollectedBy={showCollectedBy}
             showDetailsLink={showDetailsLink}
             showWishlistButton={showWishlistButton}
+            showMyAlbumsButton={showMyAlbumsButton} // Reenvío de la nueva prop
             wishlistOnly={wishlistOnly} // Reenvío de la prop
           />
         )

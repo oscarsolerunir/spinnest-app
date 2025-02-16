@@ -1,4 +1,3 @@
-// AlbumItem.jsx
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -55,6 +54,7 @@ const AlbumItem = ({
   showCollectedBy = true,
   showDetailsLink = true,
   showWishlistButton = true, // Controla si se muestra el botón de wishlist
+  showMyAlbumsButton = true, // Nueva prop para mostrar/ocultar el botón de "Mis Albums"
   wishlistOnly = false // Si true, asumimos que estamos en WishlistPage (solo opción de eliminar)
 }) => {
   const [currentUser] = useAuthState(auth)
@@ -65,11 +65,9 @@ const AlbumItem = ({
   const [isInMyAlbums, setIsInMyAlbums] = useState(
     album.userIds?.includes(currentUser?.uid) || false
   )
-  const [isInWishlist, setIsInWishlist] = useState(
-    album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
-  )
+  const [isInWishlist, setIsInWishlist] = useState(false)
 
-  // Efecto para actualizar los estados cuando cambie la prop "album" o el usuario
+  // Efecto para actualizar los estados cuando cambie el álbum, el usuario o la wishlist
   useEffect(() => {
     setIsInMyAlbums(album.userIds?.includes(currentUser?.uid) || false)
     // Verificamos si el álbum ya está en la wishlist usando el contexto
@@ -206,9 +204,12 @@ const AlbumItem = ({
         </>
       )}
 
-      <Button onClick={handleMyAlbumsClick} color="#2196f3">
-        {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
-      </Button>
+      {/* Mostrar el botón de "Mis Albums" solo si showMyAlbumsButton es true */}
+      {showMyAlbumsButton && (
+        <Button onClick={handleMyAlbumsClick} color="#2196f3">
+          {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
+        </Button>
+      )}
 
       {shouldShowWishlistButton && (
         <Button onClick={handleWishlistClick} color="#ff9800">

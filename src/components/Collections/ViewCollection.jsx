@@ -1,8 +1,10 @@
+// ViewCollection.jsx
 import { useEffect, useState } from 'react'
 import { getCollectionById } from '../../services/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
+import AlbumsList from '../../components/Albums/AlbumsList' // Asegúrate de la ruta correcta
 
 const ViewCollection = () => {
   const { id } = useParams()
@@ -55,14 +57,14 @@ const ViewCollection = () => {
         {collection.privacy === 'public' ? 'Pública' : 'Privada'}
       </p>
       <h2>Álbums:</h2>
-      <ul>
-        {collection.albums.map(album => (
-          <li key={album.id}>
-            <img src={album.image} alt={album.name} width="50" height="50" />
-            {album.name}
-          </li>
-        ))}
-      </ul>
+      {/* Utilizamos AlbumsList para mostrar los álbumes de la colección sin el botón "Mis Albums" */}
+      <AlbumsList
+        albums={collection.albums}
+        showCollectedBy={false}
+        showDetailsLink={true}
+        showWishlistButton={false} // Ajusta según convenga
+        showMyAlbumsButton={false} // Oculta el botón de "Mis Albums"
+      />
       {isOwner && (
         <button onClick={() => navigate(`/edit-collection/${id}`)}>
           Editar Colección
