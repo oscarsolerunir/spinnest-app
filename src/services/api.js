@@ -148,7 +148,6 @@ export const addToMyAlbums = async (userId, album, updateState) => {
       }
     } else {
       console.log(`🆕 Creando nuevo álbum (${album.id}) en Firestore.`)
-
       const completeAlbumData = {
         id: album.id,
         name: album.name || 'Desconocido',
@@ -178,12 +177,21 @@ export const addToMyAlbums = async (userId, album, updateState) => {
 
       console.log('📀 Guardando en Firebase:', completeAlbumData)
 
-      await setDoc(albumRef, completeAlbumData, { merge: true }) // 🔹 ¡Usar `merge: true` evita borrar datos existentes!
-
+      await setDoc(albumRef, completeAlbumData, { merge: true })
       console.log('✅ Álbum añadido correctamente a Firestore.')
     }
 
     if (updateState) updateState(true)
+
+    // Nueva lógica: eliminar el álbum de la wishlist si estuviera allí
+    try {
+      await removeFromWishlist(userId, album.id)
+      console.log(
+        '✅ Álbum removido de la wishlist tras ser añadido a mis albums.'
+      )
+    } catch (error) {
+      console.error('⚠️ Error removiendo álbum de wishlist:', error)
+    }
   } catch (error) {
     console.error('❌ Error añadiendo álbum a mis albums:', error)
   }

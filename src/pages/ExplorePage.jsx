@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import {
-  getCollections,
+  addToMyAlbums,
   addToWishlist,
-  removeFromWishlist
+  removeFromWishlist,
+  getCollections
 } from '../services/api'
 import { useNavigate } from 'react-router-dom'
 import { useAlbums } from '../context/AlbumsContext'
@@ -13,7 +14,7 @@ import ListCollections from '../components/Collections/ListCollections'
 import UserList from '../components/User/UserList'
 
 const ExplorePage = () => {
-  const { albums, fetchAllAlbums } = useAlbums()
+  const { allAlbums, fetchAllAlbums, setAlbums } = useAlbums()
   const [collections, setCollections] = useState([])
   const [user] = useAuthState(auth)
   const navigate = useNavigate()
@@ -56,16 +57,35 @@ const ExplorePage = () => {
     }
   }
 
+  // En ExplorePage.jsx, suponiendo que 'albums' es el estado de la lista de álbumes
+  const handleAddToMyAlbums = async album => {
+    try {
+      await addToMyAlbums(user.uid, album)
+      // Actualizamos localmente: agregamos user.uid a la propiedad userIds del álbum
+      setAlbums(prevAlbums =>
+        prevAlbums.map(a =>
+          a.id === album.id
+            ? { ...a, userIds: [...(a.userIds || []), user.uid] }
+            : a
+        )
+      )
+      console.log('✅ Álbum añadido a mis albums con éxito.')
+    } catch (error) {
+      console.error('⚠️ Error añadiendo álbum:', error)
+    }
+  }
+
   return (
     <div>
       <h1>Explorar</h1>
       <h2>Todos los álbumes</h2>
       <AlbumsList
-        albums={albums}
+        albums={allAlbums}
         showCollectedBy={false}
-        showWishlistButton={true} // Se indica que se deben mostrar los botones de wishlist
+        showWishlistButton={true}
         handleAddToWishlist={handleAddToWishlist}
         handleRemoveFromWishlist={handleRemoveFromWishlist}
+        handleAddToMyAlbums={handleAddToMyAlbums}
       />
 
       <h2>Todas las colecciones</h2>

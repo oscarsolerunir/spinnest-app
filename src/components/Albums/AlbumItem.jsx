@@ -1,9 +1,9 @@
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { addToMyAlbums, removeFromMyAlbums } from '../../services/api'
 import { auth } from '../../services/firebase'
-import { useState, useEffect } from 'react'
 import { useWishlist } from '../../context/WishlistContext'
 
 const AlbumContainer = styled.div`
@@ -54,23 +54,27 @@ const AlbumItem = ({
   showCollectedBy = true,
   showDetailsLink = true,
   showWishlistButton = true, // Controla si se muestra el botón de wishlist
-  wishlistOnly = false // Si true, indica que estamos en WishlistPage
+  wishlistOnly = false // Si true, asumimos que estamos en WishlistPage
 }) => {
   const [currentUser] = useAuthState(auth)
   const { wishlist, addToWishlistContext, removeFromWishlistContext } =
     useWishlist()
 
-  // Estado para "mis albums" basado en album.userIds
+  // Estado para "mis álbumes" basado en album.userIds
   const [isInMyAlbums, setIsInMyAlbums] = useState(
     album.userIds?.includes(currentUser?.uid) || false
   )
-  // Estado para wishlist: si wishlistOnly es true, forzamos true; en otro caso, se calcula
+  // Estado para wishlist basado en album.isInWishlistOfUserIds o en el contexto
   const [isInWishlist, setIsInWishlist] = useState(
-    wishlistOnly
-      ? true
-      : album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
+    album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
   )
 
+  // Actualizar isInMyAlbums cuando cambie album.userIds o el currentUser
+  useEffect(() => {
+    setIsInMyAlbums(album.userIds?.includes(currentUser?.uid) || false)
+  }, [album.userIds, currentUser?.uid])
+
+  // Actualizar isInWishlist cuando cambie el contexto o la prop wishlistOnly
   useEffect(() => {
     if (wishlistOnly) {
       setIsInWishlist(true)
@@ -78,6 +82,13 @@ const AlbumItem = ({
       setIsInWishlist(wishlist.some(item => item.albumId === album.id))
     }
   }, [wishlist, album.id, wishlistOnly])
+
+  // ** NUEVO useEffect **: Si el álbum ya está en "mis álbumes", forzamos que no esté en la wishlist
+  useEffect(() => {
+    if (album.userIds?.includes(currentUser?.uid)) {
+      setIsInWishlist(false)
+    }
+  }, [album.userIds, currentUser?.uid])
 
   if (!album || !album.id || !album.name) {
     console.error('⚠️ Error: El álbum es inválido:', album)
@@ -94,7 +105,7 @@ const AlbumItem = ({
     ? album.label.join(', ')
     : album.label || 'Sello desconocido'
 
-  // Función para "Mis Albums"
+  // Función para gestionar "Mis Álbumes"
   const handleMyAlbumsClick = async e => {
     e.stopPropagation()
     e.preventDefault()
@@ -113,6 +124,7 @@ const AlbumItem = ({
       console.log(
         `🗑️ Eliminando álbum ID: ${album.id} para usuario: ${currentUser.uid}`
       )
+
       try {
         await removeFromMyAlbums(currentUser.uid, album.id)
         setIsInMyAlbums(false)
@@ -127,6 +139,7 @@ const AlbumItem = ({
       console.log(
         `📀 Añadiendo álbum ID: ${album.id} para usuario: ${currentUser.uid}`
       )
+
       try {
         await addToMyAlbums(currentUser.uid, album)
         setIsInMyAlbums(true)
@@ -137,7 +150,7 @@ const AlbumItem = ({
     }
   }
 
-  // Función para gestionar la wishlist
+  // Función para gestionar la acción de wishlist
   const handleWishlistClick = async e => {
     e.stopPropagation()
     e.preventDefault()
@@ -163,6 +176,7 @@ const AlbumItem = ({
         if (handleAddToWishlist) {
           await handleAddToWishlist(album)
           setIsInWishlist(true)
+          // Agregar al contexto
           addToWishlistContext({
             albumId: album.id,
             albumName: album.name,
