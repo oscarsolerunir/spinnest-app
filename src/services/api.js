@@ -588,7 +588,7 @@ export const addToWishlist = async (userId, album, updateState) => {
 // REMOVE FROM WISHLIST
 export const removeFromWishlist = async (userId, albumId) => {
   try {
-    const colRef = collection(db, wishlistCollectionName)
+    const colRef = collection(db, 'wishlist')
     const q = query(
       colRef,
       where('userId', '==', userId),
@@ -601,6 +601,7 @@ export const removeFromWishlist = async (userId, albumId) => {
     console.log('✅ Álbum eliminado de la wishlist en Firestore.')
   } catch (error) {
     console.error('❌ Error eliminando de wishlist:', error)
+    throw error
   }
 }
 
