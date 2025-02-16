@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback
+} from 'react'
 import {
   collection,
   onSnapshot,
@@ -97,23 +103,26 @@ export const AlbumsProvider = ({ children }) => {
   }
 
   // Función para obtener los álbumes del feed (usuarios seguidos)
-  const fetchFeedAlbums = async followingIds => {
-    if (!currentUser || followingIds.length === 0) return
-    try {
-      const q = query(
-        collection(db, 'albums'),
-        where('userIds', 'array-contains-any', followingIds)
-      )
-      const snapshot = await getDocs(q)
-      const albumsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setFeedAlbums(albumsData)
-    } catch (error) {
-      console.error('❌ Error fetching feed albums:', error)
-    }
-  }
+  const fetchFeedAlbums = useCallback(
+    async followingIds => {
+      if (!currentUser || followingIds.length === 0) return
+      try {
+        const q = query(
+          collection(db, 'albums'),
+          where('userIds', 'array-contains-any', followingIds)
+        )
+        const snapshot = await getDocs(q)
+        const albumsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setFeedAlbums(albumsData)
+      } catch (error) {
+        console.error('❌ Error fetching feed albums:', error)
+      }
+    },
+    [currentUser]
+  ) // La función se volverá a crear solo si currentUser cambia
 
   // Funciones para actualizar el estado local
   const addAlbum = album => {

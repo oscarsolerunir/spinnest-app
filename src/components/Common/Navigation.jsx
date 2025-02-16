@@ -98,7 +98,7 @@ const Navigation = () => {
   const [collectionsCount, setCollectionsCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
   const [newContent, setNewContent] = useState(
-    localStorage.getItem('feedVisited') === 'false'
+    localStorage.getItem('newContent') === 'true'
   )
   const location = useLocation()
 
@@ -165,6 +165,49 @@ const Navigation = () => {
       unsubscribes.push(unsubscribe)
     })
 
+    // Escuchar cambios en los álbumes y colecciones de los usuarios seguidos
+    const followingQuery = query(
+      collection(db, 'follows'),
+      where('followerId', '==', user.uid)
+    )
+
+    const unsubscribeFollowing = onSnapshot(followingQuery, snapshot => {
+      const followingIds = snapshot.docs.map(doc => doc.data().followingId)
+
+      if (followingIds.length > 0) {
+        const albumsQuery = query(
+          collection(db, 'albums'),
+          where('userIds', 'array-contains-any', followingIds)
+        )
+
+        const collectionsQuery = query(
+          collection(db, 'collections'),
+          where('userId', 'in', followingIds)
+        )
+
+        const unsubscribeAlbums = onSnapshot(albumsQuery, snapshot => {
+          if (!snapshot.empty) {
+            setNewContent(true)
+            localStorage.setItem('newContent', 'true')
+          }
+        })
+
+        const unsubscribeCollections = onSnapshot(
+          collectionsQuery,
+          snapshot => {
+            if (!snapshot.empty) {
+              setNewContent(true)
+              localStorage.setItem('newContent', 'true')
+            }
+          }
+        )
+
+        unsubscribes.push(unsubscribeAlbums, unsubscribeCollections)
+      }
+    })
+
+    unsubscribes.push(unsubscribeFollowing)
+
     return () => {
       console.log('♻️ Limpiando suscripciones de Firestore...')
       unsubscribes.forEach(unsub => unsub())
@@ -174,7 +217,7 @@ const Navigation = () => {
   // Desaparecer el mensaje "¡Nuevos!" al visitar el feed
   useEffect(() => {
     if (location.pathname === '/feed') {
-      localStorage.setItem('feedVisited', 'true')
+      localStorage.setItem('newContent', 'false')
       setNewContent(false)
     }
   }, [location.pathname])
