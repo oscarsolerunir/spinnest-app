@@ -185,8 +185,21 @@ const Navigation = () => {
           where('userId', 'in', followingIds)
         )
 
+        // Obtenemos la última visita al feed del localStorage o un valor muy antiguo
+        const lastFeedVisitStr = localStorage.getItem('lastFeedVisit')
+        const lastFeedVisit = lastFeedVisitStr
+          ? new Date(lastFeedVisitStr)
+          : new Date(0)
+
         const unsubscribeAlbums = onSnapshot(albumsQuery, snapshot => {
-          if (!snapshot.empty) {
+          const newAlbums = snapshot.docs.filter(doc => {
+            const data = doc.data()
+            if (!data.addedAt) return false
+            const addedAt = new Date(data.addedAt)
+            return addedAt > lastFeedVisit
+          })
+
+          if (newAlbums.length > 0) {
             setNewContent(true)
             localStorage.setItem('newContent', 'true')
           }
@@ -195,7 +208,14 @@ const Navigation = () => {
         const unsubscribeCollections = onSnapshot(
           collectionsQuery,
           snapshot => {
-            if (!snapshot.empty) {
+            const newCollections = snapshot.docs.filter(doc => {
+              const data = doc.data()
+              if (!data.createdAt) return false
+              const createdAt = new Date(data.createdAt)
+              return createdAt > lastFeedVisit
+            })
+
+            if (newCollections.length > 0) {
               setNewContent(true)
               localStorage.setItem('newContent', 'true')
             }
@@ -214,9 +234,11 @@ const Navigation = () => {
     }
   }, [user])
 
-  // Desaparecer el mensaje "¡Nuevos!" al visitar el feed
+  // Al visitar el feed, actualizamos la última visita y ocultamos el mensaje "¡Nuevos!"
   useEffect(() => {
     if (location.pathname === '/feed') {
+      const now = new Date().toISOString()
+      localStorage.setItem('lastFeedVisit', now)
       localStorage.setItem('newContent', 'false')
       setNewContent(false)
     }
