@@ -7,7 +7,8 @@ import { Link } from 'react-router-dom'
 import AlbumsList from '../components/Albums/AlbumsList'
 
 const UserAlbumsPage = () => {
-  const { albums, fetchUserAlbums, removeAlbum } = useAlbums()
+  // Usamos userAlbums en lugar de albums
+  const { userAlbums, fetchUserAlbums, removeAlbum } = useAlbums()
   const [user] = useAuthState(auth)
 
   useEffect(() => {
@@ -16,11 +17,11 @@ const UserAlbumsPage = () => {
     }
   }, [user])
 
-  // ✅ Función para eliminar álbum de manera reactiva
+  // Función para eliminar álbum de manera reactiva
   const handleRemoveFromMyAlbums = async albumId => {
     try {
       await removeFromMyAlbums(user.uid, albumId)
-      removeAlbum(albumId) // 🔹 Actualiza el estado global en AlbumsContext
+      removeAlbum(albumId) // Actualiza el estado global en AlbumsContext
     } catch (error) {
       console.error('❌ Error eliminando álbum de mis albums:', error)
     }
@@ -28,10 +29,10 @@ const UserAlbumsPage = () => {
 
   return (
     <div>
-      <h1>Tus albums</h1>
-      {albums.length > 0 ? (
+      <h1>Tus álbumes</h1>
+      {userAlbums.length > 0 ? (
         <AlbumsList
-          albums={albums}
+          albums={userAlbums}
           handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
         />
       ) : (

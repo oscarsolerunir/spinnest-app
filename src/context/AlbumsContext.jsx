@@ -109,7 +109,28 @@ export const AlbumsProvider = ({ children }) => {
   }
 
   const removeAlbum = albumId => {
-    setAllAlbums(prev => prev.filter(album => album.id !== albumId))
+    // Actualizamos la lista global "allAlbums":
+    setAllAlbums(prev =>
+      prev
+        .map(album => {
+          if (album.id === albumId && album.userIds) {
+            // Eliminamos el id del usuario actual de userIds
+            const updatedUserIds = album.userIds.filter(
+              id => id !== currentUser.uid
+            )
+            // Si tras quitar el id no queda nadie, eliminamos el álbum del listado global
+            if (updatedUserIds.length === 0) {
+              return null
+            }
+            // Sino, devolvemos el álbum actualizado
+            return { ...album, userIds: updatedUserIds }
+          }
+          return album
+        })
+        .filter(album => album !== null)
+    )
+
+    // En el listado de "mis álbumes" (userAlbums) sí lo removemos
     setUserAlbums(prev => prev.filter(album => album.id !== albumId))
   }
 

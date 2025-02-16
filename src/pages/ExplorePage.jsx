@@ -61,15 +61,8 @@ const ExplorePage = () => {
   const handleAddToMyAlbums = async album => {
     try {
       await addToMyAlbums(user.uid, album)
-      // Actualizamos localmente: agregamos user.uid a la propiedad userIds del álbum
-      setAlbums(prevAlbums =>
-        prevAlbums.map(a =>
-          a.id === album.id
-            ? { ...a, userIds: [...(a.userIds || []), user.uid] }
-            : a
-        )
-      )
       console.log('✅ Álbum añadido a mis albums con éxito.')
+      // Eliminamos el setAlbums manual, dejando que el onSnapshot del contexto actualice la lista.
     } catch (error) {
       console.error('⚠️ Error añadiendo álbum:', error)
     }
