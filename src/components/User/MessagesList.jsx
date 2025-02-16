@@ -23,9 +23,7 @@ const UserConversationsPage = () => {
   useEffect(() => {
     if (user) {
       const fetchConversations = async () => {
-        console.log('Fetching conversations for user:', user.uid)
         const convos = await getConversationsByUser(user.uid)
-        console.log('Conversations fetched:', convos)
         const convosWithUserNames = await Promise.all(
           convos.map(async convo => {
             const otherUserId = convo.participants.find(uid => uid !== user.uid)
@@ -36,7 +34,6 @@ const UserConversationsPage = () => {
             return { ...convo, userName }
           })
         )
-        console.log('Conversations with user names:', convosWithUserNames)
         setConversations(convosWithUserNames)
       }
 
@@ -48,7 +45,6 @@ const UserConversationsPage = () => {
       )
       const unsubscribe = onSnapshot(q, snapshot => {
         const convos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        console.log('Snapshot conversations:', convos)
         const convosWithUserNames = Promise.all(
           convos.map(async convo => {
             const otherUserId = convo.participants.find(uid => uid !== user.uid)
@@ -67,21 +63,22 @@ const UserConversationsPage = () => {
   }, [user])
 
   const handleConversationClick = async conversationId => {
-    console.log('Marking conversation as read:', conversationId)
     await markConversationAsRead(conversationId)
     navigate(`/messages/${conversationId}`)
   }
 
   return (
-    <div>
-      <h2>Mensajes</h2>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Mensajes</h2>
       {conversations.length > 0 ? (
-        <ul>
+        <ul className="space-y-2">
           {conversations.map(convo => (
             <li
               key={convo.id}
               onClick={() => handleConversationClick(convo.id)}
-              style={{ fontWeight: convo.read ? 'normal' : 'bold' }} // Indicador visual para conversaciones no leídas
+              className={`p-2 border rounded cursor-pointer ${
+                convo.read ? 'font-normal' : 'font-bold'
+              }`}
             >
               <strong>{convo.userName}</strong> - {convo.lastMessage} -{' '}
               {convo.read ? 'Leído' : 'No leído'}

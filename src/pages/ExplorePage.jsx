@@ -14,7 +14,7 @@ import ListCollections from '../components/Collections/ListCollections'
 import UserList from '../components/User/UserList'
 
 const ExplorePage = () => {
-  const { allAlbums, fetchAllAlbums, setAlbums } = useAlbums()
+  const { allAlbums, fetchAllAlbums } = useAlbums()
   const [collections, setCollections] = useState([])
   const [user] = useAuthState(auth)
   const navigate = useNavigate()
@@ -37,12 +37,9 @@ const ExplorePage = () => {
     navigate(`/collection/${id}`, { state: { from: '/' } })
   }
 
-  // Funciones para la wishlist
   const handleAddToWishlist = async album => {
     try {
       await addToWishlist(user.uid, album)
-      console.log('Álbum añadido a wishlist')
-      // Aquí podrías actualizar el estado local o el contexto, según lo necesites
     } catch (error) {
       console.error('Error añadiendo álbum a wishlist:', error)
     }
@@ -51,28 +48,23 @@ const ExplorePage = () => {
   const handleRemoveFromWishlist = async albumId => {
     try {
       await removeFromWishlist(user.uid, albumId)
-      console.log('Álbum eliminado de wishlist')
-      // Aquí podrías actualizar el estado local o el contexto, según lo necesites
     } catch (error) {
       console.error('Error eliminando álbum de wishlist:', error)
     }
   }
 
-  // En ExplorePage.jsx, suponiendo que 'albums' es el estado de la lista de álbumes
   const handleAddToMyAlbums = async album => {
     try {
       await addToMyAlbums(user.uid, album)
-      console.log('✅ Álbum añadido a mis albums con éxito.')
-      // Eliminamos el setAlbums manual, dejando que el onSnapshot del contexto actualice la lista.
     } catch (error) {
-      console.error('⚠️ Error añadiendo álbum:', error)
+      console.error('Error añadiendo álbum:', error)
     }
   }
 
   return (
-    <div>
-      <h1>Explorar</h1>
-      <h2>Todos los álbumes</h2>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Explorar</h1>
+      <h2 className="text-xl font-semibold mb-2">Todos los álbumes</h2>
       <AlbumsList
         albums={allAlbums}
         showCollectedBy={false}
@@ -82,14 +74,14 @@ const ExplorePage = () => {
         handleAddToMyAlbums={handleAddToMyAlbums}
       />
 
-      <h2>Todas las colecciones</h2>
+      <h2 className="text-xl font-semibold mb-2">Todas las colecciones</h2>
       <ListCollections
         collections={collections}
         onClick={handleCollectionClick}
         allUsers
       />
 
-      <h2>Todos los usuarios</h2>
+      <h2 className="text-xl font-semibold mb-2">Todos los usuarios</h2>
       {user ? (
         <UserList userId={user.uid} />
       ) : (

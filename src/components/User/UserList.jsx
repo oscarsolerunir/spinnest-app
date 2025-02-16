@@ -57,19 +57,15 @@ const UserList = ({ userId, filterType }) => {
 
   const fetchUsers = async () => {
     try {
-      console.log('🔍 Obteniendo lista de usuarios...')
       const data = await getUsers()
-      console.log('📋 Usuarios obtenidos:', data)
 
       if (!data || data.length === 0) {
-        console.warn('⚠️ No se encontraron usuarios en la base de datos.')
         setUsers([])
         return
       }
 
       setUsers(data.filter(u => u.id !== userId))
 
-      // Obtener albums y colecciones para cada usuario
       const albumsPromises = data.map(async user => {
         const albums = await getAlbumsByUser(user.id)
         return { userId: user.id, count: albums.length }
@@ -97,7 +93,7 @@ const UserList = ({ userId, filterType }) => {
       setUserAlbums(albumsMap)
       setUserCollections(collectionsMap)
     } catch (error) {
-      console.error('❌ Error obteniendo usuarios:', error)
+      console.error('Error obteniendo usuarios:', error)
     }
   }
 
@@ -159,42 +155,54 @@ const UserList = ({ userId, filterType }) => {
   return (
     <div>
       {filteredUsersList.length > 0 ? (
-        <ul>
+        <ul className="space-y-4">
           {filteredUsersList.map(u => (
             <li
               key={u.id}
               onClick={() => handleUserClick(u.id)}
-              style={{ cursor: 'pointer' }}
+              className="cursor-pointer p-4 border rounded hover:bg-gray-100"
             >
-              {u.name} - {userAlbums[u.id] || 0} álbums y{' '}
-              {userCollections[u.id] || 0} colecciones
-              {following.some(f => f.followingId === u.id) ? (
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    handleUnfollow(u.id)
-                  }}
-                >
-                  Dejar de seguir
-                </button>
-              ) : (
-                <button
-                  onClick={e => {
-                    e.stopPropagation()
-                    handleFollow(u.id)
-                  }}
-                >
-                  Seguir
-                </button>
-              )}
-              <button
-                onClick={e => {
-                  e.stopPropagation()
-                  handleSendMessage(u.id)
-                }}
-              >
-                Enviar mensaje
-              </button>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-bold">{u.name}</p>
+                  <p>
+                    {userAlbums[u.id] || 0} álbums y{' '}
+                    {userCollections[u.id] || 0} colecciones
+                  </p>
+                </div>
+                <div className="flex space-x-2">
+                  {following.some(f => f.followingId === u.id) ? (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleUnfollow(u.id)
+                      }}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Dejar de seguir
+                    </button>
+                  ) : (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleFollow(u.id)
+                      }}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Seguir
+                    </button>
+                  )}
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      handleSendMessage(u.id)
+                    }}
+                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  >
+                    Enviar mensaje
+                  </button>
+                </div>
+              </div>
             </li>
           ))}
         </ul>

@@ -10,8 +10,8 @@ const FollowingPage = () => {
   }
 
   return (
-    <div>
-      <h1>Siguiendo</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Siguiendo</h1>
       <UserList userId={user.uid} filterType="following" />
     </div>
   )

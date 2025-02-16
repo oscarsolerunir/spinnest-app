@@ -26,8 +26,7 @@ const LoginPage = () => {
       await signInWithEmailAndPassword(auth, email, password)
       alert('User logged in successfully')
       navigate('/')
-    } catch (error) {
-      console.error('Error logging in user:', error)
+    } catch {
       setError(
         'Error logging in user. Please check your credentials and try again.'
       )
@@ -37,35 +36,48 @@ const LoginPage = () => {
   }
 
   return (
-    <div>
-      <h1>Bienvenido a Spinnest</h1>
-      <p>Comparte tu colección de discos con tus amigos</p>
-      <form onSubmit={handleLogin}>
-        <h2>Login</h2>
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow-md">
+      <h1 className="text-3xl font-bold mb-4">Bienvenido a Spinnest</h1>
+      <p className="mb-4">Comparte tu colección de discos con tus amigos</p>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <h2 className="text-2xl font-semibold mb-2">Login</h2>
         <div>
-          <label>Email:</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Email:
+          </label>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Password:
+          </label>
           <input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" disabled={loading}>
+        {error && <p className="text-red-500">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
           {loading ? 'Logging in...' : 'Login'}
         </button>
-        <p>
-          Not have an account? <Link to="/register">Register here</Link>
+        <p className="mt-4">
+          Not have an account?{' '}
+          <Link to="/register" className="text-blue-500 hover:underline">
+            Register here
+          </Link>
         </p>
       </form>
     </div>

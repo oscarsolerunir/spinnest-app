@@ -23,8 +23,7 @@ const EditCollection = () => {
       try {
         const data = await getCollectionById(id)
         setCollection(data)
-      } catch (error) {
-        console.error('Error fetching collection:', error)
+      } catch {
         setError(
           'Hubo un error al cargar la colección. Por favor, inténtalo de nuevo.'
         )
@@ -37,8 +36,7 @@ const EditCollection = () => {
       try {
         const data = await getAlbumsByUser(user.uid)
         setUserAlbums(data)
-      } catch (error) {
-        console.error('Error fetching user albums:', error)
+      } catch {
         setError(
           'Hubo un error al cargar los álbumes del usuario. Por favor, inténtalo de nuevo.'
         )
@@ -59,8 +57,7 @@ const EditCollection = () => {
       await updateCollection(id, collectionData)
       alert('La colección se ha actualizado con éxito.')
       navigate(`/collections`)
-    } catch (error) {
-      console.error('Error updating collection:', error)
+    } catch {
       setError(
         'Hubo un error actualizando la colección. Por favor, inténtalo de nuevo.'
       )
@@ -72,8 +69,7 @@ const EditCollection = () => {
       await deleteCollection(id)
       alert('La colección se ha eliminado con éxito.')
       navigate('/collections')
-    } catch (error) {
-      console.error('Error deleting collection:', error)
+    } catch {
       setError(
         'Hubo un error eliminando la colección. Por favor, inténtalo de nuevo.'
       )
@@ -85,12 +81,12 @@ const EditCollection = () => {
   }
 
   if (error) {
-    return <p style={{ color: 'red' }}>{error}</p>
+    return <p className="text-red-500">{error}</p>
   }
 
   return (
-    <div>
-      <h1>Editar Colección</h1>
+    <div className="max-w-2xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Editar Colección</h1>
       <CollectionForm
         initialName={collection.name}
         initialDescription={collection.description}

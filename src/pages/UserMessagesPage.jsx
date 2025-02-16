@@ -21,11 +21,7 @@ const UserMessagesPage = () => {
         const userDoc = await getDoc(doc(db, 'users', otherUserId))
         if (userDoc.exists()) {
           setUserName(userDoc.data().name)
-        } else {
-          console.error('No such user!')
         }
-      } else {
-        console.error('No such conversation!')
       }
     }
 
@@ -33,8 +29,8 @@ const UserMessagesPage = () => {
   }, [conversationId])
 
   return (
-    <div>
-      <h2>Mensajes con {userName}</h2>
+    <div className="p-4">
+      <h2 className="text-xl font-semibold mb-4">Mensajes con {userName}</h2>
       <UserMessages conversationId={conversationId} />
     </div>
   )

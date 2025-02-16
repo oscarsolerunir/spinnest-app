@@ -12,8 +12,6 @@ const AddAlbumPage = () => {
       return
     }
 
-    console.log('📀 Álbum recibido para guardar:', album)
-
     const normalizedAlbum = {
       id: album.id,
       name: album.name || 'Desconocido',
@@ -37,17 +35,12 @@ const AddAlbumPage = () => {
       all_images: album.all_images || []
     }
 
-    console.log(
-      '📀 Normalized Album antes de guardar en Firebase:',
-      normalizedAlbum
-    )
-
     await addToMyAlbums(user.uid, normalizedAlbum)
   }
 
   return (
-    <div>
-      <h1>Añadir un álbum</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Añadir un álbum</h1>
       <AddAlbum handleSaveAlbum={handleSaveAlbum} />
     </div>
   )

@@ -14,8 +14,7 @@ const AddCollectionPage = () => {
       try {
         const data = await getAlbumsByUser(user.uid)
         setUserAlbums(data)
-      } catch (error) {
-        console.error('Error fetching user albums:', error)
+      } catch {
         setError(
           'Hubo un error al cargar los álbumes del usuario. Por favor, inténtalo de nuevo.'
         )
@@ -43,8 +42,7 @@ const AddCollectionPage = () => {
       await createCollection(newCollection)
       alert('La colección se ha creado con éxito.')
       window.location.href = '/collections'
-    } catch (error) {
-      console.error('Error creando la colección:', error)
+    } catch {
       setError(
         'Hubo un error creando la colección. Por favor, inténtalo de nuevo.'
       )
@@ -56,12 +54,12 @@ const AddCollectionPage = () => {
   }
 
   if (error) {
-    return <p style={{ color: 'red' }}>{error}</p>
+    return <p className="text-red-500">{error}</p>
   }
 
   return (
-    <div>
-      <h1>Añadir colección</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Añadir colección</h1>
       <CollectionForm
         userAlbums={userAlbums}
         onSubmit={handleSubmit}

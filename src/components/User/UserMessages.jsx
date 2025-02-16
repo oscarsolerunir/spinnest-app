@@ -30,7 +30,6 @@ const UserMessages = ({ conversationId }) => {
         const msgs = await getMessagesByConversation(conversationId)
         setMessages(msgs)
 
-        // Obtener nombres de usuarios
         const userIds = new Set(msgs.map(msg => msg.senderId))
         const names = {}
         for (const userId of userIds) {
@@ -51,10 +50,8 @@ const UserMessages = ({ conversationId }) => {
         setIsTyping(typingUserIds.some(uid => uid !== user.uid))
       })
 
-      // Marcar la conversación como leída
       markConversationAsRead(conversationId)
 
-      // Suscribirse a los cambios en los mensajes
       const messagesRef = collection(db, 'messages')
       const q = query(
         messagesRef,
@@ -65,7 +62,6 @@ const UserMessages = ({ conversationId }) => {
         const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         setMessages(msgs)
 
-        // Actualizar nombres de usuarios
         const userIds = new Set(msgs.map(msg => msg.senderId))
         const names = { ...userNames }
         for (const userId of userIds) {
@@ -81,7 +77,7 @@ const UserMessages = ({ conversationId }) => {
 
       return () => {
         unsubscribe()
-        remove(ref(rtdb, `typing/${conversationId}/${user.uid}`)) // Limpiar el estado de escritura al desmontar el componente
+        remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
       }
     }
   }, [user, conversationId])
@@ -89,10 +85,10 @@ const UserMessages = ({ conversationId }) => {
   const handleSendMessage = async () => {
     if (message.trim() === '') return
 
-    await addMessage(conversationId, user.uid, message) // Usar la función addMessage
+    await addMessage(conversationId, user.uid, message)
 
     setMessage('')
-    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`)) // Limpiar el estado de escritura al enviar el mensaje
+    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
   }
 
   const handleTyping = () => {
@@ -100,7 +96,7 @@ const UserMessages = ({ conversationId }) => {
   }
 
   const handleBlur = () => {
-    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`)) // Limpiar el estado de escritura al perder el foco
+    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
   }
 
   const handleKeyDown = e => {
@@ -111,10 +107,10 @@ const UserMessages = ({ conversationId }) => {
   }
 
   return (
-    <div>
-      <div>
+    <div className="p-4">
+      <div className="mb-4">
         {messages.map(msg => (
-          <div key={msg.id}>
+          <div key={msg.id} className="mb-2">
             <p>
               <strong>
                 {msg.senderId === user.uid
@@ -124,21 +120,33 @@ const UserMessages = ({ conversationId }) => {
               </strong>{' '}
               {msg.text}
             </p>
-            <p>{new Date(msg.timestamp.toDate()).toLocaleString()}</p>
+            <p className="text-sm text-gray-500">
+              {new Date(msg.timestamp.toDate()).toLocaleString()}
+            </p>
           </div>
         ))}
       </div>
-      {isTyping && <p>El usuario está escribiendo...</p>}
-      <input
-        type="text"
-        value={message}
-        onChange={e => setMessage(e.target.value)}
-        onInput={handleTyping}
-        onFocus={handleTyping}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown} // Añadir el evento onKeyDown
-      />
-      <button onClick={handleSendMessage}>Enviar</button>
+      {isTyping && (
+        <p className="text-sm text-gray-500">El usuario está escribiendo...</p>
+      )}
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          onInput={handleTyping}
+          onFocus={handleTyping}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="flex-1 p-2 border rounded"
+        />
+        <button
+          onClick={handleSendMessage}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Enviar
+        </button>
+      </div>
     </div>
   )
 }

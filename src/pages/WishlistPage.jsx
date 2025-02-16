@@ -12,14 +12,11 @@ const WishlistPage = () => {
   const { wishlist, removeFromWishlistContext } = useWishlist()
   const { addAlbum } = useAlbums()
 
-  // Obtener la wishlist del usuario actual
   useEffect(() => {
     if (currentUser) {
       const fetchWishlist = async () => {
         const data = await getWishlist(currentUser.uid)
-        console.log('📥 Wishlist obtenida de Firebase:', data)
 
-        // Transformar los datos al formato esperado por AlbumsList
         const formattedAlbums = data.map(item => ({
           id: item.albumId,
           name: item.albumName,
@@ -36,48 +33,39 @@ const WishlistPage = () => {
 
       fetchWishlist()
     }
-  }, [currentUser, wishlist]) // Dependencia añadida: wishlist
+  }, [currentUser, wishlist])
 
-  // Handler para eliminar un álbum de la wishlist
   const handleRemoveFromWishlist = async albumId => {
     try {
       await removeFromWishlist(currentUser.uid, albumId)
       setAlbums(prev => prev.filter(a => a.id !== albumId))
       removeFromWishlistContext(albumId)
-      console.log('Álbum eliminado de wishlist')
     } catch (error) {
-      console.error('❌ Error al eliminar de wishlist:', error)
+      console.error('Error al eliminar de wishlist:', error)
     }
   }
 
-  // Handler para añadir un álbum a "mis álbumes"
   const handleAddToMyAlbums = async album => {
     try {
       await addToMyAlbums(currentUser.uid, album)
-      console.log('✅ Álbum añadido a mis álbumes con éxito.')
-
       await removeFromWishlist(currentUser.uid, album.id)
-
-      // 🔴 ACTUALIZA TAMBIÉN EL CONTEXTO DE LA WISHLIST
       removeFromWishlistContext(album.id)
-
       setAlbums(prev => prev.filter(a => a.id !== album.id))
-
       addAlbum(album)
     } catch (error) {
-      console.error('⚠️ Error añadiendo álbum a mis álbumes:', error)
+      console.error('Error añadiendo álbum a mis álbumes:', error)
     }
   }
 
   return (
-    <div>
-      <h1>Mi Wishlist</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Mi Wishlist</h1>
       {albums.length > 0 ? (
         <AlbumsList
           albums={albums}
           showCollectedBy={false}
           showWishlistButton={true}
-          wishlistOnly={true} // Indica que estamos en WishlistPage
+          wishlistOnly={true}
           handleRemoveFromWishlist={handleRemoveFromWishlist}
           handleAddToMyAlbums={handleAddToMyAlbums}
         />

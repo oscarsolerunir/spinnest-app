@@ -4,89 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, signOut } from '../../services/firebase'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
-import styled from 'styled-components'
 import { FaBars, FaTimes } from 'react-icons/fa'
-
-// 🔹 Contenedor del Navbar
-const NavContainer = styled.nav`
-  background-color: #333;
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-`
-
-// 🔹 Botón de menú hamburguesa (solo en móviles)
-const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  display: none;
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-`
-
-// 🔹 Menú de navegación
-const NavMenu = styled.ul`
-  list-style: none;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0;
-  margin: 0;
-  transition: all 0.3s ease-in-out;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    position: absolute;
-    top: 50px;
-    left: 0;
-    width: 100%;
-    background-color: #222;
-    padding: 15px 0;
-    transform: ${({ open }) => (open ? 'translateY(0)' : 'translateY(-300px)')};
-    opacity: ${({ open }) => (open ? '1' : '0')};
-    pointer-events: ${({ open }) => (open ? 'auto' : 'none')};
-  }
-`
-
-// 🔹 Estilo de cada elemento de la lista
-const NavItem = styled.li`
-  margin: 0 10px;
-
-  @media (max-width: 768px) {
-    margin: 10px 0;
-  }
-`
-
-// 🔹 Enlaces de navegación
-const NavLink = styled(Link)`
-  color: white;
-  text-decoration: none;
-  font-size: 16px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
-
-// 🔹 Botón de cierre de sesión
-const LogoutButton = styled.button`
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
 
 const Navigation = () => {
   const [user] = useAuthState(auth)
@@ -104,8 +22,6 @@ const Navigation = () => {
 
   useEffect(() => {
     if (!user?.uid) return
-
-    console.log('🔄 Cargando datos de navegación para el usuario:', user.uid)
 
     const unsubscribes = []
 
@@ -159,13 +75,12 @@ const Navigation = () => {
           setState(snapshot.size)
         },
         error => {
-          console.error(`⚠️ Error en Firestore (${ref.path}):`, error.message)
+          console.error(`Error en Firestore (${ref.path}):`, error.message)
         }
       )
       unsubscribes.push(unsubscribe)
     })
 
-    // Escuchar cambios en los álbumes y colecciones de los usuarios seguidos
     const followingQuery = query(
       collection(db, 'follows'),
       where('followerId', '==', user.uid)
@@ -185,7 +100,6 @@ const Navigation = () => {
           where('userId', 'in', followingIds)
         )
 
-        // Obtenemos la última visita al feed del localStorage o un valor muy antiguo
         const lastFeedVisitStr = localStorage.getItem('lastFeedVisit')
         const lastFeedVisit = lastFeedVisitStr
           ? new Date(lastFeedVisitStr)
@@ -229,12 +143,10 @@ const Navigation = () => {
     unsubscribes.push(unsubscribeFollowing)
 
     return () => {
-      console.log('♻️ Limpiando suscripciones de Firestore...')
       unsubscribes.forEach(unsub => unsub())
     }
   }, [user])
 
-  // Al visitar el feed, actualizamos la última visita y ocultamos el mensaje "¡Nuevos!"
   useEffect(() => {
     if (location.pathname === '/feed') {
       const now = new Date().toISOString()
@@ -253,61 +165,94 @@ const Navigation = () => {
   }
 
   return (
-    <NavContainer>
-      {user && (
-        <>
-          {/* Botón de menú hamburguesa */}
-          <MenuButton onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FaTimes /> : <FaBars />}
-          </MenuButton>
-
-          <NavMenu open={menuOpen}>
-            <NavItem>
-              <NavLink to="/">Explorar</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/feed">Feed {newContent && '¡Nuevos!'}</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/albums">
-                Albums {albumsCount > 0 && `(${albumsCount})`}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/collections">
-                Colecciones {collectionsCount > 0 && `(${collectionsCount})`}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/messages">
-                Mensajes {unreadCount > 0 && `(${unreadCount})`}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/followers">
-                Seguidores {followersCount > 0 && `(${followersCount})`}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/following">
-                Siguiendo {followingCount > 0 && `(${followingCount})`}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/wishlist">
-                Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/profile">Perfil</NavLink>
-            </NavItem>
-            <NavItem>
-              <LogoutButton onClick={handleSignOut}>Cerrar sesión</LogoutButton>
-            </NavItem>
-          </NavMenu>
-        </>
-      )}
-    </NavContainer>
+    <nav className="bg-gray-800 p-4 flex justify-between items-center">
+      <button
+        className="text-white text-2xl md:hidden"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        {menuOpen ? <FaTimes /> : <FaBars />}
+      </button>
+      <ul
+        className={`${
+          menuOpen ? 'flex' : 'hidden'
+        } md:flex flex-col md:flex-row md:items-center w-full md:w-auto`}
+      >
+        <li className="m-2">
+          <Link to="/" className="text-white no-underline hover:underline">
+            Explorar
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link to="/feed" className="text-white no-underline hover:underline">
+            Feed {newContent && '¡Nuevos!'}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/albums"
+            className="text-white no-underline hover:underline"
+          >
+            Albums {albumsCount > 0 && `(${albumsCount})`}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/collections"
+            className="text-white no-underline hover:underline"
+          >
+            Colecciones {collectionsCount > 0 && `(${collectionsCount})`}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/messages"
+            className="text-white no-underline hover:underline"
+          >
+            Mensajes {unreadCount > 0 && `(${unreadCount})`}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/followers"
+            className="text-white no-underline hover:underline"
+          >
+            Seguidores {followersCount > 0 && `(${followersCount})`}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/following"
+            className="text-white no-underline hover:underline"
+          >
+            Siguiendo {followingCount > 0 && `(${followingCount})`}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/wishlist"
+            className="text-white no-underline hover:underline"
+          >
+            Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+          </Link>
+        </li>
+        <li className="m-2">
+          <Link
+            to="/profile"
+            className="text-white no-underline hover:underline"
+          >
+            Perfil
+          </Link>
+        </li>
+        <li className="m-2">
+          <button
+            onClick={handleSignOut}
+            className="text-white no-underline hover:underline"
+          >
+            Cerrar sesión
+          </button>
+        </li>
+      </ul>
+    </nav>
   )
 }
 

@@ -4,18 +4,20 @@ import { Link } from 'react-router-dom'
 import ListCollections from '../components/Collections/ListCollections'
 
 const UserCollectionsPage = () => {
-  const [user] = useAuthState(auth) // No necesitamos el estado de colecciones aquí
+  const [user] = useAuthState(auth)
 
   return (
-    <div>
-      <h1>Tus colecciones</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Tus colecciones</h1>
       {user?.uid ? (
         <ListCollections userId={user.uid} />
       ) : (
         <p>No has añadido ninguna colección todavía.</p>
       )}
       <Link to="/add-collection">
-        <button>Añadir colección</button>
+        <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Añadir colección
+        </button>
       </Link>
     </div>
   )

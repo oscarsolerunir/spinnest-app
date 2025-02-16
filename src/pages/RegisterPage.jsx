@@ -5,7 +5,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-const Register = () => {
+const RegisterPage = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,36 +25,25 @@ const Register = () => {
     setLoading(true)
     setError('')
     try {
-      // Crear usuario en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       )
       const user = userCredential.user
-      console.log('Usuario creado en Auth:', user)
 
-      // Actualizar el perfil para asignar displayName
       await updateProfile(user, { displayName: name })
-      // Forzar recarga para que se actualice el objeto usuario
       await user.reload()
       const updatedUser = auth.currentUser
-      console.log('Usuario actualizado con displayName:', updatedUser)
 
-      // Guardar en Firestore usando el displayName actualizado
       await setDoc(doc(db, 'users', updatedUser.uid), {
         name: updatedUser.displayName || 'Usuario desconocido',
         email
       })
-      console.log(
-        'Documento de usuario creado en Firestore para UID:',
-        updatedUser.uid
-      )
 
       alert('User registered successfully')
       navigate('/')
-    } catch (error) {
-      console.error('Error registering user:', error)
+    } catch {
       setError('Error registering user. Please try again.')
     } finally {
       setLoading(false)
@@ -62,38 +51,51 @@ const Register = () => {
   }
 
   return (
-    <div>
-      <form onSubmit={handleRegister}>
-        <h2>Register</h2>
+    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow-md">
+      <form onSubmit={handleRegister} className="space-y-4">
+        <h2 className="text-2xl font-semibold mb-2">Register</h2>
         <div>
-          <label>Name:</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Name:
+          </label>
           <input
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
             required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <div>
-          <label>Email:</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Email:
+          </label>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Password:
+          </label>
           <input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" disabled={loading}>
+        {error && <p className="text-red-500">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
           {loading ? 'Registering...' : 'Register'}
         </button>
       </form>
@@ -101,4 +103,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default RegisterPage

@@ -1,25 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
-
-const CollectionCard = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-`
-
-const CollectionTitle = styled.h3`
-  margin: 10px 0;
-`
 
 const ItemCollection = ({ collection }) => {
   const navigate = useNavigate()
@@ -32,16 +13,23 @@ const ItemCollection = ({ collection }) => {
   const isOwner = currentUser && currentUser.uid === collection.userId
 
   return (
-    <CollectionCard onClick={handleClick}>
-      <ul>
+    <div
+      onClick={handleClick}
+      className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer mb-5 transition-transform transform hover:scale-105"
+    >
+      <ul className="flex flex-wrap justify-center">
         {collection.albums.map(album => (
-          <li key={album.id}>
-            <img src={album.image} alt={album.name} width="50" height="50" />
-            {album.name}
+          <li key={album.id} className="m-2">
+            <img
+              src={album.image}
+              alt={album.name}
+              className="w-12 h-12 rounded-md"
+            />
+            <p className="text-sm">{album.name}</p>
           </li>
         ))}
       </ul>
-      <CollectionTitle>{collection.name}</CollectionTitle>
+      <h3 className="mt-2 mb-2 text-lg font-semibold">{collection.name}</h3>
       <p>{collection.description}</p>
       {isOwner && (
         <button
@@ -49,11 +37,12 @@ const ItemCollection = ({ collection }) => {
             e.stopPropagation()
             navigate(`/edit-collection/${collection.id}`)
           }}
+          className="mt-2 px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
         >
           Editar Colección
         </button>
       )}
-    </CollectionCard>
+    </div>
   )
 }
 

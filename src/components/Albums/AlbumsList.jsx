@@ -1,20 +1,7 @@
-import styled from 'styled-components'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 import AlbumItem from './AlbumItem'
 import { useAlbums } from '../../context/AlbumsContext'
-
-const AlbumsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 320px));
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-`
 
 const AlbumsList = ({
   albums,
@@ -25,8 +12,8 @@ const AlbumsList = ({
   showCollectedBy = true,
   showDetailsLink = true,
   showWishlistButton = true,
-  showMyAlbumsButton = true, // Nueva prop para controlar el botón de "Mis Albums"
-  wishlistOnly = false // Nueva prop
+  showMyAlbumsButton = true,
+  wishlistOnly = false
 }) => {
   const { removeAlbum } = useAlbums()
   const [currentUser] = useAuthState(auth)
@@ -35,7 +22,7 @@ const AlbumsList = ({
     if (handleRemoveFromMyAlbums) {
       await handleRemoveFromMyAlbums(albumId)
     }
-    removeAlbum(albumId) // Actualizar el contexto globalmente
+    removeAlbum(albumId)
   }
 
   if (!albums || albums.length === 0) {
@@ -43,10 +30,9 @@ const AlbumsList = ({
   }
 
   return (
-    <AlbumsGrid>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
       {albums.map(album => {
         if (!album || !album.id || !album.name) {
-          console.error('⚠️ Error: El álbum es inválido:', album)
           return null
         }
         return (
@@ -61,12 +47,12 @@ const AlbumsList = ({
             showCollectedBy={showCollectedBy}
             showDetailsLink={showDetailsLink}
             showWishlistButton={showWishlistButton}
-            showMyAlbumsButton={showMyAlbumsButton} // Reenvío de la nueva prop
-            wishlistOnly={wishlistOnly} // Reenvío de la prop
+            showMyAlbumsButton={showMyAlbumsButton}
+            wishlistOnly={wishlistOnly}
           />
         )
       })}
-    </AlbumsGrid>
+    </div>
   )
 }
 

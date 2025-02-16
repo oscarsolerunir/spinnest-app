@@ -5,14 +5,11 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 
 const ListCollections = ({ userId, collections, onClick, allUsers }) => {
-  console.log('📂 Colecciones recibidas en ListCollections:', collections)
-  // Si se pasa collections, inicializamos con ella; de lo contrario, con un array vacío.
   const [collectionsState, setCollectionsState] = useState(collections || [])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [currentUser] = useAuthState(auth)
 
-  // Si se recibe la prop "collections", actualizamos el estado local.
   useEffect(() => {
     if (collections) {
       setCollectionsState(collections)
@@ -20,11 +17,9 @@ const ListCollections = ({ userId, collections, onClick, allUsers }) => {
     }
   }, [collections])
 
-  // Si no se recibe la prop "collections", hacemos la consulta con userId o allUsers.
   useEffect(() => {
-    // Solo ejecutamos si NO se pasó la prop collections.
     if (!collections) {
-      if (!userId && !allUsers) return // No hay criterios para la búsqueda.
+      if (!userId && !allUsers) return
       const fetchCollections = async () => {
         setLoading(true)
         try {
@@ -36,7 +31,7 @@ const ListCollections = ({ userId, collections, onClick, allUsers }) => {
           }
           setCollectionsState(data)
         } catch (error) {
-          console.error('Error fetching collections:', error)
+          console.error(error)
           setError(
             'Hubo un error al cargar las colecciones. Por favor, inténtalo de nuevo.'
           )
@@ -53,7 +48,7 @@ const ListCollections = ({ userId, collections, onClick, allUsers }) => {
   }
 
   if (error) {
-    return <p style={{ color: 'red' }}>{error}</p>
+    return <p className="text-red-500">{error}</p>
   }
 
   if (!collectionsState || collectionsState.length === 0) {
@@ -61,7 +56,7 @@ const ListCollections = ({ userId, collections, onClick, allUsers }) => {
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       {collectionsState.map(collection => (
         <ItemCollection
           key={collection.id}

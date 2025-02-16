@@ -6,7 +6,11 @@ const PrivateRoute = ({ children }) => {
   const [user, loading] = useAuthState(auth)
 
   if (loading) {
-    return <div>Cargando...</div>
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Cargando...
+      </div>
+    )
   }
 
   if (!user) {

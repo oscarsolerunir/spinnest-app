@@ -3,19 +3,19 @@ import { UserProvider } from '../context/UserContext'
 import { AlbumsProvider } from '../context/AlbumsContext'
 import { WishlistProvider } from '../context/WishlistContext'
 import PrivateRoute from '../components/Common/PrivateRoute'
-import DefaultLayout from '../layouts/Default'
+import DefaultLayout from '../layouts/DefaultLayout'
 import HomePage from '../pages/HomePage'
 import AddAlbumPage from '../pages/AddAlbumPage'
 import AlbumDetailsPage from '../pages/AlbumDetailsPage'
 import UserAlbumsPage from '../pages/UserAlbumsPage'
 import AddCollectionPage from '../pages/AddCollectionPage'
 import EditCollection from '../pages/Collections/EditCollection'
-import ViewCollectionPage from '../pages/Collections/ViewCollection'
+import CollectionDetailsPage from '../pages/CollectionDetailsPage'
 import UserCollectionsPage from '../pages/UserCollectionsPage'
 import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
-import UserProfile from '../pages/Profile/UserProfile'
-import EditProfile from '../pages/Profile/EditProfile'
+import UserProfilePage from '../pages/UserProfilePage'
+import EditProfilePage from '../pages/EditProfilePage'
 import UserConversationsPage from '../pages/UserConversationsPage'
 import UserMessagesPage from '../pages/UserMessagesPage'
 import FollowersPage from '../pages/FollowersPage'
@@ -74,7 +74,7 @@ const RouterApp = () => {
                   path="/collection/:id"
                   element={
                     <PrivateRoute>
-                      <ViewCollectionPage />
+                      <CollectionDetailsPage />
                     </PrivateRoute>
                   }
                 />
@@ -92,7 +92,7 @@ const RouterApp = () => {
                   path="/profile"
                   element={
                     <PrivateRoute>
-                      <UserProfile />
+                      <UserProfilePage />
                     </PrivateRoute>
                   }
                 />
@@ -100,7 +100,7 @@ const RouterApp = () => {
                   path="/edit-profile"
                   element={
                     <PrivateRoute>
-                      <EditProfile />
+                      <EditProfilePage />
                     </PrivateRoute>
                   }
                 />

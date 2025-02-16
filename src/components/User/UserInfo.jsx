@@ -29,15 +29,20 @@ const UserInfo = () => {
   }
 
   return (
-    <div>
-      <h2>Información del Usuario</h2>
-      <p>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
+      <p className="mb-2">
         <strong>Nombre:</strong> {name}
       </p>
-      <p>
+      <p className="mb-4">
         <strong>Email:</strong> {email}
       </p>
-      <button onClick={handleEditProfile}>Editar Perfil</button>
+      <button
+        onClick={handleEditProfile}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Editar Perfil
+      </button>
     </div>
   )
 }
