@@ -15,18 +15,42 @@ service cloud.firestore {
     match /albums/{albumId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
+      
+      // Permitir actualizaciones en dos casos:
+      // 1. Si el usuario ya es dueño (está en userIds), puede actualizar cualquier campo.
+      // 2. Si el usuario NO es dueño, se permite únicamente agregar su UID y su nombre,
+      //    es decir, las únicas claves modificadas son "userIds" y "userNames", y el nuevo array
+      //    debe ser exactamente el anterior con la adición de su UID (y similar para userNames).
+      // 3. Adicionalmente, cualquier actualización que afecte solo a los campos "viewedBy",
+      //    "isInWishlistOfUserIds" e "isInWishlistOfUserNames" se permite.
       allow update: if isAuthenticated() && (
-        // Si el usuario es el dueño, puede actualizar todo
-        request.auth.uid in resource.data.userIds ||
-        // Si no lo es, solo se permiten cambios en los campos de wishlist y viewedBy
-        request.resource.data.diff(resource.data).changedKeys().hasOnly([
-          'viewedBy',
-          'isInWishlistOfUserIds',
-          'isInWishlistOfUserNames'
-        ])
+          // Caso 1: dueño
+          request.auth.uid in resource.data.userIds ||
+          // Caso 2: el usuario se añade a sí mismo a "userIds" y "userNames"
+          (
+            request.resource.data.diff(resource.data).changedKeys().hasOnly(['userIds', 'userNames']) &&
+            // El nuevo array de userIds debe tener tamaño +1
+            request.resource.data.userIds.size() == resource.data.userIds.size() + 1 &&
+            // Todos los valores antiguos siguen presentes
+            request.resource.data.userIds.hasAll(resource.data.userIds) &&
+            // Y además contiene el UID del usuario que hace la actualización
+            request.resource.data.userIds.hasAny([request.auth.uid]) &&
+            // De forma similar para userNames
+            request.resource.data.userNames.size() == resource.data.userNames.size() + 1 &&
+            request.resource.data.userNames.hasAll(resource.data.userNames)
+          ) ||
+          // Caso 3: actualización restringida de campos "viewedBy" y de wishlist
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            'viewedBy',
+            'isInWishlistOfUserIds',
+            'isInWishlistOfUserNames'
+          ])
       );
+
+      // Solo el dueño puede eliminar el álbum.
       allow delete: if isAuthenticated() && request.auth.uid in resource.data.userIds;
     }
+
 
     // 🔹 Collections: acceso restringido solo al dueño, salvo que se trate
     // de actualizar únicamente el campo "viewedBy" (para marcar como vista)
@@ -34,12 +58,12 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
-        // Permitir que el dueño modifique la colección
         request.auth.uid == resource.data.userId ||
-        // O bien, permitir actualizar únicamente "viewedBy"
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewedBy']) &&
-         request.resource.data.viewedBy is list &&
-         request.auth.uid in request.resource.data.viewedBy)
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewedBy']) &&
+          request.resource.data.viewedBy is list &&
+          request.auth.uid in request.resource.data.viewedBy
+        )
       );
       allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
     }
