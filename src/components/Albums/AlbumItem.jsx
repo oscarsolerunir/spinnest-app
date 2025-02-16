@@ -72,10 +72,9 @@ const AlbumItem = ({
   // Efecto para actualizar los estados cuando cambie la prop "album" o el usuario
   useEffect(() => {
     setIsInMyAlbums(album.userIds?.includes(currentUser?.uid) || false)
-    setIsInWishlist(
-      album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
-    )
-  }, [album, currentUser])
+    // Verificamos si el álbum ya está en la wishlist usando el contexto
+    setIsInWishlist(wishlist.some(item => item.albumId === album.id))
+  }, [album, currentUser, wishlist])
 
   if (!album || !album.id || !album.name) {
     console.error('⚠️ Error: El álbum es inválido:', album)
