@@ -4,6 +4,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { addToMyAlbums, removeFromMyAlbums } from '../../services/api'
 import { auth } from '../../services/firebase'
 import { useState, useEffect } from 'react'
+import { useWishlist } from '../../context/WishlistContext'
 
 const AlbumContainer = styled.div`
   border: 1px solid #ddd;
@@ -52,20 +53,32 @@ const AlbumItem = ({
   handleRemoveFromWishlist, // Función para eliminar de wishlist
   showCollectedBy = true,
   showDetailsLink = true,
-  showWishlistButton = true // Controla si se muestra el botón de wishlist
+  showWishlistButton = true, // Controla si se muestra el botón de wishlist
+  wishlistOnly = false // Si true, indica que estamos en WishlistPage
 }) => {
   const [currentUser] = useAuthState(auth)
+  const { wishlist, addToWishlistContext, removeFromWishlistContext } =
+    useWishlist()
 
   // Estado para "mis albums" basado en album.userIds
   const [isInMyAlbums, setIsInMyAlbums] = useState(
     album.userIds?.includes(currentUser?.uid) || false
   )
-  // Estado para wishlist basado en album.isInWishlistOfUserIds
+  // Estado para wishlist: si wishlistOnly es true, forzamos true; en otro caso, se calcula
   const [isInWishlist, setIsInWishlist] = useState(
-    album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
+    wishlistOnly
+      ? true
+      : album.isInWishlistOfUserIds?.includes(currentUser?.uid) || false
   )
 
-  // Si el album o sus datos esenciales no existen, no se renderiza
+  useEffect(() => {
+    if (wishlistOnly) {
+      setIsInWishlist(true)
+    } else {
+      setIsInWishlist(wishlist.some(item => item.albumId === album.id))
+    }
+  }, [wishlist, album.id, wishlistOnly])
+
   if (!album || !album.id || !album.name) {
     console.error('⚠️ Error: El álbum es inválido:', album)
     return null
@@ -81,7 +94,7 @@ const AlbumItem = ({
     ? album.label.join(', ')
     : album.label || 'Sello desconocido'
 
-  // Función para gestionar la acción en "Mis Albums"
+  // Función para "Mis Albums"
   const handleMyAlbumsClick = async e => {
     e.stopPropagation()
     e.preventDefault()
@@ -100,7 +113,6 @@ const AlbumItem = ({
       console.log(
         `🗑️ Eliminando álbum ID: ${album.id} para usuario: ${currentUser.uid}`
       )
-
       try {
         await removeFromMyAlbums(currentUser.uid, album.id)
         setIsInMyAlbums(false)
@@ -115,7 +127,6 @@ const AlbumItem = ({
       console.log(
         `📀 Añadiendo álbum ID: ${album.id} para usuario: ${currentUser.uid}`
       )
-
       try {
         await addToMyAlbums(currentUser.uid, album)
         setIsInMyAlbums(true)
@@ -126,7 +137,7 @@ const AlbumItem = ({
     }
   }
 
-  // Función para gestionar la acción de wishlist
+  // Función para gestionar la wishlist
   const handleWishlistClick = async e => {
     e.stopPropagation()
     e.preventDefault()
@@ -141,6 +152,7 @@ const AlbumItem = ({
         if (handleRemoveFromWishlist) {
           await handleRemoveFromWishlist(album.id)
           setIsInWishlist(false)
+          removeFromWishlistContext(album.id)
           console.log('✅ Álbum eliminado de la wishlist con éxito.')
         }
       } catch (error) {
@@ -151,6 +163,16 @@ const AlbumItem = ({
         if (handleAddToWishlist) {
           await handleAddToWishlist(album)
           setIsInWishlist(true)
+          addToWishlistContext({
+            albumId: album.id,
+            albumName: album.name,
+            albumArtist: album.artist,
+            albumYear: album.year,
+            albumGenre: album.genre,
+            albumLabel: album.label,
+            albumImage: album.image,
+            addedAt: new Date().toISOString()
+          })
           console.log('✅ Álbum añadido a la wishlist con éxito.')
         }
       } catch (error) {
@@ -159,14 +181,14 @@ const AlbumItem = ({
     }
   }
 
-  // Mostrar el botón de wishlist solo si:
-  // 1. Se habilita con la prop showWishlistButton.
-  // 2. Se han pasado las funciones correspondientes.
-  // 3. El álbum NO es propio (es decir, currentUser no es propietario).
+  // Condición para mostrar el botón de wishlist:
+  // Si wishlistOnly es true, se muestra solo la opción de eliminar;
+  // en otros casos, se muestra si se han pasado ambas funciones y el álbum no es propio.
   const shouldShowWishlistButton =
     showWishlistButton &&
-    handleAddToWishlist &&
-    handleRemoveFromWishlist &&
+    (wishlistOnly
+      ? handleRemoveFromWishlist
+      : handleAddToWishlist && handleRemoveFromWishlist) &&
     !(album.userIds && album.userIds.includes(currentUser?.uid))
 
   return (

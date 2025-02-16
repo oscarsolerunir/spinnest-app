@@ -2,46 +2,95 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, signOut } from '../../services/firebase'
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  getDocs
-} from 'firebase/firestore'
+import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import styled from 'styled-components'
+import { FaBars, FaTimes } from 'react-icons/fa'
 
+// 🔹 Contenedor del Navbar
 const NavContainer = styled.nav`
   background-color: #333;
   padding: 10px;
-  ul {
-    list-style: none;
-    display: flex;
-    justify-content: space-around;
-    padding: 0;
-    margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`
+
+// 🔹 Botón de menú hamburguesa (solo en móviles)
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
   }
-  li {
-    margin: 0 10px;
+`
+
+// 🔹 Menú de navegación
+const NavMenu = styled.ul`
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  transition: all 0.3s ease-in-out;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background-color: #222;
+    padding: 15px 0;
+    transform: ${({ open }) => (open ? 'translateY(0)' : 'translateY(-300px)')};
+    opacity: ${({ open }) => (open ? '1' : '0')};
+    pointer-events: ${({ open }) => (open ? 'auto' : 'none')};
   }
-  a,
-  button {
-    color: white;
-    text-decoration: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
+`
+
+// 🔹 Estilo de cada elemento de la lista
+const NavItem = styled.li`
+  margin: 0 10px;
+
+  @media (max-width: 768px) {
+    margin: 10px 0;
   }
-  a:hover,
-  button:hover {
+`
+
+// 🔹 Enlaces de navegación
+const NavLink = styled(Link)`
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+// 🔹 Botón de cierre de sesión
+const LogoutButton = styled.button`
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
     text-decoration: underline;
   }
 `
 
 const Navigation = () => {
   const [user] = useAuthState(auth)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
@@ -116,59 +165,6 @@ const Navigation = () => {
       unsubscribes.push(unsubscribe)
     })
 
-    // Escuchar cambios en los usuarios seguidos en tiempo real
-    const followingQuery = query(
-      collection(db, 'follows'),
-      where('followerId', '==', user.uid)
-    )
-
-    const unsubscribeFollowing = onSnapshot(followingQuery, snapshot => {
-      const followingIds = snapshot.docs.map(doc => doc.data().followingId)
-      if (followingIds.length === 0) {
-        setNewContent(false)
-        return
-      }
-
-      // Escuchar cambios en álbumes de los usuarios seguidos
-      const albumsQuery = query(
-        collection(db, 'albums'),
-        where('userIds', 'array-contains-any', followingIds)
-      )
-
-      const unsubscribeAlbums = onSnapshot(albumsQuery, albumSnapshot => {
-        const hasNewAlbums = albumSnapshot.docs.some(
-          doc => !doc.data().viewedBy?.includes(user.uid)
-        )
-        if (hasNewAlbums) {
-          setNewContent(true)
-          localStorage.setItem('feedVisited', 'false')
-        }
-      })
-
-      // Escuchar cambios en colecciones de los usuarios seguidos
-      const collectionsQuery = query(
-        collection(db, 'collections'),
-        where('userId', 'in', followingIds)
-      )
-
-      const unsubscribeCollections = onSnapshot(
-        collectionsQuery,
-        collectionSnapshot => {
-          const hasNewCollections = collectionSnapshot.docs.some(
-            doc => !doc.data().viewedBy?.includes(user.uid)
-          )
-          if (hasNewCollections) {
-            setNewContent(true)
-            localStorage.setItem('feedVisited', 'false')
-          }
-        }
-      )
-
-      unsubscribes.push(unsubscribeAlbums, unsubscribeCollections)
-    })
-
-    unsubscribes.push(unsubscribeFollowing)
-
     return () => {
       console.log('♻️ Limpiando suscripciones de Firestore...')
       unsubscribes.forEach(unsub => unsub())
@@ -187,57 +183,64 @@ const Navigation = () => {
     try {
       await signOut(auth)
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error('Error al cerrar sesión:', error)
     }
   }
 
   return (
     <NavContainer>
       {user && (
-        <ul>
-          <li>
-            <Link to="/">Explorar</Link>
-          </li>
-          <li>
-            <Link to="/feed">Feed {newContent && '¡Nuevos!'}</Link>
-          </li>
-          <li>
-            <Link to="/albums">
-              Albums {albumsCount > 0 && `(${albumsCount})`}
-            </Link>
-          </li>
-          <li>
-            <Link to="/collections">
-              Colecciones {collectionsCount > 0 && `(${collectionsCount})`}
-            </Link>
-          </li>
-          <li>
-            <Link to="/messages">
-              Mensajes {unreadCount > 0 && `(${unreadCount})`}
-            </Link>
-          </li>
-          <li>
-            <Link to="/followers">
-              Seguidores {followersCount > 0 && `(${followersCount})`}
-            </Link>
-          </li>
-          <li>
-            <Link to="/following">
-              Siguiendo {followingCount > 0 && `(${followingCount})`}
-            </Link>
-          </li>
-          <li>
-            <Link to="/wishlist">
-              Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
-            </Link>
-          </li>
-          <li>
-            <Link to="/profile">Perfil</Link>
-          </li>
-          <li>
-            <button onClick={handleSignOut}>Cerrar sesión</button>
-          </li>
-        </ul>
+        <>
+          {/* Botón de menú hamburguesa */}
+          <MenuButton onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </MenuButton>
+
+          <NavMenu open={menuOpen}>
+            <NavItem>
+              <NavLink to="/">Explorar</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/feed">Feed {newContent && '¡Nuevos!'}</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/albums">
+                Albums {albumsCount > 0 && `(${albumsCount})`}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/collections">
+                Colecciones {collectionsCount > 0 && `(${collectionsCount})`}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/messages">
+                Mensajes {unreadCount > 0 && `(${unreadCount})`}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/followers">
+                Seguidores {followersCount > 0 && `(${followersCount})`}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/following">
+                Siguiendo {followingCount > 0 && `(${followingCount})`}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/wishlist">
+                Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink to="/profile">Perfil</NavLink>
+            </NavItem>
+            <NavItem>
+              <LogoutButton onClick={handleSignOut}>Cerrar sesión</LogoutButton>
+            </NavItem>
+          </NavMenu>
+        </>
       )}
     </NavContainer>
   )

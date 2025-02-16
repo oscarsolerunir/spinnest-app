@@ -9,7 +9,12 @@ import {
   doc
 } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
-import { getAlbumsByUser, getCollectionsByUser } from '../services/api'
+import {
+  getAlbumsByUser,
+  getCollectionsByUser,
+  addToWishlist,
+  removeFromWishlist
+} from '../services/api'
 import AlbumsList from '../components/Albums/AlbumsList'
 import ListCollections from '../components/Collections/ListCollections'
 
@@ -17,9 +22,10 @@ const FeedPage = () => {
   const [albums, setAlbums] = useState([])
   const [collections, setCollections] = useState([])
   const [following, setFollowing] = useState([])
-  const [loadingCollections, setLoadingCollections] = useState(true) // Estado para mostrar carga
+  const [loadingCollections, setLoadingCollections] = useState(true)
   const [currentUser] = useAuthState(auth)
 
+  // Escuchamos a quién sigue el usuario
   useEffect(() => {
     if (!currentUser?.uid) return
 
@@ -38,6 +44,7 @@ const FeedPage = () => {
     return () => unsubscribeFollowing()
   }, [currentUser])
 
+  // Obtenemos los álbumes y colecciones de los usuarios seguidos
   useEffect(() => {
     const fetchFeedData = async () => {
       if (following.length === 0) {
@@ -115,12 +122,38 @@ const FeedPage = () => {
     fetchFeedData()
   }, [following, currentUser])
 
+  // Funciones para la wishlist
+  const handleAddToWishlist = async album => {
+    try {
+      await addToWishlist(currentUser.uid, album)
+      console.log('Álbum añadido a wishlist')
+      // Puedes actualizar algún estado si lo deseas
+    } catch (error) {
+      console.error('Error añadiendo álbum a wishlist:', error)
+    }
+  }
+
+  const handleRemoveFromWishlist = async albumId => {
+    try {
+      await removeFromWishlist(currentUser.uid, albumId)
+      console.log('Álbum eliminado de wishlist')
+      // Puedes actualizar algún estado si lo deseas
+    } catch (error) {
+      console.error('Error eliminando álbum de wishlist:', error)
+    }
+  }
+
   return (
     <div>
       <h1>Feed</h1>
       <h2>Álbums</h2>
       {albums.length > 0 ? (
-        <AlbumsList albums={albums} />
+        <AlbumsList
+          albums={albums}
+          showWishlistButton={true} // Se muestran los botones de wishlist
+          handleAddToWishlist={handleAddToWishlist}
+          handleRemoveFromWishlist={handleRemoveFromWishlist}
+        />
       ) : (
         <p>No hay álbumes disponibles.</p>
       )}

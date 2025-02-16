@@ -14,7 +14,7 @@ const WishlistPage = () => {
         const data = await getWishlist(currentUser.uid)
         console.log('📥 Wishlist obtenida de Firebase:', data)
 
-        // 🔹 Transformar los datos al formato esperado por AlbumsList
+        // Transformar los datos al formato esperado por AlbumsList
         const formattedAlbums = data.map(item => ({
           id: item.albumId,
           name: item.albumName,
@@ -23,7 +23,7 @@ const WishlistPage = () => {
           genre: item.albumGenre || 'Género desconocido',
           label: item.albumLabel || 'Sello desconocido',
           image: item.albumImage || '',
-          isInWishlist: true // Añadimos este flag para que se reconozca como wishlist
+          isInWishlist: true
         }))
 
         setAlbums(formattedAlbums)
@@ -47,6 +47,8 @@ const WishlistPage = () => {
       <h1>Mi Wishlist</h1>
       <AlbumsList
         albums={albums}
+        showWishlistButton={true}
+        wishlistOnly={true} // Indica que estamos en WishlistPage
         handleRemoveFromWishlist={handleRemoveFromWishlist}
         showCollectedBy={false}
       />
