@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { auth, db } from '../services/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
@@ -25,18 +25,31 @@ const Register = () => {
     setLoading(true)
     setError('')
     try {
+      // Crear usuario en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       )
       const user = userCredential.user
+      console.log('Usuario creado en Auth:', user)
 
-      // Guardar el nombre del usuario en Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        name,
+      // Actualizar el perfil para asignar displayName
+      await updateProfile(user, { displayName: name })
+      // Forzar recarga para que se actualice el objeto usuario
+      await user.reload()
+      const updatedUser = auth.currentUser
+      console.log('Usuario actualizado con displayName:', updatedUser)
+
+      // Guardar en Firestore usando el displayName actualizado
+      await setDoc(doc(db, 'users', updatedUser.uid), {
+        name: updatedUser.displayName || 'Usuario desconocido',
         email
       })
+      console.log(
+        'Documento de usuario creado en Firestore para UID:',
+        updatedUser.uid
+      )
 
       alert('User registered successfully')
       navigate('/')

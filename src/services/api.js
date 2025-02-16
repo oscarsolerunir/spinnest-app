@@ -408,10 +408,11 @@ export const getAlbumById = async id => {
 // }
 
 // CREATE COLLECTION
+// api.js
 export const createCollection = async obj => {
-  const colRef = collection(db, collectionsCollectionName)
-  const data = await addDoc(colRef, obj)
-  return data.id
+  const colRef = collection(db, collectionsCollectionName) // Asegúrate del nombre exacto de la colección
+  const docRef = await addDoc(colRef, obj)
+  return docRef.id
 }
 
 // UPDATE COLLECTION

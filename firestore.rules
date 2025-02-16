@@ -85,6 +85,7 @@ service cloud.firestore {
     // 🔹 Users: Los usuarios pueden leer cualquier perfil, pero solo editar el suyo
     match /users/{userId} {
       allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
       allow update: if isOwner(userId);
     }
 

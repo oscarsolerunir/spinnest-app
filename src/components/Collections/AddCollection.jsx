@@ -2,12 +2,18 @@ import { useState, useEffect } from 'react'
 import { createCollection, getAlbumsByUser } from '../../services/api'
 import { useUser } from '../../context/UserContext'
 import CollectionForm from './CollectionForm'
+import { useNavigate } from 'react-router-dom'
 
 const AddCollection = () => {
   const { user } = useUser()
   const [userAlbums, setUserAlbums] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    console.log('Usuario en AddCollection:', user)
+  }, [user])
 
   useEffect(() => {
     const fetchUserAlbums = async () => {
@@ -36,13 +42,17 @@ const AddCollection = () => {
     const newCollection = {
       ...collectionData,
       createdAt: new Date().toISOString(),
-      userId: user.uid
+      userId: user.uid,
+      userName: user.displayName || user.name || 'Usuario desconocido'
     }
 
+    console.log('Nuevo objeto de colección:', newCollection) // Debería incluir userName
+
     try {
-      await createCollection(newCollection)
+      const docId = await createCollection(newCollection)
+      console.log('Colección creada con id:', docId)
       alert('La colección se ha creado con éxito.')
-      window.location.href = '/collections'
+      navigate('/collections')
     } catch (error) {
       console.error('Error creando la colección:', error)
       setError(

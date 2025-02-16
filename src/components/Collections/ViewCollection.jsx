@@ -50,6 +50,9 @@ const ViewCollection = () => {
     <div>
       <h1>{collection.name}</h1>
       <p>
+        <strong>Creada por:</strong> {collection.userName}
+      </p>
+      <p>
         <strong>Descripción:</strong> {collection.description}
       </p>
       <p>
