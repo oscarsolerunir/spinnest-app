@@ -10,22 +10,24 @@ import {
 } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import {
-  getAlbumsByUser,
   getCollectionsByUser,
   addToWishlist,
-  removeFromWishlist
+  removeFromWishlist,
+  addToMyAlbums
 } from '../services/api'
+import { useAlbums } from '../context/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
 import ListCollections from '../components/Collections/ListCollections'
 
 const FeedPage = () => {
-  const [albums, setAlbums] = useState([])
+  const { feedAlbums, fetchFeedAlbums } = useAlbums()
+  const [user] = useAuthState(auth)
   const [collections, setCollections] = useState([])
   const [following, setFollowing] = useState([])
   const [loadingCollections, setLoadingCollections] = useState(true)
   const [currentUser] = useAuthState(auth)
 
-  // Escuchamos a quién sigue el usuario
+  // Escuchar en tiempo real a quién sigue el usuario
   useEffect(() => {
     if (!currentUser?.uid) return
 
@@ -44,11 +46,10 @@ const FeedPage = () => {
     return () => unsubscribeFollowing()
   }, [currentUser])
 
-  // Obtenemos los álbumes y colecciones de los usuarios seguidos
+  // Obtener y actualizar los álbumes y colecciones de los usuarios seguidos
   useEffect(() => {
     const fetchFeedData = async () => {
       if (following.length === 0) {
-        setAlbums([])
         setCollections([])
         setLoadingCollections(false)
         return
@@ -56,41 +57,21 @@ const FeedPage = () => {
 
       const followingIds = following.map(f => f.id)
 
-      const albumsPromises = followingIds.map(userId => getAlbumsByUser(userId))
+      // Obtener los álbumes del feed
+      await fetchFeedAlbums(followingIds)
+
       const collectionsPromises = followingIds.map(userId =>
         getCollectionsByUser(userId)
       )
 
-      const albumsData = (await Promise.all(albumsPromises)).flat()
       const collectionsData = (await Promise.all(collectionsPromises)).flat()
 
       console.log('📚 Colecciones obtenidas en FeedPage:', collectionsData)
 
-      setAlbums(albumsData)
       setCollections(collectionsData)
       setLoadingCollections(false)
 
-      // Marcar álbumes como vistos en Firestore
-      albumsData.forEach(async album => {
-        if (album?.id) {
-          const viewedBy = Array.isArray(album.viewedBy) ? album.viewedBy : []
-          if (!viewedBy.includes(currentUser?.uid)) {
-            try {
-              const albumRef = doc(db, 'albums', String(album.id))
-              await updateDoc(albumRef, {
-                viewedBy: [...viewedBy, currentUser.uid]
-              })
-            } catch (error) {
-              console.error(
-                `🚨 Error al marcar álbum ${album.id} como visto:`,
-                error
-              )
-            }
-          }
-        }
-      })
-
-      // Marcar colecciones como vistas en Firestore
+      // Marcar colecciones como vistas
       collectionsData.forEach(async collectionItem => {
         if (collectionItem?.id) {
           const viewedBy = Array.isArray(collectionItem.viewedBy)
@@ -120,14 +101,14 @@ const FeedPage = () => {
     }
 
     fetchFeedData()
-  }, [following, currentUser])
+  }, [following, currentUser, fetchFeedAlbums])
 
   // Funciones para la wishlist
   const handleAddToWishlist = async album => {
     try {
-      await addToWishlist(currentUser.uid, album)
+      await addToWishlist(user.uid, album)
       console.log('Álbum añadido a wishlist')
-      // Puedes actualizar algún estado si lo deseas
+      // Aquí podrías actualizar el estado local o el contexto, según lo necesites
     } catch (error) {
       console.error('Error añadiendo álbum a wishlist:', error)
     }
@@ -135,11 +116,22 @@ const FeedPage = () => {
 
   const handleRemoveFromWishlist = async albumId => {
     try {
-      await removeFromWishlist(currentUser.uid, albumId)
+      await removeFromWishlist(user.uid, albumId)
       console.log('Álbum eliminado de wishlist')
-      // Puedes actualizar algún estado si lo deseas
+      // Aquí podrías actualizar el estado local o el contexto, según lo necesites
     } catch (error) {
       console.error('Error eliminando álbum de wishlist:', error)
+    }
+  }
+
+  // En ExplorePage.jsx, suponiendo que 'albums' es el estado de la lista de álbumes
+  const handleAddToMyAlbums = async album => {
+    try {
+      await addToMyAlbums(user.uid, album)
+      console.log('✅ Álbum añadido a mis albums con éxito.')
+      // Eliminamos el setAlbums manual, dejando que el onSnapshot del contexto actualice la lista.
+    } catch (error) {
+      console.error('⚠️ Error añadiendo álbum:', error)
     }
   }
 
@@ -147,12 +139,14 @@ const FeedPage = () => {
     <div>
       <h1>Feed</h1>
       <h2>Álbums</h2>
-      {albums.length > 0 ? (
+      {feedAlbums.length > 0 ? (
         <AlbumsList
-          albums={albums}
-          showWishlistButton={true} // Se muestran los botones de wishlist
+          albums={feedAlbums}
+          showCollectedBy={false}
+          showWishlistButton={true}
           handleAddToWishlist={handleAddToWishlist}
           handleRemoveFromWishlist={handleRemoveFromWishlist}
+          handleAddToMyAlbums={handleAddToMyAlbums}
         />
       ) : (
         <p>No hay álbumes disponibles.</p>

@@ -37,6 +37,7 @@ const ExplorePage = () => {
     navigate(`/collection/${id}`, { state: { from: '/' } })
   }
 
+  // Funciones para la wishlist
   const handleAddToWishlist = async album => {
     try {
       await addToWishlist(user.uid, album)

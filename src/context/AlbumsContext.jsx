@@ -1,4 +1,3 @@
-// AlbumsContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react'
 import {
   collection,
@@ -16,6 +15,7 @@ const AlbumsContext = createContext()
 export const AlbumsProvider = ({ children }) => {
   const [allAlbums, setAllAlbums] = useState([]) // Álbumes de toda la colección (para ExplorePage)
   const [userAlbums, setUserAlbums] = useState([]) // Álbumes del usuario autenticado (para páginas propias)
+  const [feedAlbums, setFeedAlbums] = useState([]) // Álbumes para el feed
   const [currentUser] = useAuthState(auth)
 
   // Listener en tiempo real para TODOS los álbumes (sin filtro)
@@ -96,6 +96,25 @@ export const AlbumsProvider = ({ children }) => {
     }
   }
 
+  // Función para obtener los álbumes del feed (usuarios seguidos)
+  const fetchFeedAlbums = async followingIds => {
+    if (!currentUser || followingIds.length === 0) return
+    try {
+      const q = query(
+        collection(db, 'albums'),
+        where('userIds', 'array-contains-any', followingIds)
+      )
+      const snapshot = await getDocs(q)
+      const albumsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setFeedAlbums(albumsData)
+    } catch (error) {
+      console.error('❌ Error fetching feed albums:', error)
+    }
+  }
+
   // Funciones para actualizar el estado local
   const addAlbum = album => {
     setAllAlbums(prev => [...prev, album])
@@ -141,6 +160,8 @@ export const AlbumsProvider = ({ children }) => {
         userAlbums,
         fetchAllAlbums,
         fetchUserAlbums,
+        feedAlbums,
+        fetchFeedAlbums,
         addAlbum,
         removeAlbum,
         setAlbums: setAllAlbums // Si necesitas modificar directamente "allAlbums"
