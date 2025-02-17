@@ -4,6 +4,7 @@ import { addToMyAlbums, removeFromMyAlbums } from '../../services/api'
 import { auth } from '../../services/firebase'
 import { useState, useEffect } from 'react'
 import { useWishlist } from '../../context/WishlistContext'
+import { FaHeart, FaRegHeart } from 'react-icons/fa'
 
 const AlbumItem = ({
   album,
@@ -29,11 +30,6 @@ const AlbumItem = ({
     setIsInWishlist(wishlist.some(item => item.albumId === album.id))
   }, [album, currentUser, wishlist])
 
-  if (!album || !album.id || !album.name) {
-    console.error('⚠️ Error: El álbum es inválido:', album)
-    return null
-  }
-
   const albumArtist = album.artist || 'Artista desconocido'
   const albumYear = album.year || 'Año desconocido'
   const albumGenre = Array.isArray(album.genre)
@@ -47,10 +43,7 @@ const AlbumItem = ({
     e.stopPropagation()
     e.preventDefault()
 
-    if (!currentUser?.uid) {
-      console.error('❌ Error: usuario no autenticado.')
-      return
-    }
+    if (!currentUser?.uid) return
 
     if (isInMyAlbums) {
       const confirmDelete = window.confirm(
@@ -65,14 +58,14 @@ const AlbumItem = ({
           handleRemoveFromMyAlbums(album.id)
         }
       } catch (error) {
-        console.error('⚠️ Error eliminando álbum:', error)
+        console.error('Error eliminando álbum:', error)
       }
     } else {
       try {
         await addToMyAlbums(currentUser.uid, album)
         setIsInMyAlbums(true)
       } catch (error) {
-        console.error('⚠️ Error añadiendo álbum:', error)
+        console.error('Error añadiendo álbum:', error)
       }
     }
   }
@@ -81,10 +74,7 @@ const AlbumItem = ({
     e.stopPropagation()
     e.preventDefault()
 
-    if (!currentUser?.uid) {
-      console.error('❌ Error: usuario no autenticado.')
-      return
-    }
+    if (!currentUser?.uid) return
 
     if (isInWishlist) {
       try {
@@ -94,7 +84,7 @@ const AlbumItem = ({
           removeFromWishlistContext(album.id)
         }
       } catch (error) {
-        console.error('⚠️ Error eliminando álbum de la wishlist:', error)
+        console.error('Error eliminando álbum de la wishlist:', error)
       }
     } else {
       try {
@@ -113,7 +103,7 @@ const AlbumItem = ({
           })
         }
       } catch (error) {
-        console.error('⚠️ Error añadiendo álbum a la wishlist:', error)
+        console.error('Error añadiendo álbum a la wishlist:', error)
       }
     }
   }
@@ -126,23 +116,20 @@ const AlbumItem = ({
     !(album.userIds && album.userIds.includes(currentUser?.uid))
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer mb-5 transition-transform transform hover:scale-105">
+    <div className="rounded-2xl p-4 cursor-pointer mb-5 hover:bg-darkgray">
       <img
         src={album.image}
         alt={album.name}
-        className="max-w-full h-auto rounded-md"
+        className="max-w-full h-auto rounded-2xl shadow-xl"
       />
-      <h3 className="mt-2 mb-2 text-lg font-semibold">{album.name}</h3>
-      <p>{albumArtist}</p>
-      <p>{albumYear}</p>
-      <p>{albumGenre}</p>
-      <p>{albumLabel}</p>
+      <h3 className="mt-2 mb-2 text-lg font-semibold truncate">{album.name}</h3>
+      <p className="text-gray truncate">Artista: {albumArtist}</p>
+      <p className="text-gray truncate">Año: {albumYear}</p>
+      <p className="text-gray truncate">Género: {albumGenre}</p>
+      <p className="text-gray truncate">Discográfica: {albumLabel}</p>
 
       {showDetailsLink && (
-        <Link
-          to={`/album/${album.id}`}
-          className="text-blue-500 hover:underline"
-        >
+        <Link to={`/album/${album.id}`} className="hover:underline my-2 block">
           Ver detalles
         </Link>
       )}
@@ -150,7 +137,11 @@ const AlbumItem = ({
       {showMyAlbumsButton && (
         <button
           onClick={handleMyAlbumsClick}
-          className="mt-2 px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          className={`mt-2 px-4 py-2 text-black rounded-full font-medium ${
+            isInMyAlbums
+              ? 'bg-darkgray hover:bg-black text-gray'
+              : 'bg-primary hover:bg-accent'
+          }`}
         >
           {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
         </button>
@@ -159,8 +150,11 @@ const AlbumItem = ({
       {shouldShowWishlistButton && (
         <button
           onClick={handleWishlistClick}
-          className="mt-2 px-4 py-2 text-white bg-orange-500 rounded hover:bg-orange-600"
+          className="mt-4 text-white rounded flex items-center justify-center"
         >
+          <span className="mr-2">
+            {isInWishlist ? <FaHeart /> : <FaRegHeart />}
+          </span>
           {isInWishlist ? 'Eliminar de wishlist' : 'Añadir a wishlist'}
         </button>
       )}

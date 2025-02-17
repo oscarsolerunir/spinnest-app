@@ -47,15 +47,13 @@ export const updateConversation = async (id, obj) => {
 
 // CREATE MESSAGE
 export const addMessage = async (conversationId, senderId, text) => {
-  // Verificar si la conversación existe
   const conversationDoc = await getDoc(
     doc(db, conversationsCollectionName, conversationId)
   )
   let conversationIdToUse = conversationId
 
   if (!conversationDoc.exists()) {
-    // Crear una nueva conversación si no existe
-    const participants = [senderId, conversationId] // Asumiendo que conversationId es el ID del receptor
+    const participants = [senderId, conversationId]
     conversationIdToUse = await createConversation(participants)
   }
 
@@ -67,11 +65,10 @@ export const addMessage = async (conversationId, senderId, text) => {
     timestamp: new Date()
   })
 
-  // Update the conversation with the last message and timestamp
   await updateConversation(conversationIdToUse, {
     lastMessage: text,
     lastMessageTimestamp: new Date(),
-    read: senderId === auth.currentUser.uid // Mark the conversation as read if the sender is the current user
+    read: senderId === auth.currentUser.uid
   })
 
   return data.id
@@ -85,8 +82,6 @@ export const markConversationAsRead = async conversationId => {
     await updateDoc(docRef, {
       read: true
     })
-  } else {
-    console.error('No such conversation!')
   }
 }
 
@@ -116,14 +111,8 @@ export const getMessagesByConversation = async conversationId => {
 export const addToMyAlbums = async (userId, album, updateState) => {
   try {
     if (!userId || !album || !album.id) {
-      console.error('❌ Error: userId o album.id no son válidos:', {
-        userId,
-        album
-      })
       return
     }
-
-    console.log('📀 Intentando añadir álbum a mis albums:', album)
 
     const albumRef = doc(db, 'albums', String(album.id))
     const albumDoc = await getDoc(albumRef)
@@ -132,7 +121,6 @@ export const addToMyAlbums = async (userId, album, updateState) => {
     const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
 
     if (albumDoc.exists()) {
-      console.log('🔄 Álbum ya existe en Firebase, actualizando usuarios...')
       const existingData = albumDoc.data()
       const userIds = existingData.userIds || []
       const userNames = existingData.userNames || []
@@ -142,12 +130,8 @@ export const addToMyAlbums = async (userId, album, updateState) => {
           userIds: [...userIds, userId],
           userNames: [...userNames, userName]
         })
-        console.log('✅ Álbum actualizado correctamente en Firestore.')
-      } else {
-        console.warn('⚠️ El usuario ya tenía este álbum en su colección.')
       }
     } else {
-      console.log(`🆕 Creando nuevo álbum (${album.id}) en Firestore.`)
       const completeAlbumData = {
         id: album.id,
         name: album.name || 'Desconocido',
@@ -172,42 +156,32 @@ export const addToMyAlbums = async (userId, album, updateState) => {
         userIds: [userId],
         userNames: [userName],
         addedAt: new Date().toISOString(),
-        viewedBy: [] // Inicializamos viewedBy como un array vacío
+        viewedBy: []
       }
 
-      console.log('📀 Guardando en Firebase:', completeAlbumData)
-
       await setDoc(albumRef, completeAlbumData, { merge: true })
-      console.log('✅ Álbum añadido correctamente a Firestore.')
     }
 
     if (updateState) updateState(true)
 
-    // Nueva lógica: eliminar el álbum de la wishlist si estuviera allí
     try {
       await removeFromWishlist(userId, album.id)
-      console.log(
-        '✅ Álbum removido de la wishlist tras ser añadido a mis albums.'
-      )
     } catch (error) {
-      console.error('⚠️ Error removiendo álbum de wishlist:', error)
+      console.error('Error removiendo álbum de wishlist:', error)
     }
   } catch (error) {
-    console.error('❌ Error añadiendo álbum a mis albums:', error)
+    console.error('Error añadiendo álbum a mis albums:', error)
   }
 }
 
 // REMOVE FROM MY ALBUMS
 export const removeFromMyAlbums = async (userId, albumId, updateState) => {
   try {
-    const albumIdStr = String(albumId) // ✅ Asegurar que el ID es string
-    console.log(`🗑️ Eliminando álbum ID: ${albumIdStr} para usuario: ${userId}`)
-
+    const albumIdStr = String(albumId)
     const albumRef = doc(db, albumsCollectionName, albumIdStr)
     const albumDoc = await getDoc(albumRef)
 
     if (!albumDoc.exists()) {
-      console.error('❌ Error: El álbum no existe en Firestore.')
       return
     }
 
@@ -218,7 +192,6 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
       : []
 
     if (!userIds.includes(userId)) {
-      console.warn('⚠️ El usuario no tiene este álbum en su colección.')
       return
     }
 
@@ -229,18 +202,16 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
 
     if (updatedUserIds.length === 0) {
       await deleteDoc(albumRef)
-      console.log('🗑️ Álbum eliminado completamente de Firestore.')
     } else {
       await updateDoc(albumRef, {
         userIds: updatedUserIds,
         userNames: updatedUserNames
       })
-      console.log('✅ Álbum eliminado de la colección del usuario.')
     }
 
-    if (updateState) updateState(albumIdStr) // 🔄 Llamar a la función para actualizar la UI
+    if (updateState) updateState(albumIdStr)
   } catch (error) {
-    console.error('❌ Error eliminando álbum de mis albums:', error)
+    console.error('Error eliminando álbum de mis albums:', error)
   }
 }
 
@@ -248,15 +219,9 @@ export const removeFromMyAlbums = async (userId, albumId, updateState) => {
 export const createAlbum = async album => {
   try {
     const albumRef = doc(db, albumsCollectionName, String(album.id))
-
-    // 🔹 Verificar que el objeto tiene todos los datos antes de guardarlo
-    console.log('📀 Guardando en Firebase:', album)
-
     await setDoc(albumRef, album)
-
-    console.log('✅ Álbum guardado en Firebase correctamente')
   } catch (error) {
-    console.error('❌ Error guardando álbum:', error)
+    console.error('Error guardando álbum:', error)
     throw error
   }
 }
@@ -266,9 +231,8 @@ export const updateAlbum = async (albumId, updates) => {
   try {
     const albumRef = doc(db, albumsCollectionName, String(albumId))
     await updateDoc(albumRef, updates)
-    console.log('✅ Álbum actualizado en Firebase:', updates)
   } catch (error) {
-    console.error('❌ Error actualizando álbum:', error)
+    console.error('Error actualizando álbum:', error)
     throw error
   }
 }
@@ -281,7 +245,6 @@ export const deleteAlbum = async (albumId, userId) => {
     const albumSnap = await getDoc(albumRef)
 
     if (!albumSnap.exists()) {
-      console.error('El álbum no existe')
       return
     }
 
@@ -289,11 +252,9 @@ export const deleteAlbum = async (albumId, userId) => {
     const updatedUserIds = albumData.userIds.filter(id => id !== userId)
 
     if (updatedUserIds.length === 0) {
-      await deleteDoc(albumRef) // Eliminar si no quedan usuarios
-      console.log('Álbum eliminado de la base de datos')
+      await deleteDoc(albumRef)
     } else {
-      await updateDoc(albumRef, { userIds: updatedUserIds }) // Actualizar lista de usuarios
-      console.log('Álbum eliminado del usuario pero no de la base de datos')
+      await updateDoc(albumRef, { userIds: updatedUserIds })
     }
   } catch (error) {
     console.error('Error al eliminar el álbum:', error)
@@ -308,7 +269,6 @@ export const deleteAlbumById = async (albumId, userId) => {
     const albumSnap = await getDoc(albumRef)
 
     if (!albumSnap.exists()) {
-      console.error('El álbum no existe')
       return
     }
 
@@ -316,11 +276,9 @@ export const deleteAlbumById = async (albumId, userId) => {
     const updatedUserIds = albumData.userIds.filter(id => id !== userId)
 
     if (updatedUserIds.length === 0) {
-      await deleteDoc(albumRef) // Eliminar si no quedan usuarios
-      console.log('Álbum eliminado de la base de datos')
+      await deleteDoc(albumRef)
     } else {
-      await updateDoc(albumRef, { userIds: updatedUserIds }) // Actualizar lista de usuarios
-      console.log('Álbum eliminado del usuario pero no de la base de datos')
+      await updateDoc(albumRef, { userIds: updatedUserIds })
     }
   } catch (error) {
     console.error('Error al eliminar el álbum:', error)
@@ -331,17 +289,12 @@ export const deleteAlbumById = async (albumId, userId) => {
 export const getAlbums = async () => {
   const colRef = collection(db, albumsCollectionName)
   const result = await getDocs(query(colRef))
-
-  const albumsData = getArrayFromCollection(result)
-  console.log('📀 Álbumes obtenidos de Firebase:', albumsData)
-
-  return albumsData
+  return getArrayFromCollection(result)
 }
 
 // GET ALBUMS BY USER
 export const getAlbumsByUser = async userId => {
   if (!userId) {
-    console.error('❌ Error: usuario no autenticado')
     return []
   }
 
@@ -349,20 +302,12 @@ export const getAlbumsByUser = async userId => {
   const result = await getDocs(
     query(colRef, where('userIds', 'array-contains', userId))
   )
-
-  const userAlbumsData = getArrayFromCollection(result)
-  console.log(
-    `📀 Álbumes del usuario ${userId} obtenidos de Firebase:`,
-    userAlbumsData
-  )
-
-  return userAlbumsData
+  return getArrayFromCollection(result)
 }
 
 // GET ALBUM BY ID
 export const getAlbumById = async id => {
   if (!id) {
-    console.error('❌ Error: ID no válido para getAlbumById')
     return null
   }
 
@@ -371,46 +316,19 @@ export const getAlbumById = async id => {
     const albumSnap = await getDoc(albumRef)
 
     if (!albumSnap.exists()) {
-      console.warn(`⚠️ Álbum con ID ${id} no encontrado en Firestore`)
       return null
     }
 
     return albumSnap.data()
   } catch (error) {
-    console.error('❌ Error obteniendo álbum de Firestore:', error)
+    console.error('Error obteniendo álbum de Firestore:', error)
     return null
   }
 }
 
-// export const getAlbumById = async albumId => {
-//   const albumRef = doc(db, albumsCollectionName, albumId)
-//   const albumSnap = await getDoc(albumRef)
-
-//   if (!albumSnap.exists()) {
-//     throw new Error('Álbum no encontrado')
-//   }
-
-//   const albumData = albumSnap.data()
-
-//   console.log('📀 Datos obtenidos de Firebase:', albumData)
-
-//   // Obtener los nombres de los usuarios de la wishlist
-//   const wishlistRef = collection(db, wishlistCollectionName)
-//   const wishlistSnap = await getDocs(
-//     query(wishlistRef, where('id', '==', albumId))
-//   )
-
-//   const wishlistUserNames = wishlistSnap.docs.flatMap(
-//     doc => doc.data().userNames
-//   )
-
-//   return { ...albumData, wishlistUserNames }
-// }
-
 // CREATE COLLECTION
-// api.js
 export const createCollection = async obj => {
-  const colRef = collection(db, collectionsCollectionName) // Asegúrate del nombre exacto de la colección
+  const colRef = collection(db, collectionsCollectionName)
   const docRef = await addDoc(colRef, obj)
   return docRef.id
 }
@@ -431,49 +349,30 @@ export const deleteCollection = async id => {
 export const getCollections = async () => {
   const colRef = collection(db, collectionsCollectionName)
   const result = await getDocs(query(colRef))
-
-  const collectionsData = getArrayFromCollection(result)
-  console.log('📚 Colecciones obtenidas de Firebase:', collectionsData)
-
-  return collectionsData
+  return getArrayFromCollection(result)
 }
 
 // GET COLLECTIONS BY USER
 export const getCollectionsByUser = async userId => {
   if (!userId) {
-    console.error('❌ Error: usuario no autenticado')
     return []
   }
 
-  console.log(`📡 Consultando colecciones en Firebase para usuario: ${userId}`)
-
   try {
-    // 🔹 Referencia a la colección "collections"
     const colRef = collection(db, 'collections')
-
-    // 🔍 Consulta para obtener las colecciones del usuario por su userId
     const q = query(colRef, where('userId', '==', userId))
     const result = await getDocs(q)
 
     if (result.empty) {
-      console.warn(`⚠️ No se encontraron colecciones para el usuario ${userId}`)
       return []
     }
 
-    // ✅ Mapear los resultados y devolver un array de colecciones
-    const collectionsData = result.docs.map(doc => ({
+    return result.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }))
-
-    console.log(
-      `📚 Colecciones del usuario ${userId} obtenidas de Firebase:`,
-      collectionsData
-    )
-
-    return collectionsData
   } catch (error) {
-    console.error(`❌ Error obteniendo colecciones de Firebase:`, error)
+    console.error(`Error obteniendo colecciones de Firebase:`, error)
     return []
   }
 }
@@ -548,21 +447,13 @@ export const getUserById = async userId => {
 export const addToWishlist = async (userId, album, updateState) => {
   try {
     if (!userId || !album || !album.id) {
-      console.error('❌ Error: userId o album.id no son válidos:', {
-        userId,
-        album
-      })
       return
     }
 
-    console.log('📀 Intentando añadir álbum a la wishlist:', album)
-
-    // Obtenemos el nombre del usuario
     const userDocRef = doc(db, 'users', userId)
     const userDoc = await getDoc(userDocRef)
     const userName = userDoc.exists() ? userDoc.data().name : 'Unknown User'
 
-    // Estructura de la entrada de wishlist
     const wishlistItemData = {
       albumId: album.id,
       albumName: album.name,
@@ -576,12 +467,10 @@ export const addToWishlist = async (userId, album, updateState) => {
       addedAt: new Date().toISOString()
     }
 
-    // Añadir el documento a la colección "wishlist"
     await addDoc(collection(db, wishlistCollectionName), wishlistItemData)
-    console.log('✅ Álbum añadido a la wishlist con éxito en Firestore.')
     if (updateState) updateState(true)
   } catch (error) {
-    console.error('❌ Error añadiendo a wishlist:', error)
+    console.error('Error añadiendo a wishlist:', error)
   }
 }
 
@@ -598,9 +487,8 @@ export const removeFromWishlist = async (userId, albumId) => {
     snapshot.forEach(async docSnap => {
       await deleteDoc(docSnap.ref)
     })
-    console.log('✅ Álbum eliminado de la wishlist en Firestore.')
   } catch (error) {
-    console.error('❌ Error eliminando de wishlist:', error)
+    console.error('Error eliminando de wishlist:', error)
     throw error
   }
 }
@@ -613,7 +501,7 @@ export const getWishlist = async userId => {
     const snapshot = await getDocs(q)
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
   } catch (error) {
-    console.error('❌ Error obteniendo wishlist:', error)
+    console.error('Error obteniendo wishlist:', error)
     return []
   }
 }

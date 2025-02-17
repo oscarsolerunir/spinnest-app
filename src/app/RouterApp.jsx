@@ -9,7 +9,7 @@ import AddAlbumPage from '../pages/AddAlbumPage'
 import AlbumDetailsPage from '../pages/AlbumDetailsPage'
 import UserAlbumsPage from '../pages/UserAlbumsPage'
 import AddCollectionPage from '../pages/AddCollectionPage'
-import EditCollection from '../pages/Collections/EditCollection'
+import EditCollectionPage from '../pages/EditCollectionPage'
 import CollectionDetailsPage from '../pages/CollectionDetailsPage'
 import UserCollectionsPage from '../pages/UserCollectionsPage'
 import LoginPage from '../pages/LoginPage'
@@ -66,7 +66,7 @@ const RouterApp = () => {
                   path="/edit-collection/:id"
                   element={
                     <PrivateRoute>
-                      <EditCollection />
+                      <EditCollectionPage />
                     </PrivateRoute>
                   }
                 />

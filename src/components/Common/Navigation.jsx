@@ -165,7 +165,7 @@ const Navigation = () => {
   }
 
   return (
-    <nav className="bg-gray-800 p-4 flex justify-between items-center">
+    <nav className="bg-gray-800 pt-4 flex justify-between items-center">
       <button
         className="text-white text-2xl md:hidden"
         onClick={() => setMenuOpen(!menuOpen)}

@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Estilos adicionales */
+body {
+  background-color: black; /* Spotify Black */
+  color: #ffffff; /* Spotify White */
+  font-family: 'Circular', 'Helvetica', 'Arial', 'sans-serif';
+}

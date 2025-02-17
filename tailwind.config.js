@@ -3,21 +3,18 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     fontFamily: {
-      display: ['Gilroy', 'sans-serif'],
-      body: ['Graphik', 'sans-serif']
+      display: ['Circular', 'Helvetica', 'Arial', 'sans-serif'],
+      body: ['Circular', 'Helvetica', 'Arial', 'sans-serif']
     },
     extend: {
       colors: {
-        cyan: '#9cdbff',
-        primary: '#1DA1F2',
-        secondary: '#14171A',
-        accent: '#657786',
-        background: '#E1E8ED',
-        surface: '#F5F8FA'
-      },
-      margin: {
-        96: '24rem',
-        128: '32rem'
+        primary: '#8d81f7',
+        accent: '#a499ff',
+        secondary: '#f5ea00',
+        black: '#191414',
+        white: '#edecf9',
+        gray: '#B3B3B3',
+        darkgray: '#282828'
       },
       spacing: {
         128: '32rem',

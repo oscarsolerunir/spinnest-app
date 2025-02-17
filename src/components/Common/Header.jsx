@@ -4,7 +4,7 @@ import Navigation from './Navigation'
 
 const Header = () => {
   return (
-    <header className="bg-gray-800 text-white p-5 text-center border-b-2 border-gray-700">
+    <header className="bg-black text-white p-5 text-center border-b-2 border-darkgray ">
       <Link to="/" className="text-white no-underline hover:underline">
         <Logo />
       </Link>

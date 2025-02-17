@@ -1,14 +1,14 @@
 import Header from '../components/Common/Header'
 import Footer from '../components/Common/Footer'
 
-const DefaultLayout = ({ children }) => {
+const PublicLayout = ({ children }) => {
   return (
     <>
       <Header />
-      <main className="bg-black p-5 text-white font-body">{children}</main>
+      <main className="p-5">{children}</main>
       <Footer />
     </>
   )
 }
 
-export default DefaultLayout
+export default PublicLayout

@@ -1,4 +1,4 @@
-import EditCollection from '../../components/Collections/EditCollection'
+import EditCollection from '../components/Collections/EditCollection'
 
 const EditCollectionPage = () => {
   return (

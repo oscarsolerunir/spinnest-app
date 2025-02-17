@@ -90,7 +90,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
   }
 
   return (
-    <form className="flex flex-col max-w-md mx-auto">
+    <form className="flex flex-col mx-auto">
       <h2 className="text-xl font-bold mb-4">Buscar álbumes por artista</h2>
       <label className="mb-2 font-bold">Artista:</label>
       <input
@@ -98,7 +98,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         placeholder="Nombre del artista"
         value={artist}
         onChange={e => setArtist(e.target.value)}
-        className="mb-4 p-2 text-lg border rounded"
+        className="mb-4 p-4 text-lg border-none rounded bg-darkgray"
       />
       {loading && <p>🔄 Cargando resultados...</p>}
       {error && <p className="text-red-500">{error}</p>}
