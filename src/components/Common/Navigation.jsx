@@ -164,6 +164,10 @@ const Navigation = () => {
     }
   }
 
+  if (!user) {
+    return null
+  }
+
   return (
     <nav className="pt-4 flex justify-between items-center">
       <button
@@ -175,9 +179,9 @@ const Navigation = () => {
       <ul
         className={`${
           menuOpen ? 'flex' : 'hidden'
-        } md:flex flex-col md:flex-row md:items-center w-full md:w-auto`}
+        } flex-col items-center md:flex md:flex-row md:items-center w-full md:w-auto md:space-x-4`}
       >
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/"
             className={`${
@@ -187,7 +191,7 @@ const Navigation = () => {
             Explorar
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/feed"
             className={`${
@@ -199,7 +203,7 @@ const Navigation = () => {
             Feed {newContent && '¡Nuevos!'}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/albums"
             className={`${
@@ -222,7 +226,7 @@ const Navigation = () => {
             )}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/collections"
             className={`${
@@ -247,7 +251,7 @@ const Navigation = () => {
             )}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/messages"
             className={`${
@@ -270,7 +274,7 @@ const Navigation = () => {
             )}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/followers"
             className={`${
@@ -293,7 +297,7 @@ const Navigation = () => {
             )}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/following"
             className={`${
@@ -316,7 +320,7 @@ const Navigation = () => {
             )}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/wishlist"
             className={`${
@@ -339,7 +343,7 @@ const Navigation = () => {
             )}
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <Link
             to="/profile"
             className={`${
@@ -351,7 +355,7 @@ const Navigation = () => {
             Perfil
           </Link>
         </li>
-        <li className="m-2">
+        <li className="m-2 md:m-0">
           <button
             onClick={handleSignOut}
             className="text-gray no-underline hover:text-white"

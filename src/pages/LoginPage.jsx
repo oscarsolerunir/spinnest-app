@@ -36,45 +36,47 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow-md">
+    <div className="max-w-md mx-auto my-10 p-4">
       <h1 className="text-3xl font-bold mb-4">Bienvenido a Spinnest</h1>
       <p className="mb-4">Comparte tu colección de discos con tus amigos</p>
       <form onSubmit={handleLogin} className="space-y-4">
         <h2 className="text-2xl font-semibold mb-2">Login</h2>
         <div>
-          <label className="block text-sm font-medium text-gray">Email:</label>
+          <label className="block text-sm font-medium text-gray mb-3">
+            Email:
+          </label>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray">
-            Password:
+          <label className="block text-sm font-medium text-gray mb-3">
+            Contraseña:
           </label>
           <input
-            type="password"
+            type="contraseña"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
           />
         </div>
         {error && <p className="text-red-500">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="mt-2 w-full px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>
-        <p className="mt-4">
-          Not have an account?{' '}
+        <p className="mt-4 block text-center">
+          ¿No tienes cuenta?{' '}
           <Link to="/register" className="text-primary hover:underline">
-            Register here
+            Regístrate aquí
           </Link>
         </p>
       </form>
