@@ -31,6 +31,11 @@ const UserAlbumsPage = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Tus álbumes</h1>
+      <Link to="/add-album">
+        <button className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold">
+          Añadir álbum
+        </button>
+      </Link>
       {userAlbums.length > 0 ? (
         <AlbumsList
           albums={userAlbums}
@@ -39,11 +44,6 @@ const UserAlbumsPage = () => {
       ) : (
         <p>No has añadido ningún álbum todavía.</p>
       )}
-      <Link to="/add-album">
-        <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Añadir álbum
-        </button>
-      </Link>
     </div>
   )
 }

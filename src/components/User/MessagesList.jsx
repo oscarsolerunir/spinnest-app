@@ -76,7 +76,7 @@ const UserConversationsPage = () => {
             <li
               key={convo.id}
               onClick={() => handleConversationClick(convo.id)}
-              className={`p-2 border rounded cursor-pointer ${
+              className={`p-4 rounded-md bg-darkgray hover:bg-dark cursor-pointer ${
                 convo.read ? 'font-normal' : 'font-bold'
               }`}
             >

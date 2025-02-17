@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 
@@ -12,32 +12,47 @@ const ItemCollection = ({ collection }) => {
 
   const isOwner = currentUser && currentUser.uid === collection.userId
 
+  const albumsToShow = collection.albums.slice(0, 4)
+  const emptySlots = 4 - albumsToShow.length
+
   return (
     <div
       onClick={handleClick}
-      className="border border-gray-300 rounded-lg p-4 text-center cursor-pointer mb-5 transition-transform transform hover:scale-105"
+      className="rounded-2xl p-4 cursor-pointer mb-5 transition-transform transform hover:bg-darkgray"
     >
-      <ul className="flex flex-wrap justify-center">
-        {collection.albums.map(album => (
-          <li key={album.id} className="m-2">
+      <div className="grid grid-cols-2 gap-2">
+        {albumsToShow.map(album => (
+          <div key={album.id} className="w-full h-24 bg-gray-200 rounded-md">
             <img
               src={album.image}
               alt={album.name}
-              className="w-12 h-12 rounded-md"
+              className="w-full h-full object-cover rounded-md"
             />
-            <p className="text-sm">{album.name}</p>
-          </li>
+          </div>
         ))}
-      </ul>
-      <h3 className="mt-2 mb-2 text-lg font-semibold">{collection.name}</h3>
-      <p>{collection.description}</p>
+        {Array.from({ length: emptySlots }).map((_, index) => (
+          <div key={index} className="w-full h-24 bg-darkgray rounded-md"></div>
+        ))}
+      </div>
+      <h3 className="mt-2 mb-2 text-lg font-semibold truncate">
+        {collection.name}
+      </h3>
+      {collection.description && (
+        <p className="text-gray truncate">{collection.description}</p>
+      )}
+      <Link
+        to={`/collection/${collection.id}`}
+        className="hover:underline my-2 block text-spotifyGreen"
+      >
+        Ver colección
+      </Link>
       {isOwner && (
         <button
           onClick={e => {
             e.stopPropagation()
             navigate(`/edit-collection/${collection.id}`)
           }}
-          className="mt-2 px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          className="mt-2 px-4 py-2 text-white bg-darkgray rounded-full hover:bg-black"
         >
           Editar Colección
         </button>

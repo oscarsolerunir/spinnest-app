@@ -165,9 +165,9 @@ const Navigation = () => {
   }
 
   return (
-    <nav className="bg-gray-800 pt-4 flex justify-between items-center">
+    <nav className="pt-4 flex justify-between items-center">
       <button
-        className="text-white text-2xl md:hidden"
+        className="text-gray text-2xl md:hidden"
         onClick={() => setMenuOpen(!menuOpen)}
       >
         {menuOpen ? <FaTimes /> : <FaBars />}
@@ -178,67 +178,175 @@ const Navigation = () => {
         } md:flex flex-col md:flex-row md:items-center w-full md:w-auto`}
       >
         <li className="m-2">
-          <Link to="/" className="text-white no-underline hover:underline">
+          <Link
+            to="/"
+            className={`${
+              location.pathname === '/' ? 'text-primary' : 'text-gray'
+            } no-underline ${location.pathname !== '/' && 'hover:text-white'}`}
+          >
             Explorar
           </Link>
         </li>
         <li className="m-2">
-          <Link to="/feed" className="text-white no-underline hover:underline">
+          <Link
+            to="/feed"
+            className={`${
+              location.pathname === '/feed' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/feed' && 'hover:text-white'
+            }`}
+          >
             Feed {newContent && '¡Nuevos!'}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/albums"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/albums' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/albums' && 'hover:text-white'
+            } flex items-center`}
           >
-            Albums {albumsCount > 0 && `(${albumsCount})`}
+            Albums
+            {albumsCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/albums'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkgray text-white'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {albumsCount}
+              </span>
+            )}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/collections"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/collections'
+                ? 'text-primary'
+                : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/collections' && 'hover:text-white'
+            } flex items-center`}
           >
-            Colecciones {collectionsCount > 0 && `(${collectionsCount})`}
+            Colecciones
+            {collectionsCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/collections'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkgray text-white'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {collectionsCount}
+              </span>
+            )}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/messages"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/messages' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/messages' && 'hover:text-white'
+            } flex items-center`}
           >
-            Mensajes {unreadCount > 0 && `(${unreadCount})`}
+            Mensajes
+            {unreadCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/messages'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkgray text-white'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {unreadCount}
+              </span>
+            )}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/followers"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/followers' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/followers' && 'hover:text-white'
+            } flex items-center`}
           >
-            Seguidores {followersCount > 0 && `(${followersCount})`}
+            Seguidores
+            {followersCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/followers'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkgray text-white'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {followersCount}
+              </span>
+            )}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/following"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/following' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/following' && 'hover:text-white'
+            } flex items-center`}
           >
-            Siguiendo {followingCount > 0 && `(${followingCount})`}
+            Siguiendo
+            {followingCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/following'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkgray text-white'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {followingCount}
+              </span>
+            )}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/wishlist"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/wishlist' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/wishlist' && 'hover:text-white'
+            } flex items-center`}
           >
-            Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+            Wishlist
+            {wishlistCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/wishlist'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkgray text-white'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {wishlistCount}
+              </span>
+            )}
           </Link>
         </li>
         <li className="m-2">
           <Link
             to="/profile"
-            className="text-white no-underline hover:underline"
+            className={`${
+              location.pathname === '/profile' ? 'text-primary' : 'text-gray'
+            } no-underline ${
+              location.pathname !== '/profile' && 'hover:text-white'
+            }`}
           >
             Perfil
           </Link>
@@ -246,7 +354,7 @@ const Navigation = () => {
         <li className="m-2">
           <button
             onClick={handleSignOut}
-            className="text-white no-underline hover:underline"
+            className="text-gray no-underline hover:text-white"
           >
             Cerrar sesión
           </button>

@@ -116,7 +116,10 @@ const AlbumItem = ({
     !(album.userIds && album.userIds.includes(currentUser?.uid))
 
   return (
-    <div className="rounded-2xl p-4 cursor-pointer mb-5 hover:bg-darkgray">
+    <Link
+      to={`/album/${album.id}`}
+      className="block rounded-2xl p-4 cursor-pointer mb-5 hover:bg-darkgray"
+    >
       <img
         src={album.image}
         alt={album.name}
@@ -129,7 +132,10 @@ const AlbumItem = ({
       <p className="text-gray truncate">Discográfica: {albumLabel}</p>
 
       {showDetailsLink && (
-        <Link to={`/album/${album.id}`} className="hover:underline my-2 block">
+        <Link
+          to={`/album/${album.id}`}
+          className="hover:underline my-2 block text-primary"
+        >
           Ver detalles
         </Link>
       )}
@@ -158,7 +164,7 @@ const AlbumItem = ({
           {isInWishlist ? 'Eliminar de wishlist' : 'Añadir a wishlist'}
         </button>
       )}
-    </div>
+    </Link>
   )
 }
 

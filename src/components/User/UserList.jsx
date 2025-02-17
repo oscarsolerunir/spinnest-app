@@ -11,6 +11,7 @@ import {
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import { useNavigate } from 'react-router-dom'
+import { FaEnvelope } from 'react-icons/fa'
 
 const UserList = ({ userId, filterType }) => {
   const [users, setUsers] = useState([])
@@ -153,59 +154,58 @@ const UserList = ({ userId, filterType }) => {
   const filteredUsersList = filteredUsers()
 
   return (
-    <div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
       {filteredUsersList.length > 0 ? (
-        <ul className="space-y-4">
-          {filteredUsersList.map(u => (
-            <li
-              key={u.id}
-              onClick={() => handleUserClick(u.id)}
-              className="cursor-pointer p-4 border rounded hover:bg-gray-100"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-bold">{u.name}</p>
-                  <p>
-                    {userAlbums[u.id] || 0} álbums y{' '}
-                    {userCollections[u.id] || 0} colecciones
-                  </p>
-                </div>
-                <div className="flex space-x-2">
-                  {following.some(f => f.followingId === u.id) ? (
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        handleUnfollow(u.id)
-                      }}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Dejar de seguir
-                    </button>
-                  ) : (
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        handleFollow(u.id)
-                      }}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Seguir
-                    </button>
-                  )}
-                  <button
-                    onClick={e => {
-                      e.stopPropagation()
-                      handleSendMessage(u.id)
-                    }}
-                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                  >
-                    Enviar mensaje
-                  </button>
-                </div>
+        filteredUsersList.map(u => (
+          <div
+            key={u.id}
+            onClick={() => handleUserClick(u.id)}
+            className="rounded-2xl p-4 cursor-pointer mb-5 transition-transform transform hover:bg-darkgray"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-bold text-lg truncate">{u.name}</p>
+                <p className="text-gray truncate">
+                  {userAlbums[u.id] || 0} álbums y {userCollections[u.id] || 0}{' '}
+                  colecciones
+                </p>
               </div>
-            </li>
-          ))}
-        </ul>
+            </div>
+            <div className="space-x-2 mt-4">
+              {following.some(f => f.followingId === u.id) ? (
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleUnfollow(u.id)
+                  }}
+                  className="px-4 py-2 bg-darkgray text-white rounded-full hover:bg-black"
+                >
+                  Dejar de seguir
+                </button>
+              ) : (
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    handleFollow(u.id)
+                  }}
+                  className="px-4 py-2 bg-primary text-white rounded-full hover:bg-accent"
+                >
+                  Seguir
+                </button>
+              )}
+              <button
+                onClick={e => {
+                  e.stopPropagation()
+                  handleSendMessage(u.id)
+                }}
+                className="py-2 mt-3 bg-gray-500 text-white flex items-center"
+              >
+                <FaEnvelope className="mr-2" />
+                Enviar mensaje
+              </button>
+            </div>
+          </div>
+        ))
       ) : (
         <p>
           {filterType === 'followers'

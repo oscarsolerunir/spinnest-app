@@ -3,8 +3,8 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     fontFamily: {
-      display: ['Circular', 'Helvetica', 'Arial', 'sans-serif'],
-      body: ['Circular', 'Helvetica', 'Arial', 'sans-serif']
+      display: ['Inter', 'Helvetica', 'Arial', 'sans-serif'],
+      body: ['Inter', 'Helvetica', 'Arial', 'sans-serif']
     },
     extend: {
       colors: {
@@ -12,6 +12,7 @@ export default {
         accent: '#a499ff',
         secondary: '#f5ea00',
         black: '#191414',
+        dark: '#111111',
         white: '#edecf9',
         gray: '#B3B3B3',
         darkgray: '#282828'

@@ -84,29 +84,29 @@ const UserProfileForm = () => {
     <form onSubmit={handleSaveChanges} className="space-y-4">
       <h2 className="text-2xl font-bold mb-4">Perfil de usuario</h2>
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray mb-3">
           Nombre:
         </label>
         <input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray mb-3">
           Email:
         </label>
         <input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray mb-3">
           Contraseña:
         </label>
         <input
@@ -114,21 +114,21 @@ const UserProfileForm = () => {
           value={password}
           onChange={e => setPassword(e.target.value)}
           placeholder="Leave blank to keep current password"
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
         />
       </div>
       {error && <p className="text-red-500">{error}</p>}
       <div className="flex space-x-2">
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
         >
           Guardar cambios
         </button>
         <button
           type="button"
           onClick={handleDeleteAccount}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-red-500 hover:bg-red-600 text-lg font-bold"
         >
           Borrar cuenta
         </button>

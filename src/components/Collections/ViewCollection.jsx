@@ -45,7 +45,7 @@ const ViewCollection = () => {
   const isOwner = currentUser && currentUser.uid === collection.userId
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{collection.name}</h1>
       <p>
         <strong>Creada por:</strong> {collection.userName}
@@ -68,7 +68,7 @@ const ViewCollection = () => {
       {isOwner && (
         <button
           onClick={() => navigate(`/edit-collection/${id}`)}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
         >
           Editar Colección
         </button>

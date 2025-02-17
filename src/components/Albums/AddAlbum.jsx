@@ -91,11 +91,13 @@ const AddAlbum = ({ handleSaveAlbum }) => {
 
   return (
     <form className="flex flex-col mx-auto">
-      <h2 className="text-xl font-bold mb-4">Buscar álbumes por artista</h2>
-      <label className="mb-2 font-bold">Artista:</label>
+      <h2 className="text-xl font-bold mb-4">
+        Busca álbumes por artista o álbum
+      </h2>
+      <label className="mb-2 font-bold">Artista o álbum:</label>
       <input
         type="text"
-        placeholder="Nombre del artista"
+        placeholder="Nombre del artista o del álbum"
         value={artist}
         onChange={e => setArtist(e.target.value)}
         className="mb-4 p-4 text-lg border-none rounded bg-darkgray"

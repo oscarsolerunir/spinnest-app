@@ -85,7 +85,7 @@ const EditCollection = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Editar Colección</h1>
       <CollectionForm
         initialName={collection.name}
