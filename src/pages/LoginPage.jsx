@@ -38,7 +38,9 @@ const LoginPage = () => {
   return (
     <div className="max-w-md mx-auto my-10 p-4">
       <h1 className="text-3xl font-bold mb-4">Bienvenido a Spinnest</h1>
-      <p className="mb-4">Comparte tu colección de discos con tus amigos</p>
+      <p className="mb-4">
+        Organiza y comparte tu colección de discos con tus amigos
+      </p>
       <form onSubmit={handleLogin} className="space-y-4">
         <h2 className="text-2xl font-semibold mb-2">Login</h2>
         <div>
