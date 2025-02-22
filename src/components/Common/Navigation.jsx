@@ -171,7 +171,7 @@ const Navigation = () => {
   return (
     <nav className="pt-4 flex justify-between items-center">
       <button
-        className="text-gray text-2xl md:hidden"
+        className="text-light text-2xl md:hidden"
         onClick={() => setMenuOpen(!menuOpen)}
       >
         {menuOpen ? <FaTimes /> : <FaBars />}
@@ -185,8 +185,10 @@ const Navigation = () => {
           <Link
             to="/"
             className={`${
-              location.pathname === '/' ? 'text-primary' : 'text-gray'
-            } no-underline ${location.pathname !== '/' && 'hover:text-white'}`}
+              location.pathname === '/' ? 'text-primary' : 'text-light'
+            } no-underline ${
+              location.pathname !== '/' && 'hover:text-lightaccent'
+            }`}
           >
             Explorar
           </Link>
@@ -195,9 +197,9 @@ const Navigation = () => {
           <Link
             to="/feed"
             className={`${
-              location.pathname === '/feed' ? 'text-primary' : 'text-gray'
+              location.pathname === '/feed' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/feed' && 'hover:text-white'
+              location.pathname !== '/feed' && 'hover:text-lightaccent'
             }`}
           >
             Feed {newContent && '¡Nuevos!'}
@@ -207,9 +209,9 @@ const Navigation = () => {
           <Link
             to="/albums"
             className={`${
-              location.pathname === '/albums' ? 'text-primary' : 'text-gray'
+              location.pathname === '/albums' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/albums' && 'hover:text-white'
+              location.pathname !== '/albums' && 'hover:text-lightaccent'
             } flex items-center`}
           >
             Albums
@@ -218,7 +220,7 @@ const Navigation = () => {
                 className={`ml-2 ${
                   location.pathname === '/albums'
                     ? 'bg-primary text-black'
-                    : 'bg-darkgray text-white'
+                    : 'bg-darkaccent text-light'
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {albumsCount}
@@ -232,9 +234,9 @@ const Navigation = () => {
             className={`${
               location.pathname === '/collections'
                 ? 'text-primary'
-                : 'text-gray'
+                : 'text-light'
             } no-underline ${
-              location.pathname !== '/collections' && 'hover:text-white'
+              location.pathname !== '/collections' && 'hover:text-lightaccent'
             } flex items-center`}
           >
             Colecciones
@@ -243,7 +245,7 @@ const Navigation = () => {
                 className={`ml-2 ${
                   location.pathname === '/collections'
                     ? 'bg-primary text-black'
-                    : 'bg-darkgray text-white'
+                    : 'bg-darkaccent text-light'
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {collectionsCount}
@@ -255,9 +257,9 @@ const Navigation = () => {
           <Link
             to="/messages"
             className={`${
-              location.pathname === '/messages' ? 'text-primary' : 'text-gray'
+              location.pathname === '/messages' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/messages' && 'hover:text-white'
+              location.pathname !== '/messages' && 'hover:text-lightaccent'
             } flex items-center`}
           >
             Mensajes
@@ -266,7 +268,7 @@ const Navigation = () => {
                 className={`ml-2 ${
                   location.pathname === '/messages'
                     ? 'bg-primary text-black'
-                    : 'bg-darkgray text-white'
+                    : 'bg-darkaccent text-light'
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {unreadCount}
@@ -278,9 +280,9 @@ const Navigation = () => {
           <Link
             to="/followers"
             className={`${
-              location.pathname === '/followers' ? 'text-primary' : 'text-gray'
+              location.pathname === '/followers' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/followers' && 'hover:text-white'
+              location.pathname !== '/followers' && 'hover:text-lightaccent'
             } flex items-center`}
           >
             Seguidores
@@ -289,7 +291,7 @@ const Navigation = () => {
                 className={`ml-2 ${
                   location.pathname === '/followers'
                     ? 'bg-primary text-black'
-                    : 'bg-darkgray text-white'
+                    : 'bg-darkaccent text-light'
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {followersCount}
@@ -301,9 +303,9 @@ const Navigation = () => {
           <Link
             to="/following"
             className={`${
-              location.pathname === '/following' ? 'text-primary' : 'text-gray'
+              location.pathname === '/following' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/following' && 'hover:text-white'
+              location.pathname !== '/following' && 'hover:text-lightaccent'
             } flex items-center`}
           >
             Siguiendo
@@ -312,7 +314,7 @@ const Navigation = () => {
                 className={`ml-2 ${
                   location.pathname === '/following'
                     ? 'bg-primary text-black'
-                    : 'bg-darkgray text-white'
+                    : 'bg-darkaccent text-light'
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {followingCount}
@@ -324,9 +326,9 @@ const Navigation = () => {
           <Link
             to="/wishlist"
             className={`${
-              location.pathname === '/wishlist' ? 'text-primary' : 'text-gray'
+              location.pathname === '/wishlist' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/wishlist' && 'hover:text-white'
+              location.pathname !== '/wishlist' && 'hover:text-lightaccent'
             } flex items-center`}
           >
             Wishlist
@@ -335,7 +337,7 @@ const Navigation = () => {
                 className={`ml-2 ${
                   location.pathname === '/wishlist'
                     ? 'bg-primary text-black'
-                    : 'bg-darkgray text-white'
+                    : 'bg-darkaccent text-light'
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {wishlistCount}
@@ -347,9 +349,9 @@ const Navigation = () => {
           <Link
             to="/profile"
             className={`${
-              location.pathname === '/profile' ? 'text-primary' : 'text-gray'
+              location.pathname === '/profile' ? 'text-primary' : 'text-light'
             } no-underline ${
-              location.pathname !== '/profile' && 'hover:text-white'
+              location.pathname !== '/profile' && 'hover:text-lightaccent'
             }`}
           >
             Perfil
@@ -358,7 +360,7 @@ const Navigation = () => {
         <li className="m-2 md:m-0">
           <button
             onClick={handleSignOut}
-            className="text-gray no-underline hover:text-white"
+            className="text-light no-underline hover:text-lightaccent"
           >
             Cerrar sesión
           </button>

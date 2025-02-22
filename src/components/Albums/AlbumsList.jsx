@@ -26,11 +26,11 @@ const AlbumsList = ({
   }
 
   if (!albums || albums.length === 0) {
-    return <p>No hay álbumes disponibles.</p>
+    return <p className="mt-4">No hay álbumes disponibles.</p>
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
       {albums.map(album => {
         if (!album || !album.id || !album.name) {
           return null

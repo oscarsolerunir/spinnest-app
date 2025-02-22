@@ -18,11 +18,11 @@ const ItemCollection = ({ collection }) => {
   return (
     <div
       onClick={handleClick}
-      className="rounded-2xl p-4 cursor-pointer mb-5 transition-transform transform hover:bg-darkgray"
+      className="rounded-2xl p-4 cursor-pointer mb-5 transition-transform transform hover:bg-darkaccent group"
     >
       <div className="grid grid-cols-2 gap-2">
         {albumsToShow.map(album => (
-          <div key={album.id} className="w-full h-24 bg-gray-200 rounded-md">
+          <div key={album.id} className="w-full h-24 bg-darkaccent rounded-md">
             <img
               src={album.image}
               alt={album.name}
@@ -31,14 +31,17 @@ const ItemCollection = ({ collection }) => {
           </div>
         ))}
         {Array.from({ length: emptySlots }).map((_, index) => (
-          <div key={index} className="w-full h-24 bg-darkgray rounded-md"></div>
+          <div
+            key={index}
+            className="w-full h-24 bg-darkaccent group-hover:bg-dark rounded-md"
+          ></div>
         ))}
       </div>
       <h3 className="mt-2 mb-2 text-lg font-semibold truncate">
         {collection.name}
       </h3>
       {collection.description && (
-        <p className="text-gray truncate">{collection.description}</p>
+        <p className="text-light truncate">{collection.description}</p>
       )}
       <Link
         to={`/collection/${collection.id}`}
@@ -52,7 +55,7 @@ const ItemCollection = ({ collection }) => {
             e.stopPropagation()
             navigate(`/edit-collection/${collection.id}`)
           }}
-          className="mt-2 px-4 py-2 text-white bg-darkgray rounded-full hover:bg-black"
+          className="mt-2 px-4 py-2 text-light bg-darkaccent rounded-full hover:bg-dark"
         >
           Editar Colección
         </button>

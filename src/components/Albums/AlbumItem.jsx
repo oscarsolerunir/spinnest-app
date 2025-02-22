@@ -118,7 +118,7 @@ const AlbumItem = ({
   return (
     <Link
       to={`/album/${album.id}`}
-      className="block rounded-2xl p-4 cursor-pointer mb-5 hover:bg-darkgray"
+      className="block rounded-2xl p-4 cursor-pointer mb-5 text-light hover:bg-darkaccent"
     >
       <img
         src={album.image}
@@ -126,10 +126,10 @@ const AlbumItem = ({
         className="max-w-full h-auto rounded-2xl shadow-xl"
       />
       <h3 className="mt-2 mb-2 text-lg font-semibold truncate">{album.name}</h3>
-      <p className="text-gray truncate">Artista: {albumArtist}</p>
-      <p className="text-gray truncate">Año: {albumYear}</p>
-      <p className="text-gray truncate">Género: {albumGenre}</p>
-      <p className="text-gray truncate">Discográfica: {albumLabel}</p>
+      <p className="text-light truncate">Artista: {albumArtist}</p>
+      <p className="text-light truncate">Año: {albumYear}</p>
+      <p className="text-light truncate">Género: {albumGenre}</p>
+      <p className="text-light truncate">Discográfica: {albumLabel}</p>
 
       {showDetailsLink && (
         <Link
@@ -145,8 +145,8 @@ const AlbumItem = ({
           onClick={handleMyAlbumsClick}
           className={`mt-2 px-4 py-2 text-black rounded-full font-medium ${
             isInMyAlbums
-              ? 'bg-darkgray hover:bg-black text-gray'
-              : 'bg-primary hover:bg-accent'
+              ? 'bg-red-500 hover:bg-red-600 text-dark text-medium'
+              : 'bg-primary hover:bg-accent text-medium'
           }`}
         >
           {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
@@ -156,7 +156,7 @@ const AlbumItem = ({
       {shouldShowWishlistButton && (
         <button
           onClick={handleWishlistClick}
-          className="mt-4 text-white rounded flex items-center justify-center"
+          className="mt-4 text-light rounded flex items-center justify-center"
         >
           <span className="mr-2">
             {isInWishlist ? <FaHeart /> : <FaRegHeart />}

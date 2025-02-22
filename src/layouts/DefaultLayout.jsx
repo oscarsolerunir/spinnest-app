@@ -5,7 +5,7 @@ const DefaultLayout = ({ children }) => {
   return (
     <>
       <Header />
-      <main className="bg-black p-5 text-white font-body">{children}</main>
+      <main className="bg-dark p-5 text-light h-full">{children}</main>
       <Footer />
     </>
   )

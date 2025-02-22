@@ -4,8 +4,8 @@ import Navigation from './Navigation'
 
 const Header = () => {
   return (
-    <header className="bg-black text-white p-5 text-center border-b-2 border-darkgray ">
-      <Link to="/" className="text-white no-underline hover:underline">
+    <header className="bg-dark text-light p-5 text-center border-b-2 border-darkaccent">
+      <Link to="/" className="text-light hover:no-underline">
         <Logo />
       </Link>
       <Navigation />

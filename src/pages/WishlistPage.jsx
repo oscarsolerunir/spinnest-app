@@ -59,7 +59,7 @@ const WishlistPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Mi Wishlist</h1>
+      <h1 className="text-2xl font-bold mb-4">Wishlist</h1>
       {albums.length > 0 ? (
         <AlbumsList
           albums={albums}
@@ -70,7 +70,7 @@ const WishlistPage = () => {
           handleAddToMyAlbums={handleAddToMyAlbums}
         />
       ) : (
-        <p>No hay álbumes en tu wishlist.</p>
+        <p className="mt-4">No hay álbumes en tu wishlist.</p>
       )}
     </div>
   )

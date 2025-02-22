@@ -1,16 +1,24 @@
-@font-face {
-  font-family: 'Atkinson Hyperlegible';
-  src: url('./assets/fonts/woff2/AtkinsonHyperlegibleNext-Regular.woff2')
-      format('woff2'),
-    url('./assets/fonts/ttf/AtkinsonHyperlegibleNext-Regular.ttf') format('ttf');
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos adicionales */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  src: url(assets/fonts/woff2/AtkinsonHyperlegibleNext-Regular.woff2)
+    format('woff2');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 500;
+  src: url(assets/fonts/woff2/AtkinsonHyperlegibleNext-Medium.woff2)
+    format('woff2');
+}
+
 body {
-  background-color: black; /* Spotify Black */
-  color: #ffffff; /* Spotify White */
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  min-height: 100vh;
 }

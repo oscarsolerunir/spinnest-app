@@ -39,7 +39,7 @@ const CollectionForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray mb-2">
+        <label className="block text-sm font-medium text-light mb-2">
           Nombre:
         </label>
         <input
@@ -47,34 +47,34 @@ const CollectionForm = ({
           value={name}
           onChange={e => setName(e.target.value)}
           required
-          className="mb-4 p-4 text-lg block w-full p-2 bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full p-2 bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray mb-2">
+        <label className="block text-sm font-medium text-light mb-2">
           Descripción:
         </label>
         <textarea
           value={description}
           onChange={e => setDescription(e.target.value)}
-          className="mb-4 p-4 text-lg block w-full bg-darkgray p-2 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full bg-darkaccent p-2 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray mb-2">
+        <label className="block text-sm font-medium text-light mb-2">
           Privacidad:
         </label>
         <select
           value={privacy}
           onChange={e => setPrivacy(e.target.value)}
-          className="mb-4 p-4 text-lg block w-full bg-darkgray p-2 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full bg-darkaccent p-2 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
         >
           <option value="public">Pública</option>
           <option value="private">Privada</option>
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray mb-2">
+        <label className="block text-sm font-medium text-light mb-2">
           Álbums:
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -84,8 +84,8 @@ const CollectionForm = ({
               onClick={() => handleAlbumChange(album)}
               className={`flex items-center space-x-2 p-4 rounded-md cursor-pointer ${
                 selectedAlbums.some(a => a.id === album.id)
-                  ? 'border-2 border-primary bg-black'
-                  : 'bg-darkgray hover:bg-gray-700'
+                  ? 'border-2 border-primary bg-dark'
+                  : 'bg-darkaccent hover:bg-dark'
               }`}
             >
               <input
@@ -99,7 +99,7 @@ const CollectionForm = ({
                 alt={album.name}
                 className="w-12 h-12 rounded-md"
               />
-              <span className="text-white truncate">{album.name}</span>
+              <span className="text-light truncate">{album.name}</span>
             </div>
           ))}
         </div>
@@ -125,7 +125,7 @@ const CollectionForm = ({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            className="px-4 py-2 bg-dark text-light rounded hover:bg-dark"
           >
             Volver a Colecciones
           </button>

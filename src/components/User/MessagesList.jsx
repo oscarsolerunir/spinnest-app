@@ -68,15 +68,14 @@ const UserConversationsPage = () => {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Mensajes</h2>
+    <div className="py-4">
       {conversations.length > 0 ? (
         <ul className="space-y-2">
           {conversations.map(convo => (
             <li
               key={convo.id}
               onClick={() => handleConversationClick(convo.id)}
-              className={`p-4 rounded-md bg-darkgray hover:bg-dark cursor-pointer ${
+              className={`p-4 rounded-md bg-darkaccent hover:bg-dark cursor-pointer ${
                 convo.read ? 'font-normal' : 'font-bold'
               }`}
             >

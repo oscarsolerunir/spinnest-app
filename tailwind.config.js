@@ -3,19 +3,19 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     fontFamily: {
-      display: ['Inter', 'Helvetica', 'Arial', 'sans-serif'],
-      body: ['Inter', 'Helvetica', 'Arial', 'sans-serif']
+      display: ['Atkinson Hyperlegible', 'Helvetica', 'Arial', 'sans-serif'],
+      body: ['Atkinson Hyperlegible', 'Helvetica', 'Arial', 'sans-serif']
     },
     extend: {
       colors: {
-        primary: '#8d81f7',
-        accent: '#a499ff',
-        secondary: '#f5ea00',
-        black: '#191414',
-        dark: '#111111',
-        white: '#edecf9',
-        gray: '#B3B3B3',
-        darkgray: '#282828'
+        primary: '#8D81F7',
+        accent: '#A499FF',
+        secondary: '#81F7B6',
+        dark: '#17161A',
+        darkaccent: '#262529',
+        light: '#EDECF9',
+        lightaccent: '#FCFBFF',
+        neutral: '#A3A2AD'
       },
       spacing: {
         128: '32rem',

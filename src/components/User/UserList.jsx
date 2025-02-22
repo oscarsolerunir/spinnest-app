@@ -154,18 +154,18 @@ const UserList = ({ userId, filterType }) => {
   const filteredUsersList = filteredUsers()
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
       {filteredUsersList.length > 0 ? (
         filteredUsersList.map(u => (
           <div
             key={u.id}
             onClick={() => handleUserClick(u.id)}
-            className="rounded-2xl p-4 cursor-pointer mb-5 transition-transform transform hover:bg-darkgray"
+            className="rounded-2xl p-4 cursor-pointer mb-5 transition-transform transform hover:bg-darkaccent"
           >
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-bold text-lg truncate">{u.name}</p>
-                <p className="text-gray truncate">
+                <p className="text-light truncate">
                   {userAlbums[u.id] || 0} álbums y {userCollections[u.id] || 0}{' '}
                   colecciones
                 </p>
@@ -178,7 +178,7 @@ const UserList = ({ userId, filterType }) => {
                     e.stopPropagation()
                     handleUnfollow(u.id)
                   }}
-                  className="px-4 py-2 bg-darkgray text-white rounded-full hover:bg-black"
+                  className="px-4 py-2 bg-darkaccent text-light rounded-full hover:bg-dark"
                 >
                   Dejar de seguir
                 </button>
@@ -188,7 +188,7 @@ const UserList = ({ userId, filterType }) => {
                     e.stopPropagation()
                     handleFollow(u.id)
                   }}
-                  className="px-4 py-2 bg-primary text-white rounded-full hover:bg-accent"
+                  className="px-4 py-2 bg-primary text-dark text-medium rounded-full hover:bg-accent"
                 >
                   Seguir
                 </button>
@@ -198,7 +198,7 @@ const UserList = ({ userId, filterType }) => {
                   e.stopPropagation()
                   handleSendMessage(u.id)
                 }}
-                className="py-2 mt-3 bg-gray-500 text-white flex items-center"
+                className="py-2 mt-3 text-light flex items-center"
               >
                 <FaEnvelope className="mr-2" />
                 Enviar mensaje

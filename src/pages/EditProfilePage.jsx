@@ -14,7 +14,7 @@ const EditProfilePage = () => {
       <UserProfileForm />
       <button
         onClick={handleCancel}
-        className="mt-4 px-4 py-2 text-white rounded"
+        className="mt-4 px-4 py-2 text-light rounded"
       >
         Cancelar
       </button>

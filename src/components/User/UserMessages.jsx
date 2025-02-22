@@ -120,14 +120,14 @@ const UserMessages = ({ conversationId }) => {
               </strong>{' '}
               {msg.text}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-light">
               {new Date(msg.timestamp.toDate()).toLocaleString()}
             </p>
           </div>
         ))}
       </div>
       {isTyping && (
-        <p className="text-sm text-gray-500">El usuario está escribiendo...</p>
+        <p className="text-sm text-light">El usuario está escribiendo...</p>
       )}
       <div className="flex items-center space-x-2">
         <input
@@ -142,7 +142,7 @@ const UserMessages = ({ conversationId }) => {
         />
         <button
           onClick={handleSendMessage}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 bg-blue-500 text-light rounded hover:bg-blue-600"
         >
           Enviar
         </button>

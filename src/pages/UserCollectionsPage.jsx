@@ -17,7 +17,7 @@ const UserCollectionsPage = () => {
       {user?.uid ? (
         <ListCollections userId={user.uid} />
       ) : (
-        <p>No has añadido ninguna colección todavía.</p>
+        <p className="mt-4">No has añadido ninguna colección todavía.</p>
       )}
     </div>
   )

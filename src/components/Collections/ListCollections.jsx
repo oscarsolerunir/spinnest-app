@@ -48,15 +48,15 @@ const ListCollections = ({ userId, collections, onClick, allUsers }) => {
   }
 
   if (error) {
-    return <p className="text-red-500">{error}</p>
+    return <p className="text-red-500 mt-4">{error}</p>
   }
 
   if (!collectionsState || collectionsState.length === 0) {
-    return <p>No hay colecciones disponibles.</p>
+    return <p className="mt-4">No hay colecciones disponibles.</p>
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
       {collectionsState.map(collection => (
         <ItemCollection
           key={collection.id}

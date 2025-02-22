@@ -44,7 +44,7 @@ const LoginPage = () => {
       <form onSubmit={handleLogin} className="space-y-4">
         <h2 className="text-2xl font-semibold mb-2">Login</h2>
         <div>
-          <label className="block text-sm font-medium text-gray mb-3">
+          <label className="block text-sm font-medium text-light mb-3">
             Email:
           </label>
           <input
@@ -52,11 +52,11 @@ const LoginPage = () => {
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray mb-3">
+          <label className="block text-sm font-medium text-light mb-3">
             Contraseña:
           </label>
           <input
@@ -64,7 +64,7 @@ const LoginPage = () => {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            className="mb-4 p-4 text-lg block w-full bg-darkgray rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
           />
         </div>
         {error && <p className="text-red-500">{error}</p>}

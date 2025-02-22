@@ -54,44 +54,48 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   if (!album) return <p>Álbum no encontrado.</p>
 
   return (
-    <div className="max-w-3xl mx-auto p-4 mb-5 bg-gray-800 rounded-lg shadow-lg">
+    <div className="max-w-3xl mx-auto p-4 mb-5 rounded-lg shadow-lg">
       <img
         src={album.image}
         alt={album.name}
         className="max-w-full h-auto rounded-lg shadow-lg"
       />
-      <h3 className="my-4 text-3xl font-bold text-white">{album.name}</h3>
-      <p className="text-lg text-gray">
+      <h3 className="my-4 text-3xl font-bold text-light">{album.name}</h3>
+      <p className="text-lg text-light">
         {album.artist || 'Artista desconocido'}
       </p>
-      <p className="text-lg text-gray">{album.year || 'Año desconocido'}</p>
-      <p className="text-lg text-gray">{album.genre || 'Género desconocido'}</p>
-      <p className="text-lg text-gray">{album.label || 'Sello desconocido'}</p>
-      <p className="text-lg text-gray">{album.country || 'País desconocido'}</p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">{album.year || 'Año desconocido'}</p>
+      <p className="text-lg text-light">
+        {album.genre || 'Género desconocido'}
+      </p>
+      <p className="text-lg text-light">{album.label || 'Sello desconocido'}</p>
+      <p className="text-lg text-light">
+        {album.country || 'País desconocido'}
+      </p>
+      <p className="text-lg text-light">
         {album.released || 'Fecha de lanzamiento desconocida'}
       </p>
-      <p className="text-lg text-gray">{album.notes || 'Sin notas'}</p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">{album.notes || 'Sin notas'}</p>
+      <p className="text-lg text-light">
         {Array.isArray(album.formats)
           ? album.formats.join(', ')
           : album.formats || 'Formato desconocido'}
       </p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">
         {album.lowest_price ? `$${album.lowest_price}` : 'Precio no disponible'}
       </p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">
         {Array.isArray(album.styles)
           ? album.styles.join(', ')
           : album.styles || 'Estilos no disponibles'}
       </p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">
         Rating: {album.rating || 'Sin rating'}
       </p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">
         Rating Count: {album.rating_count || 0}
       </p>
-      <p className="text-lg text-gray">
+      <p className="text-lg text-light">
         Credits: {album.credits || 'Créditos no disponibles'}
       </p>
       <a
@@ -102,14 +106,14 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
       >
         View on Discogs
       </a>
-      <ol className="list-decimal list-inside text-lg text-gray mt-4">
+      <ol className="list-decimal list-inside text-lg text-light mt-4">
         {Array.isArray(album.tracklist)
           ? album.tracklist.map((track, index) => <li key={index}>{track}</li>)
           : 'Sin lista de pistas'}
       </ol>
       {album.videos?.length > 0 && (
         <div className="mt-4">
-          <h4 className="text-2xl font-bold text-white">Videos</h4>
+          <h4 className="text-2xl font-bold text-light">Videos</h4>
           {album.videos.map((video, index) => (
             <div key={index} className="mt-2">
               <a
@@ -125,12 +129,12 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         </div>
       )}
       {showCollectedBy && (
-        <p className="text-lg text-gray mt-4">
+        <p className="text-lg text-light mt-4">
           Añadido por: {album.userNames ? album.userNames.join(', ') : 'N/A'}
         </p>
       )}
       {showCollectedBy && (
-        <p className="text-lg text-gray">
+        <p className="text-lg text-light">
           En wishlist de:{' '}
           {album.wishlistUserNames ? album.wishlistUserNames.join(', ') : 'N/A'}
         </p>
@@ -141,7 +145,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
           onClick={handleDeleteAlbum}
           className="mt-4 px-4 py-2 text-black rounded-full font-medium bg-red-500 hover:bg-red-600 text-lg font-bold"
         >
-          Eliminar de mis álbumes
+          Eliminar de mis albums
         </button>
       )}
     </div>

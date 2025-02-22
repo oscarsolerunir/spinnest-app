@@ -42,7 +42,7 @@ const UserAlbumsPage = () => {
           handleRemoveFromMyAlbums={handleRemoveFromMyAlbums}
         />
       ) : (
-        <p>No has añadido ningún álbum todavía.</p>
+        <p className="mt-4">No has añadido ningún álbum todavía.</p>
       )}
     </div>
   )
