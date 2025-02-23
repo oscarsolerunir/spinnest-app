@@ -37,7 +37,7 @@ const CollectionForm = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-3xl mx-0">
       <div>
         <label className="block text-sm font-medium text-light mb-2">
           Nombre:
@@ -45,9 +45,10 @@ const CollectionForm = ({
         <input
           type="text"
           value={name}
+          placeholder="Nombre de la colección"
           onChange={e => setName(e.target.value)}
           required
-          className="mb-4 p-4 text-lg block w-full p-2 bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
       </div>
       <div>
@@ -56,8 +57,9 @@ const CollectionForm = ({
         </label>
         <textarea
           value={description}
+          placeholder="Descripción de la colección"
           onChange={e => setDescription(e.target.value)}
-          className="mb-4 p-4 text-lg block w-full bg-darkaccent p-2 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary h-40"
         />
       </div>
       <div>
@@ -67,7 +69,7 @@ const CollectionForm = ({
         <select
           value={privacy}
           onChange={e => setPrivacy(e.target.value)}
-          className="mb-4 p-4 text-lg block w-full bg-darkaccent p-2 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         >
           <option value="public">Pública</option>
           <option value="private">Privada</option>
@@ -82,9 +84,9 @@ const CollectionForm = ({
             <div
               key={album.id}
               onClick={() => handleAlbumChange(album)}
-              className={`flex items-center space-x-2 p-4 rounded-md cursor-pointer ${
+              className={`flex flex-col items-center p-4 rounded-md cursor-pointer ${
                 selectedAlbums.some(a => a.id === album.id)
-                  ? 'border-2 border-primary bg-dark'
+                  ? 'border-2 border-primary bg-dark box-border'
                   : 'bg-darkaccent hover:bg-dark'
               }`}
             >
@@ -97,9 +99,14 @@ const CollectionForm = ({
               <img
                 src={album.image}
                 alt={album.name}
-                className="w-12 h-12 rounded-md"
+                className="w-24 h-24 rounded-md mb-2"
               />
-              <span className="text-light truncate">{album.name}</span>
+              <span className="text-light truncate text-center">
+                {album.name}
+              </span>
+              <span className="text-neutral truncate text-center">
+                {album.artist}
+              </span>
             </div>
           ))}
         </div>

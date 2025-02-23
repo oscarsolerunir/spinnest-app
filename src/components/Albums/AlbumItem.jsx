@@ -145,7 +145,7 @@ const AlbumItem = ({
           onClick={handleMyAlbumsClick}
           className={`mt-2 px-4 py-2 text-black rounded-full font-medium ${
             isInMyAlbums
-              ? 'bg-red-500 hover:bg-red-600 text-dark text-medium'
+              ? 'bg-neutral hover:bg-neutralaccent text-dark text-medium'
               : 'bg-primary hover:bg-accent text-medium'
           }`}
         >

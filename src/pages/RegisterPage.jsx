@@ -55,7 +55,7 @@ const RegisterPage = () => {
       <h1 className="text-3xl font-bold mb-4">Bienvenido a Spinnest</h1>
       <p className="mb-4">Comparte tu colección de discos con tus amigos</p>
       <form onSubmit={handleRegister} className="space-y-4">
-        <h2 className="text-2xl font-semibold mb-2">Register</h2>
+        <h2 className="text-2xl font-semibold mb-2">Registro</h2>
         <div>
           <label className="block text-sm font-medium text-light mb-3">
             Nombre:
@@ -63,6 +63,7 @@ const RegisterPage = () => {
           <input
             type="text"
             value={name}
+            placeholder="Escribe tu nombre"
             onChange={e => setName(e.target.value)}
             required
             className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
@@ -75,9 +76,10 @@ const RegisterPage = () => {
           <input
             type="email"
             value={email}
+            placeholder="Escribe tu email"
             onChange={e => setEmail(e.target.value)}
             required
-            className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
           />
         </div>
         <div>
@@ -87,9 +89,10 @@ const RegisterPage = () => {
           <input
             type="password"
             value={password}
+            placeholder="Escribe tu contraseña"
             onChange={e => setPassword(e.target.value)}
             required
-            className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
           />
         </div>
         {error && <p className="text-red-500">{error}</p>}

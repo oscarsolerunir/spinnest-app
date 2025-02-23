@@ -42,7 +42,7 @@ const LoginPage = () => {
         Organiza y comparte tu colección de discos con tus amigos
       </p>
       <form onSubmit={handleLogin} className="space-y-4">
-        <h2 className="text-2xl font-semibold mb-2">Login</h2>
+        <h2 className="text-2xl font-semibold mb-2">Inico de sesión</h2>
         <div>
           <label className="block text-sm font-medium text-light mb-3">
             Email:
@@ -50,9 +50,10 @@ const LoginPage = () => {
           <input
             type="email"
             value={email}
+            placeholder='Escribe tu email'
             onChange={e => setEmail(e.target.value)}
             required
-            className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
           />
         </div>
         <div>
@@ -62,9 +63,10 @@ const LoginPage = () => {
           <input
             type="contraseña"
             value={password}
+            placeholder='Escribe tu contraseña'
             onChange={e => setPassword(e.target.value)}
             required
-            className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+            className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
           />
         </div>
         {error && <p className="text-red-500">{error}</p>}

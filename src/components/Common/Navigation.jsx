@@ -167,7 +167,7 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
       <ul
         className={`${
           menuOpen ? 'flex' : 'hidden'
-        } flex-col items-center md:flex md:flex-row md:items-center w-full md:w-auto md:space-x-4`}
+        } flex-col md:flex md:flex-row w-full md:w-auto md:space-x-4`}
       >
         <li className="m-2 md:m-0">
           <Link

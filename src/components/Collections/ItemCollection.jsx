@@ -22,7 +22,10 @@ const ItemCollection = ({ collection }) => {
     >
       <div className="grid grid-cols-2 gap-2">
         {albumsToShow.map(album => (
-          <div key={album.id} className="w-full h-24 bg-darkaccent rounded-md">
+          <div
+            key={album.id}
+            className="w-full aspect-square bg-darkaccent rounded-md"
+          >
             <img
               src={album.image}
               alt={album.name}
@@ -33,7 +36,7 @@ const ItemCollection = ({ collection }) => {
         {Array.from({ length: emptySlots }).map((_, index) => (
           <div
             key={index}
-            className="w-full h-24 bg-darkaccent group-hover:bg-dark rounded-md"
+            className="w-full aspect-square bg-darkaccent group-hover:bg-dark rounded-md"
           ></div>
         ))}
       </div>

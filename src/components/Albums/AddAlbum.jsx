@@ -100,7 +100,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         placeholder="Nombre del artista o del álbum"
         value={artist}
         onChange={e => setArtist(e.target.value)}
-        className="mb-4 p-4 text-lg border-none rounded bg-darkaccent"
+        className="mb-4 p-4 text-lg border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
       />
       {loading && <p>🔄 Cargando resultados...</p>}
       {error && <p className="text-red-500">{error}</p>}

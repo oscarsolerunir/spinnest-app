@@ -81,7 +81,7 @@ const UserProfileForm = () => {
   }
 
   return (
-    <form onSubmit={handleSaveChanges} className="space-y-4">
+    <form onSubmit={handleSaveChanges} className="space-y-4 max-w-3xl mx-0">
       <h2 className="text-2xl font-bold mb-4">Perfil de usuario</h2>
       <div>
         <label className="block text-sm font-medium text-light mb-3">
@@ -90,8 +90,9 @@ const UserProfileForm = () => {
         <input
           type="text"
           value={name}
+          placeholder="Escribe tu nombre"
           onChange={e => setName(e.target.value)}
-          className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
       </div>
       <div>
@@ -101,8 +102,9 @@ const UserProfileForm = () => {
         <input
           type="email"
           value={email}
+          placeholder="Escribe tu email"
           onChange={e => setEmail(e.target.value)}
-          className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
       </div>
       <div>
@@ -112,9 +114,9 @@ const UserProfileForm = () => {
         <input
           type="password"
           value={password}
+          placeholder="Escribe aquí tu contraseña"
           onChange={e => setPassword(e.target.value)}
-          placeholder="Leave blank to keep current password"
-          className="mb-4 p-4 text-lg block w-full bg-darkaccent rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+          className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
       </div>
       {error && <p className="text-red-500">{error}</p>}
