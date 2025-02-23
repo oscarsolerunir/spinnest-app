@@ -4,11 +4,9 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, signOut } from '../../services/firebase'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
-import { FaBars, FaTimes } from 'react-icons/fa'
 
-const Navigation = () => {
+const Navigation = ({ menuOpen, setMenuOpen }) => {
   const [user] = useAuthState(auth)
-  const [menuOpen, setMenuOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
@@ -164,18 +162,16 @@ const Navigation = () => {
     }
   }
 
+  const handleLinkClick = () => {
+    setMenuOpen(false)
+  }
+
   if (!user) {
     return null
   }
 
   return (
     <nav className="pt-4 flex justify-between items-center">
-      <button
-        className="text-light text-2xl md:hidden"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        {menuOpen ? <FaTimes /> : <FaBars />}
-      </button>
       <ul
         className={`${
           menuOpen ? 'flex' : 'hidden'
@@ -189,6 +185,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/' && 'hover:text-lightaccent'
             }`}
+            onClick={handleLinkClick}
           >
             Explorar
           </Link>
@@ -201,6 +198,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/feed' && 'hover:text-lightaccent'
             }`}
+            onClick={handleLinkClick}
           >
             Feed {newContent && '¡Nuevos!'}
           </Link>
@@ -213,6 +211,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/albums' && 'hover:text-lightaccent'
             } flex items-center`}
+            onClick={handleLinkClick}
           >
             Albums
             {albumsCount > 0 && (
@@ -238,6 +237,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/collections' && 'hover:text-lightaccent'
             } flex items-center`}
+            onClick={handleLinkClick}
           >
             Colecciones
             {collectionsCount > 0 && (
@@ -261,6 +261,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/messages' && 'hover:text-lightaccent'
             } flex items-center`}
+            onClick={handleLinkClick}
           >
             Mensajes
             {unreadCount > 0 && (
@@ -284,6 +285,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/followers' && 'hover:text-lightaccent'
             } flex items-center`}
+            onClick={handleLinkClick}
           >
             Seguidores
             {followersCount > 0 && (
@@ -307,6 +309,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/following' && 'hover:text-lightaccent'
             } flex items-center`}
+            onClick={handleLinkClick}
           >
             Siguiendo
             {followingCount > 0 && (
@@ -330,6 +333,7 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/wishlist' && 'hover:text-lightaccent'
             } flex items-center`}
+            onClick={handleLinkClick}
           >
             Wishlist
             {wishlistCount > 0 && (
@@ -353,13 +357,17 @@ const Navigation = () => {
             } no-underline ${
               location.pathname !== '/profile' && 'hover:text-lightaccent'
             }`}
+            onClick={handleLinkClick}
           >
             Perfil
           </Link>
         </li>
         <li className="m-2 md:m-0">
           <button
-            onClick={handleSignOut}
+            onClick={() => {
+              handleSignOut()
+              setMenuOpen(false)
+            }}
             className="text-light no-underline hover:text-lightaccent"
           >
             Cerrar sesión
