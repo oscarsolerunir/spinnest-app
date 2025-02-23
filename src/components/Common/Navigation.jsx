@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, signOut } from '../../services/firebase'
+import { auth } from '../../services/firebase'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
@@ -153,14 +153,6 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
       setNewContent(false)
     }
   }, [location.pathname])
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth)
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error)
-    }
-  }
 
   const handleLinkClick = () => {
     setMenuOpen(false)
@@ -361,17 +353,6 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
           >
             Perfil
           </Link>
-        </li>
-        <li className="m-2 md:m-0">
-          <button
-            onClick={() => {
-              handleSignOut()
-              setMenuOpen(false)
-            }}
-            className="text-light no-underline hover:text-lightaccent"
-          >
-            Cerrar sesión
-          </button>
         </li>
       </ul>
     </nav>

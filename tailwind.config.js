@@ -15,7 +15,8 @@ export default {
         darkaccent: '#262529',
         light: '#EDECF9',
         lightaccent: '#FCFBFF',
-        neutral: '#A3A2AD'
+        neutral: '#A3A2AD',
+        neutralaccent: '#D9D9E0'
       },
       spacing: {
         128: '32rem',
