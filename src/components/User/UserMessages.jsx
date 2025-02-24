@@ -1,30 +1,24 @@
-import { useState, useEffect, useRef } from 'react'
+import { useMessages } from '../../context/MessagesContext'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, db, rtdb } from '../../services/firebase'
-import {
-  doc,
-  getDoc,
-  onSnapshot,
-  collection,
-  query,
-  where,
-  orderBy
-} from 'firebase/firestore'
-import { ref, set, onValue, remove } from 'firebase/database'
-import {
-  addMessage,
-  markConversationAsRead,
-  getMessagesByConversation
-} from '../../services/api'
+import { auth } from '../../services/firebase'
+import { useState, useEffect, useRef } from 'react'
 
 const UserMessages = ({ conversationId }) => {
   const [user] = useAuthState(auth)
   const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
-  const [isTyping, setIsTyping] = useState(false)
-  const [typingUserName, setTypingUserName] = useState('')
-  const [userNames, setUserNames] = useState({})
   const messagesEndRef = useRef(null)
+  const {
+    messages,
+    isTyping,
+    typingUserName,
+    userNames,
+    fetchMessages,
+    subscribeToTyping,
+    unsubscribeFromTyping,
+    handleSendMessage,
+    handleTyping,
+    handleBlur
+  } = useMessages()
 
   useEffect(() => {
     if (!user) {
@@ -33,98 +27,19 @@ const UserMessages = ({ conversationId }) => {
     }
 
     if (user && conversationId) {
-      const fetchMessages = async () => {
-        const msgs = await getMessagesByConversation(conversationId)
-        setMessages(msgs)
-
-        const userIds = new Set(msgs.map(msg => msg.senderId))
-        const names = {}
-        for (const userId of userIds) {
-          const userDoc = await getDoc(doc(db, 'users', userId))
-          if (userDoc.exists()) {
-            names[userId] = userDoc.data().name
-          }
-        }
-        setUserNames(names)
-      }
-
-      fetchMessages()
-
-      const typingRef = ref(rtdb, `typing/${conversationId}`)
-      onValue(typingRef, async snapshot => {
-        const typingUsers = snapshot.val() || {}
-        const typingUserIds = Object.keys(typingUsers).filter(
-          uid => uid !== user.uid
-        )
-        setIsTyping(typingUserIds.length > 0)
-
-        if (typingUserIds.length > 0) {
-          const typingUserId = typingUserIds[0]
-          const userDoc = await getDoc(doc(db, 'users', typingUserId))
-          if (userDoc.exists()) {
-            setTypingUserName(userDoc.data().name)
-          }
-        } else {
-          setTypingUserName('')
-        }
-      })
-
-      markConversationAsRead(conversationId)
-
-      const messagesRef = collection(db, 'messages')
-      const q = query(
-        messagesRef,
-        where('conversationId', '==', conversationId),
-        orderBy('timestamp')
-      )
-      const unsubscribe = onSnapshot(q, async snapshot => {
-        const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        setMessages(msgs)
-
-        const userIds = new Set(msgs.map(msg => msg.senderId))
-        const names = { ...userNames }
-        for (const userId of userIds) {
-          if (!names[userId]) {
-            const userDoc = await getDoc(doc(db, 'users', userId))
-            if (userDoc.exists()) {
-              names[userId] = userDoc.data().name
-            }
-          }
-        }
-        setUserNames(names)
-        scrollToBottom()
-      })
+      fetchMessages(conversationId)
+      subscribeToTyping(conversationId)
 
       return () => {
-        unsubscribe()
-        remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
+        unsubscribeFromTyping(conversationId)
       }
     }
   }, [user, conversationId])
 
-  const handleSendMessage = async () => {
-    if (message.trim() === '') return
-
-    await addMessage(conversationId, user.uid, message)
-
+  const handleSend = async () => {
+    await handleSendMessage(conversationId, message)
     setMessage('')
-    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
     scrollToBottom()
-  }
-
-  const handleTyping = () => {
-    set(ref(rtdb, `typing/${conversationId}/${user.uid}`), true)
-  }
-
-  const handleBlur = () => {
-    remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
-  }
-
-  const handleKeyDown = e => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleSendMessage()
-    }
   }
 
   const scrollToBottom = () => {
@@ -173,14 +88,19 @@ const UserMessages = ({ conversationId }) => {
           type="text"
           value={message}
           onChange={e => setMessage(e.target.value)}
-          onInput={handleTyping}
-          onFocus={handleTyping}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
+          onInput={() => handleTyping(conversationId)}
+          onFocus={() => handleTyping(conversationId)}
+          onBlur={() => handleBlur(conversationId)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              handleSend()
+            }
+          }}
           className="flex-1 p-4 text-lg border-none rounded-full bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
         <button
-          onClick={handleSendMessage}
+          onClick={handleSend}
           className="ml-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
         >
           Enviar
