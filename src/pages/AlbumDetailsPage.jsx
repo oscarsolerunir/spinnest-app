@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db } from '../services/firebase'
-import { useAlbums } from '../context/AlbumsContext'
-import { useWishlist } from '../context/WishlistContext'
+import { useAlbums } from '../contexts/AlbumsContext'
+import { useWishlist } from '../contexts/WishlistContext'
 import {
   getAlbumById,
   addToMyAlbums,

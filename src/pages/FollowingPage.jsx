@@ -1,6 +1,6 @@
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
-import UserList from '../components/User/UserList'
+import UserList from '../components/Users/UserList'
 
 const FollowingPage = () => {
   const [user] = useAuthState(auth)

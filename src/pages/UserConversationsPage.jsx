@@ -1,4 +1,4 @@
-import UserConversations from '../components/User/UserConversations'
+import UserConversations from '../components/Users/UserConversations'
 
 const UserConversationsPage = () => {
   return (

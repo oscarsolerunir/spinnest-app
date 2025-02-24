@@ -1,7 +1,7 @@
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 import AlbumItem from './AlbumItem'
-import { useAlbums } from '../../context/AlbumsContext'
+import { useAlbums } from '../../contexts/AlbumsContext'
 
 const AlbumsList = ({
   albums,

@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
-import { getCollectionsByUser, getCollections } from '../../services/api'
 import ItemCollection from './ItemCollection'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
+import { useCollections } from '../../contexts/CollectionsContext'
 
 const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
   const [collectionsState, setCollectionsState] = useState(collections || [])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [currentUser] = useAuthState(auth)
+  const { collections: contextCollections } = useCollections()
 
   useEffect(() => {
     if (collections) {
@@ -25,9 +26,11 @@ const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
         try {
           let data = []
           if (allUsers) {
-            data = await getCollections()
+            data = contextCollections
           } else if (userId) {
-            data = await getCollectionsByUser(userId)
+            data = contextCollections.filter(
+              collection => collection.userId === userId
+            )
           }
           setCollectionsState(data)
         } catch (error) {
@@ -41,7 +44,7 @@ const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
       }
       fetchCollections()
     }
-  }, [userId, allUsers, collections])
+  }, [userId, allUsers, collections, contextCollections])
 
   if (loading) {
     return <p>Cargando...</p>
@@ -51,10 +54,6 @@ const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
     return <p className="text-red-500 mt-4">{error}</p>
   }
 
-  if (!collectionsState || collectionsState.length === 0) {
-    return <p className="mt-4">No hay colecciones disponibles.</p>
-  }
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 py-4">
       {collectionsState.map(collection => (
@@ -62,7 +61,6 @@ const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
           key={collection.id}
           collection={collection}
           onClick={onClick}
-          currentUser={currentUser}
         />
       ))}
     </div>

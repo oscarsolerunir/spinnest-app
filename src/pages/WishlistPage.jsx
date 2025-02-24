@@ -3,8 +3,8 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import { getWishlist, removeFromWishlist, addToMyAlbums } from '../services/api'
 import AlbumsList from '../components/Albums/AlbumsList'
-import { useWishlist } from '../context/WishlistContext'
-import { useAlbums } from '../context/AlbumsContext'
+import { useWishlist } from '../contexts/WishlistContext'
+import { useAlbums } from '../contexts/AlbumsContext'
 
 const WishlistPage = () => {
   const [albums, setAlbums] = useState([])

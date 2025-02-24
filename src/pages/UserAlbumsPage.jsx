@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAlbums } from '../context/AlbumsContext'
+import { useAlbums } from '../contexts/AlbumsContext'
 import { removeFromMyAlbums } from '../services/api'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'

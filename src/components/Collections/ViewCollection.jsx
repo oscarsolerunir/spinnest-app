@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { getCollectionById } from '../../services/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 import AlbumsList from '../../components/Albums/AlbumsList'
+import { useCollections } from '../../contexts/CollectionsContext'
 
 const ViewCollection = () => {
   const { id } = useParams()
@@ -12,13 +12,17 @@ const ViewCollection = () => {
   const [error, setError] = useState('')
   const [currentUser] = useAuthState(auth)
   const navigate = useNavigate()
+  const { collections } = useCollections()
 
   useEffect(() => {
     const fetchCollection = async () => {
       try {
-        const data = await getCollectionById(id)
+        const data = collections.find(collection => collection.id === id)
+        if (!data) {
+          throw new Error('Colección no encontrada')
+        }
         setCollection(data)
-      } catch {
+      } catch (error) {
         setError(
           'Hubo un error al cargar la colección. Por favor, inténtalo de nuevo.'
         )
@@ -28,7 +32,7 @@ const ViewCollection = () => {
     }
 
     fetchCollection()
-  }, [id])
+  }, [id, collections])
 
   if (loading) {
     return <p>Cargando...</p>

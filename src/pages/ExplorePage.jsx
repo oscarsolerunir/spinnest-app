@@ -8,10 +8,10 @@ import {
   getCollections
 } from '../services/api'
 import { useNavigate } from 'react-router-dom'
-import { useAlbums } from '../context/AlbumsContext'
+import { useAlbums } from '../contexts/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
 import CollectionsList from '../components/Collections/CollectionsList'
-import UserList from '../components/User/UserList'
+import UserList from '../components/Users/UserList'
 
 const ExplorePage = () => {
   const { allAlbums, fetchAllAlbums } = useAlbums()

@@ -3,7 +3,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { addToMyAlbums, removeFromMyAlbums } from '../../services/api'
 import { auth } from '../../services/firebase'
 import { useState, useEffect } from 'react'
-import { useWishlist } from '../../context/WishlistContext'
+import { useWishlist } from '../../contexts/WishlistContext'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 
 const AlbumItem = ({

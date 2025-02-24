@@ -1,4 +1,4 @@
-import { useConversations } from '../../context/ConversationsContext'
+import { useConversations } from '../../contexts/ConversationsContext'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../../services/firebase'
 

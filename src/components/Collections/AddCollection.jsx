@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { createCollection, getAlbumsByUser } from '../../services/api'
-import { useUser } from '../../context/UserContext'
+import { getAlbumsByUser } from '../../services/api'
+import { useUser } from '../../contexts/UserContext'
+import { useCollections } from '../../contexts/CollectionsContext' // Importa el contexto de colecciones
 import CollectionForm from './CollectionForm'
 import { useNavigate } from 'react-router-dom'
 
 const AddCollection = () => {
   const { user } = useUser()
+  const { addCollection } = useCollections() // Usa la función addCollection del contexto
   const [userAlbums, setUserAlbums] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -42,7 +44,7 @@ const AddCollection = () => {
     }
 
     try {
-      await createCollection(newCollection)
+      await addCollection(newCollection) // Usa la función addCollection del contexto
       alert('La colección se ha creado con éxito.')
       navigate('/collections')
     } catch {

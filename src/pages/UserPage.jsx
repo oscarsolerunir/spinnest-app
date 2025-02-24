@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
-import { useAlbums } from '../context/AlbumsContext'
+import { useAlbums } from '../contexts/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
 import CollectionsList from '../components/Collections/CollectionsList'
 import {

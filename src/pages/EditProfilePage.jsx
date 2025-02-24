@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import UserProfileForm from '../components/User/UserProfileForm'
+import UserProfileForm from '../components/Users/UserProfileForm'
 
 const EditProfilePage = () => {
   const navigate = useNavigate()

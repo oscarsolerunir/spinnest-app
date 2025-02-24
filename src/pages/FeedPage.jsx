@@ -15,7 +15,7 @@ import {
   removeFromWishlist,
   addToMyAlbums
 } from '../services/api'
-import { useAlbums } from '../context/AlbumsContext'
+import { useAlbums } from '../contexts/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
 import CollectionsList from '../components/Collections/CollectionsList'
 

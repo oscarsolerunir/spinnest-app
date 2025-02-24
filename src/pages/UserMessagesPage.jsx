@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { doc, getDoc } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
-import UserMessages from '../components/User/UserMessages'
+import UserMessages from '../components/Users/UserMessages'
 
 const UserMessagesPage = () => {
   const { conversationId } = useParams()

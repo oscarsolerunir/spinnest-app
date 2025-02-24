@@ -1,4 +1,4 @@
-import { useMessages } from '../../context/MessagesContext'
+import { useMessages } from '../../contexts/MessagesContext'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 import { useState, useEffect, useRef } from 'react'

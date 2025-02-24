@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import {
-  getCollectionById,
-  updateCollection,
-  deleteCollection,
-  getAlbumsByUser
-} from '../../services/api'
-import { useUser } from '../../context/UserContext'
+import { useCollections } from '../../contexts/CollectionsContext'
+import { useUser } from '../../contexts/UserContext'
 import CollectionForm from './CollectionForm'
+import { getAlbumsByUser } from '../../services/api'
 
 const EditCollection = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useUser()
+  const { collections, updateCollection, deleteCollection } = useCollections()
   const [collection, setCollection] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -21,7 +18,10 @@ const EditCollection = () => {
   useEffect(() => {
     const fetchCollection = async () => {
       try {
-        const data = await getCollectionById(id)
+        const data = collections.find(collection => collection.id === id)
+        if (!data) {
+          throw new Error('Colección no encontrada')
+        }
         setCollection(data)
       } catch {
         setError(
@@ -50,7 +50,7 @@ const EditCollection = () => {
       setError('Usuario no autenticado.')
       setLoading(false)
     }
-  }, [id, user])
+  }, [id, user, collections])
 
   const handleSubmit = async collectionData => {
     try {
