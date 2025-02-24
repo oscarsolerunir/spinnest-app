@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth, db } from '../services/firebase'
+import { useAlbums } from '../context/AlbumsContext'
+import { useWishlist } from '../context/WishlistContext'
 import {
   getAlbumById,
   addToMyAlbums,
@@ -7,11 +11,8 @@ import {
   addToWishlist,
   removeFromWishlist
 } from '../services/api'
-import { auth } from '../services/firebase'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { useAlbums } from '../context/AlbumsContext'
-import { useWishlist } from '../context/WishlistContext'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { doc, getDoc } from 'firebase/firestore'
 
 const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   const { id } = useParams()
@@ -19,20 +20,15 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   const [album, setAlbum] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [setUserId] = useState(null)
   const [isInMyAlbums, setIsInMyAlbums] = useState(false)
   const [isInWishlist, setIsInWishlist] = useState(false)
+  const [wishlistUserNames, setWishlistUserNames] = useState([]) // Estado para los nombres de los usuarios en la wishlist
   const [currentUser] = useAuthState(auth)
   const { addAlbum, removeAlbum } = useAlbums()
   const { wishlist, addToWishlistContext, removeFromWishlistContext } =
     useWishlist()
 
   useEffect(() => {
-    const currentUser = auth.currentUser
-    if (currentUser) {
-      setUserId(currentUser.uid)
-    }
-
     const fetchAlbum = async () => {
       try {
         const albumData = await getAlbumById(id)
@@ -42,6 +38,19 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         setAlbum(albumData)
         setIsInMyAlbums(albumData.userIds?.includes(currentUser?.uid) || false)
         setIsInWishlist(wishlist.some(item => item.albumId === albumData.id))
+
+        // Obtener los nombres de los usuarios que tienen el álbum en su wishlist
+        const userNames = await Promise.all(
+          wishlist
+            .filter(item => item.albumId === albumData.id)
+            .map(async item => {
+              const userDoc = await getDoc(doc(db, 'users', item.userId))
+              return userDoc.exists()
+                ? { name: userDoc.data().name, id: item.userId }
+                : { name: 'Desconocido', id: null }
+            })
+        )
+        setWishlistUserNames(userNames)
       } catch {
         setError('Error fetching album. Please try again.')
       } finally {
@@ -108,7 +117,8 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
           albumGenre: album.genre,
           albumLabel: album.label,
           albumImage: album.image,
-          addedAt: new Date().toISOString()
+          addedAt: new Date().toISOString(),
+          userId: currentUser.uid // Asegúrate de incluir el userId
         })
       } catch (error) {
         console.error('Error añadiendo álbum a la wishlist:', error)
@@ -210,14 +220,33 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         )}
         {showCollectedBy && (
           <p className="text-lg text-light mt-4">
-            Añadido por: {album.userNames ? album.userNames.join(', ') : 'N/A'}
+            Añadido por:{' '}
+            {album.userNames
+              ? album.userNames.map((name, index) => (
+                  <Link
+                    key={index}
+                    to={`/user/${album.userIds[index]}`}
+                    className="text-primary hover:underline"
+                  >
+                    {name}
+                  </Link>
+                ))
+              : 'N/A'}
           </p>
         )}
         {showCollectedBy && (
           <p className="text-lg text-light">
             En wishlist de:{' '}
-            {album.wishlistUserNames
-              ? album.wishlistUserNames.join(', ')
+            {wishlistUserNames.length > 0
+              ? wishlistUserNames.map((user, index) => (
+                  <Link
+                    key={index}
+                    to={`/user/${user.id}`}
+                    className="text-primary hover:underline"
+                  >
+                    {user.name}
+                  </Link>
+                ))
               : 'N/A'}
           </p>
         )}

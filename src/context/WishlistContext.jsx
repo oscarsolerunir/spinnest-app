@@ -28,7 +28,8 @@ export const WishlistProvider = ({ children }) => {
         albumGenre: doc.data().albumGenre || 'Género desconocido',
         albumLabel: doc.data().albumLabel || 'Sello desconocido',
         albumImage: doc.data().albumImage || '',
-        isInWishlist: true
+        isInWishlist: true,
+        userId: doc.data().userId // Asegúrate de incluir el userId
       }))
       setWishlist(data)
     })
