@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   getAlbumById,
-  deleteAlbumById,
   addToMyAlbums,
   removeFromMyAlbums,
   addToWishlist,
@@ -20,7 +19,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   const [album, setAlbum] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [userId, setUserId] = useState(null)
+  const [setUserId] = useState(null)
   const [isInMyAlbums, setIsInMyAlbums] = useState(false)
   const [isInWishlist, setIsInWishlist] = useState(false)
   const [currentUser] = useAuthState(auth)
@@ -52,21 +51,6 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
 
     fetchAlbum()
   }, [id, currentUser, wishlist])
-
-  const handleDeleteAlbum = async () => {
-    const confirmDelete = window.confirm(
-      '¿Seguro que quieres eliminar este álbum de tu colección?'
-    )
-    if (!confirmDelete) return
-
-    try {
-      await deleteAlbumById(id, userId)
-      alert('Álbum eliminado correctamente.')
-      navigate('/albums') // Redirigir al home después de eliminar
-    } catch {
-      setError('Error deleting album. Please try again.')
-    }
-  }
 
   const handleMyAlbumsClick = async e => {
     e.stopPropagation()
