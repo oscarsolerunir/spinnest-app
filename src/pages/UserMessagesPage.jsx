@@ -29,7 +29,7 @@ const UserMessagesPage = () => {
   }, [conversationId])
 
   return (
-    <div className="p-4">
+    <div className="py-4 max-w-6xl mx-auto">
       <h2 className="text-xl font-semibold mb-4">Mensajes con {userName}</h2>
       <UserMessages conversationId={conversationId} />
     </div>

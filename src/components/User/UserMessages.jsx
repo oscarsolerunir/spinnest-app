@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db, rtdb } from '../../services/firebase'
 import {
@@ -22,7 +22,9 @@ const UserMessages = ({ conversationId }) => {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
+  const [typingUserName, setTypingUserName] = useState('')
   const [userNames, setUserNames] = useState({})
+  const messagesEndRef = useRef(null)
 
   useEffect(() => {
     if (!user) {
@@ -49,10 +51,22 @@ const UserMessages = ({ conversationId }) => {
       fetchMessages()
 
       const typingRef = ref(rtdb, `typing/${conversationId}`)
-      onValue(typingRef, snapshot => {
+      onValue(typingRef, async snapshot => {
         const typingUsers = snapshot.val() || {}
-        const typingUserIds = Object.keys(typingUsers)
-        setIsTyping(typingUserIds.some(uid => uid !== user.uid))
+        const typingUserIds = Object.keys(typingUsers).filter(
+          uid => uid !== user.uid
+        )
+        setIsTyping(typingUserIds.length > 0)
+
+        if (typingUserIds.length > 0) {
+          const typingUserId = typingUserIds[0]
+          const userDoc = await getDoc(doc(db, 'users', typingUserId))
+          if (userDoc.exists()) {
+            setTypingUserName(userDoc.data().name)
+          }
+        } else {
+          setTypingUserName('')
+        }
       })
 
       markConversationAsRead(conversationId)
@@ -78,6 +92,7 @@ const UserMessages = ({ conversationId }) => {
           }
         }
         setUserNames(names)
+        scrollToBottom()
       })
 
       return () => {
@@ -94,6 +109,7 @@ const UserMessages = ({ conversationId }) => {
 
     setMessage('')
     remove(ref(rtdb, `typing/${conversationId}/${user.uid}`))
+    scrollToBottom()
   }
 
   const handleTyping = () => {
@@ -111,11 +127,22 @@ const UserMessages = ({ conversationId }) => {
     }
   }
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
-    <div className="p-4">
-      <div className="mb-4">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-4">
         {messages.map(msg => (
-          <div key={msg.id} className="mb-2">
+          <div
+            key={msg.id}
+            className={`mb-2 px-6 py-4 rounded-xl text-lg grow ${
+              msg.senderId === user.uid
+                ? 'bg-primary text-black justify-self-end block max-w-lg'
+                : 'bg-darkaccent text-light justify-self-start block max-w-lg'
+            }`}
+          >
             <p>
               <strong>
                 {msg.senderId === user.uid
@@ -125,16 +152,23 @@ const UserMessages = ({ conversationId }) => {
               </strong>{' '}
               {msg.text}
             </p>
-            <p className="text-sm text-light">
+            <p
+              className={`text-sm ${
+                msg.senderId === user.uid ? 'text-dark' : 'text-light'
+              }`}
+            >
               {new Date(msg.timestamp.toDate()).toLocaleString()}
             </p>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       {isTyping && (
-        <p className="text-sm text-light">El usuario está escribiendo...</p>
+        <p className="text-sm text-light p-2">
+          {typingUserName} está escribiendo...
+        </p>
       )}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center p-4 border-t border-darkaccent">
         <input
           type="text"
           value={message}
@@ -143,11 +177,11 @@ const UserMessages = ({ conversationId }) => {
           onFocus={handleTyping}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="mb-4 p-4 text-lg border-none rounded-full bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
+          className="flex-1 p-4 text-lg border-none rounded-full bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
         <button
           onClick={handleSendMessage}
-          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+          className="ml-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
         >
           Enviar
         </button>
