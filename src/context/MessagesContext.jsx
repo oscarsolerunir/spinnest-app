@@ -1,7 +1,15 @@
 import { createContext, useContext, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db, rtdb } from '../services/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy
+} from 'firebase/firestore'
 import { ref, onValue, remove, set } from 'firebase/database'
 import { addMessage, getMessagesByConversation } from '../services/api'
 
@@ -33,6 +41,36 @@ export const MessagesProvider = ({ children }) => {
       }
     }
     setUserNames(names)
+  }
+
+  const subscribeToMessages = conversationId => {
+    if (!user || !conversationId) return
+
+    const messagesRef = collection(db, 'messages')
+    const q = query(
+      messagesRef,
+      where('conversationId', '==', conversationId),
+      orderBy('timestamp')
+    )
+    const unsubscribe = onSnapshot(q, snapshot => {
+      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      setMessages(msgs)
+
+      const userIds = new Set(msgs.map(msg => msg.senderId))
+      const names = { ...userNames }
+      for (const userId of userIds) {
+        if (!names[userId]) {
+          getDoc(doc(db, 'users', userId)).then(userDoc => {
+            if (userDoc.exists()) {
+              names[userId] = userDoc.data().name
+              setUserNames(names)
+            }
+          })
+        }
+      }
+    })
+
+    return unsubscribe
   }
 
   const subscribeToTyping = conversationId => {
@@ -91,6 +129,7 @@ export const MessagesProvider = ({ children }) => {
         typingUserName,
         userNames,
         fetchMessages,
+        subscribeToMessages,
         subscribeToTyping,
         unsubscribeFromTyping,
         handleSendMessage,

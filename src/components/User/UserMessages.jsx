@@ -13,6 +13,7 @@ const UserMessages = ({ conversationId }) => {
     typingUserName,
     userNames,
     fetchMessages,
+    subscribeToMessages,
     subscribeToTyping,
     unsubscribeFromTyping,
     handleSendMessage,
@@ -28,9 +29,11 @@ const UserMessages = ({ conversationId }) => {
 
     if (user && conversationId) {
       fetchMessages(conversationId)
+      const unsubscribeMessages = subscribeToMessages(conversationId)
       subscribeToTyping(conversationId)
 
       return () => {
+        unsubscribeMessages()
         unsubscribeFromTyping(conversationId)
       }
     }

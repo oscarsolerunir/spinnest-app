@@ -1,25 +1,35 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth } from '../services/firebase'
+import { auth, db } from '../services/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 
 const UserContext = createContext()
 
-export const useUser = () => useContext(UserContext)
+export const useUser = () => {
+  return useContext(UserContext)
+}
 
 export const UserProvider = ({ children }) => {
-  const [user] = useAuthState(auth)
-  const [userId, setUserId] = useState(null)
+  const [user, loading, error] = useAuthState(auth)
+  const [userData, setUserData] = useState(null)
 
   useEffect(() => {
     if (user) {
-      setUserId(user.uid)
+      const fetchUserData = async () => {
+        const userDoc = await getDoc(doc(db, 'users', user.uid))
+        if (userDoc.exists()) {
+          setUserData(userDoc.data())
+        }
+      }
+
+      fetchUserData()
     } else {
-      setUserId(null)
+      setUserData(null)
     }
   }, [user])
 
   return (
-    <UserContext.Provider value={{ user, userId }}>
+    <UserContext.Provider value={{ user, userData, loading, error }}>
       {children}
     </UserContext.Provider>
   )
