@@ -1,12 +1,12 @@
-import MessagesList from '../components/User/MessagesList'
+import UserConversations from '../components/User/UserConversations'
 
-const MessagesPage = () => {
+const UserConversationsPage = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Mensajes</h1>
-      <MessagesList />
+      <UserConversations />
     </div>
   )
 }
 
-export default MessagesPage
+export default UserConversationsPage

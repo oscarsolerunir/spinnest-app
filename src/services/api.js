@@ -45,7 +45,7 @@ export const updateConversation = async (id, obj) => {
   await updateDoc(docRef, obj)
 }
 
-// CREATE MESSAGE
+// ADD MESSAGE
 export const addMessage = async (conversationId, senderId, text) => {
   const conversationDoc = await getDoc(
     doc(db, conversationsCollectionName, conversationId)

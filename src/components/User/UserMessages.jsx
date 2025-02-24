@@ -25,6 +25,11 @@ const UserMessages = ({ conversationId }) => {
   const [userNames, setUserNames] = useState({})
 
   useEffect(() => {
+    if (!user) {
+      console.error('No hay usuario autenticado.')
+      return
+    }
+
     if (user && conversationId) {
       const fetchMessages = async () => {
         const msgs = await getMessagesByConversation(conversationId)
@@ -138,11 +143,11 @@ const UserMessages = ({ conversationId }) => {
           onFocus={handleTyping}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="flex-1 p-2 border rounded"
+          className="mb-4 p-4 text-lg border-none rounded-full bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
         />
         <button
           onClick={handleSendMessage}
-          className="px-4 py-2 bg-blue-500 text-light rounded hover:bg-blue-600"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
         >
           Enviar
         </button>

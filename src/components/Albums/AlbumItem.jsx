@@ -116,20 +116,21 @@ const AlbumItem = ({
     !(album.userIds && album.userIds.includes(currentUser?.uid))
 
   return (
-    <Link
-      to={`/album/${album.id}`}
-      className="block rounded-2xl p-4 cursor-pointer mb-5 text-light hover:bg-darkaccent"
-    >
-      <img
-        src={album.image}
-        alt={album.name}
-        className="max-w-full h-auto rounded-2xl shadow-xl"
-      />
-      <h3 className="mt-2 mb-2 text-lg font-semibold truncate">{album.name}</h3>
-      <p className="text-light truncate">Artista: {albumArtist}</p>
-      <p className="text-light truncate">Año: {albumYear}</p>
-      <p className="text-light truncate">Género: {albumGenre}</p>
-      <p className="text-light truncate">Discográfica: {albumLabel}</p>
+    <div className="block rounded-2xl p-4 cursor-pointer mb-5 text-light hover:bg-darkaccent">
+      <Link to={`/album/${album.id}`}>
+        <img
+          src={album.image}
+          alt={album.name}
+          className="max-w-full h-auto rounded-2xl shadow-xl"
+        />
+        <h3 className="mt-2 mb-2 text-lg font-semibold truncate">
+          {album.name}
+        </h3>
+        <p className="text-light truncate">Artista: {albumArtist}</p>
+        <p className="text-light truncate">Año: {albumYear}</p>
+        <p className="text-light truncate">Género: {albumGenre}</p>
+        <p className="text-light truncate">Discográfica: {albumLabel}</p>
+      </Link>
 
       {showDetailsLink && (
         <Link
@@ -164,7 +165,7 @@ const AlbumItem = ({
           {isInWishlist ? 'Eliminar de wishlist' : 'Añadir a wishlist'}
         </button>
       )}
-    </Link>
+    </div>
   )
 }
 

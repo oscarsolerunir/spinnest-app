@@ -15,7 +15,7 @@ import {
   where
 } from 'firebase/firestore'
 
-const UserConversationsPage = () => {
+const UserConversations = () => {
   const [user] = useAuthState(auth)
   const [conversations, setConversations] = useState([])
   const navigate = useNavigate()
@@ -91,4 +91,4 @@ const UserConversationsPage = () => {
   )
 }
 
-export default UserConversationsPage
+export default UserConversations
