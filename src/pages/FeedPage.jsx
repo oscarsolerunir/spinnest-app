@@ -17,7 +17,7 @@ import {
 } from '../services/api'
 import { useAlbums } from '../context/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
-import ListCollections from '../components/Collections/ListCollections'
+import CollectionsList from '../components/Collections/CollectionsList'
 
 const FeedPage = () => {
   const { feedAlbums, fetchFeedAlbums } = useAlbums()
@@ -142,7 +142,7 @@ const FeedPage = () => {
       {loadingCollections ? (
         <p>Cargando colecciones...</p>
       ) : collections.length > 0 ? (
-        <ListCollections collections={collections} />
+        <CollectionsList collections={collections} />
       ) : (
         <p>No hay colecciones disponibles.</p>
       )}

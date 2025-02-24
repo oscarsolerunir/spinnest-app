@@ -10,7 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useAlbums } from '../context/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
-import ListCollections from '../components/Collections/ListCollections'
+import CollectionsList from '../components/Collections/CollectionsList'
 import UserList from '../components/User/UserList'
 
 const ExplorePage = () => {
@@ -75,7 +75,7 @@ const ExplorePage = () => {
       />
 
       <h2 className="text-xl font-semibold mb-2">Todas las colecciones</h2>
-      <ListCollections
+      <CollectionsList
         collections={collections}
         onClick={handleCollectionClick}
         allUsers

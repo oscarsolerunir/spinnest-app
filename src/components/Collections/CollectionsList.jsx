@@ -4,7 +4,7 @@ import ItemCollection from './ItemCollection'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 
-const ListCollections = ({ userId, collections, onClick, allUsers }) => {
+const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
   const [collectionsState, setCollectionsState] = useState(collections || [])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -69,4 +69,4 @@ const ListCollections = ({ userId, collections, onClick, allUsers }) => {
   )
 }
 
-export default ListCollections
+export default CollectionsList
