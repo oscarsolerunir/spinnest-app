@@ -1,6 +1,6 @@
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
-import UserList from '../components/Users/UserList'
+import UsersList from '../components/Users/UsersList'
 
 const FollowingPage = () => {
   const [user] = useAuthState(auth)
@@ -12,7 +12,7 @@ const FollowingPage = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-medium mb-4">Siguiendo</h1>
-      <UserList userId={user.uid} filterType="following" />
+      <UsersList userId={user.uid} filterType="following" />
     </div>
   )
 }

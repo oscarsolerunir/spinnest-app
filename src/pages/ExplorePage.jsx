@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAlbums } from '../contexts/AlbumsContext'
 import AlbumsList from '../components/Albums/AlbumsList'
 import CollectionsList from '../components/Collections/CollectionsList'
-import UserList from '../components/Users/UserList'
+import UsersList from '../components/Users/UsersList'
 
 const ExplorePage = () => {
   const { allAlbums, fetchAllAlbums } = useAlbums()
@@ -83,7 +83,7 @@ const ExplorePage = () => {
 
       <h2 className="text-xl font-medium mb-2">Todos los usuarios</h2>
       {user ? (
-        <UserList userId={user.uid} />
+        <UsersList userId={user.uid} />
       ) : (
         <p>Inicia sesión para ver usuarios.</p>
       )}

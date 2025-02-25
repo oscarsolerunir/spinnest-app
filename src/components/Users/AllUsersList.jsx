@@ -1,7 +1,7 @@
-import UserList from './UserList'
+import UsersList from './UsersList'
 
 const AllUsersList = ({ userId }) => {
-  return <UserList userId={userId} filterType="all" />
+  return <UsersList userId={userId} filterType="all" />
 }
 
 export default AllUsersList

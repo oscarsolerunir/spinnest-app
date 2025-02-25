@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { auth, db } from '../../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-const UserProfileForm = () => {
+const EditUser = () => {
   const [user] = useAuthState(auth)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -139,4 +139,4 @@ const UserProfileForm = () => {
   )
 }
 
-export default UserProfileForm
+export default EditUser

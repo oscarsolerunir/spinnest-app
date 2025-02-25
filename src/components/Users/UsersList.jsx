@@ -13,7 +13,7 @@ import { db } from '../../services/firebase'
 import { useNavigate } from 'react-router-dom'
 import { FaEnvelope } from 'react-icons/fa'
 
-const UserList = ({ userId, filterType }) => {
+const UsersList = ({ userId, filterType }) => {
   const [users, setUsers] = useState([])
   const [following, setFollowing] = useState([])
   const [followers, setFollowers] = useState([])
@@ -219,4 +219,4 @@ const UserList = ({ userId, filterType }) => {
   )
 }
 
-export default UserList
+export default UsersList
