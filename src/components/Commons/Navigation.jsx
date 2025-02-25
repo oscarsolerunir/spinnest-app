@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
+import { useConversations } from '../../contexts/ConversationsContext'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
 const Navigation = ({ menuOpen, setMenuOpen }) => {
   const [user] = useAuthState(auth)
-  const [unreadCount, setUnreadCount] = useState(0)
+  const { unreadCount } = useConversations()
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
   const [albumsCount, setAlbumsCount] = useState(0)
@@ -24,14 +25,6 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
     const unsubscribes = []
 
     const queries = [
-      {
-        ref: query(
-          collection(db, 'conversations'),
-          where('participants', 'array-contains', user.uid),
-          where('read', '==', false)
-        ),
-        setState: setUnreadCount
-      },
       {
         ref: query(
           collection(db, 'follows'),

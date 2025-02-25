@@ -49,8 +49,8 @@ export const ConversationsProvider = ({ children }) => {
 
     const unsubscribe = onSnapshot(q, async snapshot => {
       const convos = await Promise.all(
-        snapshot.docs.map(async doc => {
-          const convo = { id: doc.id, ...doc.data() }
+        snapshot.docs.map(async docSnapshot => {
+          const convo = { id: docSnapshot.id, ...docSnapshot.data() }
           const otherUserId = convo.participants.find(uid => uid !== user.uid)
           const userDoc = await getDoc(doc(db, 'users', otherUserId))
           const userName = userDoc.exists()
