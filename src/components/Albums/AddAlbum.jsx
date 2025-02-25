@@ -89,6 +89,12 @@ const AddAlbum = ({ handleSaveAlbum }) => {
     handleSaveAlbum(selectedAlbum)
   }
 
+  const handleKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+    }
+  }
+
   return (
     <form className="flex flex-col mx-auto">
       <h2 className="text-xl font-medium mb-4">
@@ -100,6 +106,7 @@ const AddAlbum = ({ handleSaveAlbum }) => {
         placeholder="Nombre del artista o del álbum"
         value={artist}
         onChange={e => setArtist(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="mb-4 p-4 text-lg border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
       />
       {loading && <p>🔄 Cargando resultados...</p>}
