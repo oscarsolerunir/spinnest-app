@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../services/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 
 const UserDetailsPage = () => {
@@ -59,6 +59,12 @@ const UserDetailsPage = () => {
       >
         Cerrar sesión
       </button>
+      <Link
+        to={`/user/${user?.uid}`}
+        className="mt-4 block text-primary hover:underline"
+      >
+        Ver mi perfil
+      </Link>
     </div>
   )
 }

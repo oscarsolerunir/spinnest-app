@@ -14,7 +14,8 @@ import {
   getConversationsByUser,
   createConversation,
   getUserById,
-  getCollectionsByUser
+  getCollectionsByUser,
+  getFollowingUsers
 } from '../services/api'
 import { FaEnvelope } from 'react-icons/fa'
 
@@ -62,8 +63,20 @@ const UserProfilePage = () => {
 
     fetchUserCollections()
 
-    // Aquí puedes agregar lógica para verificar si el usuario actual sigue al usuario seleccionado
-    // y actualizar el estado `following` en consecuencia.
+    // Verificar si el usuario actual sigue al usuario seleccionado
+    const checkFollowingStatus = async () => {
+      try {
+        const followingUsers = await getFollowingUsers(currentUser.uid)
+        const isFollowing = followingUsers.some(
+          user => user.followingId === selectedUserId
+        )
+        setFollowing(isFollowing)
+      } catch (error) {
+        console.error('Error verificando estado de seguimiento:', error)
+      }
+    }
+
+    checkFollowingStatus()
   }, [selectedUserId, currentUser])
 
   const handleAddToWishlist = async album => {
@@ -95,7 +108,7 @@ const UserProfilePage = () => {
       await followUser(currentUser.uid, selectedUserId)
       setFollowing(true)
     } catch (error) {
-      console.error('Error following user:', error)
+      console.error('Error siguiendo al usuario:', error)
     }
   }
 
@@ -104,7 +117,7 @@ const UserProfilePage = () => {
       await unfollowUser(currentUser.uid, selectedUserId)
       setFollowing(false)
     } catch (error) {
-      console.error('Error unfollowing user:', error)
+      console.error('Error dejando de seguir al usuario:', error)
     }
   }
 
@@ -125,7 +138,7 @@ const UserProfilePage = () => {
 
       navigate(`/messages/${conversation.id}`)
     } catch (error) {
-      console.error('Error sending message:', error)
+      console.error('Error enviando mensaje:', error)
     }
   }
 

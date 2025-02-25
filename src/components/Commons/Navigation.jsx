@@ -247,30 +247,6 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
         </li>
         <li className="m-2 md:m-0">
           <Link
-            to="/messages"
-            className={`${
-              location.pathname === '/messages' ? 'text-primary' : 'text-light'
-            } no-underline ${
-              location.pathname !== '/messages' && 'hover:text-lightaccent'
-            } flex items-center`}
-            onClick={handleLinkClick}
-          >
-            Mensajes
-            {unreadCount > 0 && (
-              <span
-                className={`ml-2 ${
-                  location.pathname === '/messages'
-                    ? 'bg-primary text-black'
-                    : 'bg-darkaccent text-light'
-                } rounded-full px-2 py-1 text-xs`}
-              >
-                {unreadCount}
-              </span>
-            )}
-          </Link>
-        </li>
-        <li className="m-2 md:m-0">
-          <Link
             to="/followers"
             className={`${
               location.pathname === '/followers' ? 'text-primary' : 'text-light'
@@ -313,6 +289,30 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
                 } rounded-full px-2 py-1 text-xs`}
               >
                 {followingCount}
+              </span>
+            )}
+          </Link>
+        </li>
+        <li className="m-2 md:m-0">
+          <Link
+            to="/messages"
+            className={`${
+              location.pathname === '/messages' ? 'text-primary' : 'text-light'
+            } no-underline ${
+              location.pathname !== '/messages' && 'hover:text-lightaccent'
+            } flex items-center`}
+            onClick={handleLinkClick}
+          >
+            Mensajes
+            {unreadCount > 0 && (
+              <span
+                className={`ml-2 ${
+                  location.pathname === '/messages'
+                    ? 'bg-primary text-black'
+                    : 'bg-darkaccent text-light'
+                } rounded-full px-2 py-1 text-xs`}
+              >
+                {unreadCount}
               </span>
             )}
           </Link>
