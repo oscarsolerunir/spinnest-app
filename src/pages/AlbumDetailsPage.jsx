@@ -135,7 +135,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
   if (!album) return <p>Álbum no encontrado.</p>
 
   return (
-    <div className="max-w-7xl p-4 mb-5 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="max-w-7xl p-4 mb-5 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="md:sticky top-4 self-start">
         <img
           src={album.image}
