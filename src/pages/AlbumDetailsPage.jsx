@@ -250,31 +250,32 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
               : 'N/A'}
           </p>
         )}
-
-        <button
-          onClick={handleMyAlbumsClick}
-          className={`mt-4 px-4 py-2 text-black rounded-full font-medium ${
-            isInMyAlbums
-              ? 'bg-neutral hover:bg-neutralaccent'
-              : 'bg-primary hover:bg-accent'
-          } text-lg font-bold`}
-        >
-          {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
-        </button>
-        {!isInMyAlbums && (
+        <div className="flex items-center gap-3">
           <button
-            onClick={handleWishlistClick}
-            className="mt-4 text-light rounded flex items-center justify-center"
+            onClick={handleMyAlbumsClick}
+            className={`mt-4 px-4 py-2 text-black rounded-full font-medium ${
+              isInMyAlbums
+                ? 'bg-neutral hover:bg-neutralaccent'
+                : 'bg-primary hover:bg-accent'
+            } text-lg font-bold`}
           >
-            <span className="mr-2">
-              {isInWishlist ? <FaHeart /> : <FaRegHeart />}
-            </span>
-            {isInWishlist ? 'Eliminar de wishlist' : 'Añadir a wishlist'}
+            {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
           </button>
-        )}
+          {!isInMyAlbums && (
+            <button
+              onClick={handleWishlistClick}
+              className="mt-4 text-light rounded flex items-center justify-center"
+            >
+              <span className="mr-2">
+                {isInWishlist ? <FaHeart /> : <FaRegHeart />}
+              </span>
+              {isInWishlist ? 'Eliminar de wishlist' : 'Añadir a wishlist'}
+            </button>
+          )}
+        </div>
         <button
           onClick={handleBackClick}
-          className="mt-4 px-4 py-2 text-light rounded-full font-medium text-lg font-bold"
+          className="mt-6 text-light rounded-full font-medium text-lg font-bold"
         >
           Volver
         </button>

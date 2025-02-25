@@ -178,7 +178,7 @@ const UserList = ({ userId, filterType }) => {
                     e.stopPropagation()
                     handleUnfollow(u.id)
                   }}
-                  className="px-4 py-2 bg-darkaccent text-light rounded-full hover:bg-dark"
+                  className="px-4 py-2 bg-neutral text-dark rounded-full hover:bg-neutralaccent"
                 >
                   Dejar de seguir
                 </button>

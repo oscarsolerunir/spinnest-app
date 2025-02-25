@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import ItemCollection from './ItemCollection'
+import CollectionItem from './CollectionItem'
 import { useCollections } from '../../contexts/CollectionsContext'
 
 const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
@@ -54,7 +54,7 @@ const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 py-4">
       {collectionsState.map(collection => (
-        <ItemCollection
+        <CollectionItem
           key={collection.id}
           collection={collection}
           onClick={onClick}

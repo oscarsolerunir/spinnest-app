@@ -2,7 +2,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../services/firebase'
 
-const ItemCollection = ({ collection }) => {
+const CollectionItem = ({ collection }) => {
   const navigate = useNavigate()
   const [currentUser] = useAuthState(auth)
 
@@ -67,4 +67,4 @@ const ItemCollection = ({ collection }) => {
   )
 }
 
-export default ItemCollection
+export default CollectionItem
