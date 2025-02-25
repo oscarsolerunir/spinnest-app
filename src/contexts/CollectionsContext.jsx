@@ -4,13 +4,13 @@ import { auth, db } from '../services/firebase'
 import {
   collection,
   query,
-  where,
   onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
   doc
 } from 'firebase/firestore'
+import { createCollection as createCollectionAPI } from '../services/api'
 
 const CollectionsContext = createContext()
 
@@ -19,12 +19,7 @@ export const CollectionsProvider = ({ children }) => {
   const [currentUser] = useAuthState(auth)
 
   useEffect(() => {
-    if (!currentUser) return
-
-    const q = query(
-      collection(db, 'collections'),
-      where('userId', '==', currentUser.uid)
-    )
+    const q = query(collection(db, 'collections'))
 
     const unsubscribe = onSnapshot(q, snapshot => {
       const data = snapshot.docs.map(doc => ({
@@ -35,12 +30,11 @@ export const CollectionsProvider = ({ children }) => {
     })
 
     return () => unsubscribe()
-  }, [currentUser])
+  }, [])
 
-  const addCollection = async collectionData => {
-    const colRef = collection(db, 'collections')
-    const docRef = await addDoc(colRef, collectionData)
-    setCollections(prev => [...prev, { id: docRef.id, ...collectionData }])
+  const addCollection = async (collectionData, user) => {
+    const docId = await createCollectionAPI(collectionData, user)
+    setCollections(prev => [...prev, { id: docId, ...collectionData }])
   }
 
   const updateCollection = async (id, collectionData) => {

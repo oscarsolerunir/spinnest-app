@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react'
 import ItemCollection from './ItemCollection'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth } from '../../services/firebase'
 import { useCollections } from '../../contexts/CollectionsContext'
 
 const CollectionsList = ({ userId, collections, onClick, allUsers }) => {
   const [collectionsState, setCollectionsState] = useState(collections || [])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [currentUser] = useAuthState(auth)
   const { collections: contextCollections } = useCollections()
 
   useEffect(() => {

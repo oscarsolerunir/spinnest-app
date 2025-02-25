@@ -2,9 +2,15 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../services/firebase'
 import { Link } from 'react-router-dom'
 import CollectionsList from '../components/Collections/CollectionsList'
+import { useCollections } from '../contexts/CollectionsContext'
 
 const UserCollectionsPage = () => {
   const [user] = useAuthState(auth)
+  const { collections } = useCollections()
+
+  const userCollections = collections.filter(
+    collection => collection.userId === user?.uid
+  )
 
   return (
     <div className="p-4">
@@ -14,8 +20,8 @@ const UserCollectionsPage = () => {
           Añadir colección
         </button>
       </Link>
-      {user?.uid ? (
-        <CollectionsList userId={user.uid} />
+      {userCollections.length > 0 ? (
+        <CollectionsList collections={userCollections} />
       ) : (
         <p className="mt-4">No has añadido ninguna colección todavía.</p>
       )}

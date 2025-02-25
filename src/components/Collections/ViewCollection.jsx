@@ -52,7 +52,7 @@ const ViewCollection = () => {
     <div className="mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{collection.name}</h1>
       <p>
-        <strong>Creada por:</strong> {collection.userName}
+        <strong>Creada por:</strong> {collection.userName || 'Desconocido'}
       </p>
       <p>
         <strong>Descripción:</strong> {collection.description}

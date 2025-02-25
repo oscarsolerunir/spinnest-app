@@ -53,8 +53,13 @@ const EditCollection = () => {
   }, [id, user, collections])
 
   const handleSubmit = async collectionData => {
+    const updatedCollection = {
+      ...collectionData,
+      userName: user.displayName || user.name || 'Usuario desconocido'
+    }
+
     try {
-      await updateCollection(id, collectionData)
+      await updateCollection(id, updatedCollection, user)
       alert('La colección se ha actualizado con éxito.')
       navigate(`/collections`)
     } catch {
