@@ -39,7 +39,7 @@ const UserDetailsPage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-2xl font-medium mb-4">Información del Usuario</h2>
       <p className="mb-2">
         <strong>Nombre:</strong> {name}

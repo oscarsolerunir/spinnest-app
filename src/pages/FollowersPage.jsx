@@ -10,7 +10,7 @@ const FollowersPage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h1 className="text-2xl font-medium mb-4">Seguidores</h1>
       <UsersList userId={user.uid} filterType="followers" />
     </div>

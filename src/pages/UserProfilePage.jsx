@@ -143,7 +143,7 @@ const UserProfilePage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <div className="flex md:items-center flex-col md:flex-row justify-between">
         <h1 className="text-2xl font-medium mb-3">Perfil de {userName}</h1>
         {currentUser && currentUser.uid !== selectedUserId && (

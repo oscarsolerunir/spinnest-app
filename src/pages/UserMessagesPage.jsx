@@ -74,7 +74,7 @@ const UserMessagesPage = () => {
   }
 
   return (
-    <div className="py-4 max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <h2 className="text-xl font-medium mb-4">Mensajes con {userName}</h2>
       <div className="flex flex-col h-full">
         <div className="flex-1 overflow-y-auto p-4">

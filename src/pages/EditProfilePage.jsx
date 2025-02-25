@@ -9,7 +9,7 @@ const EditProfilePage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-2xl font-medium mb-4">Editar Perfil</h2>
       <EditUser />
       <button

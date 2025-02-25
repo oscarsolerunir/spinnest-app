@@ -13,7 +13,7 @@ const UserCollectionsPage = () => {
   )
 
   return (
-    <div className="p-4">
+    <div>
       <h1 className="text-2xl font-medium mb-4">Tus colecciones</h1>
       <Link to="/add-collection">
         <button className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium">

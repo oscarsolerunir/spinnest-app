@@ -156,7 +156,7 @@ const Navigation = ({ menuOpen, setMenuOpen }) => {
   }
 
   return (
-    <nav className="pt-4 flex justify-between items-center">
+    <nav className="md:pt-4 flex justify-between items-center">
       <ul
         className={`${
           menuOpen ? 'flex' : 'hidden'

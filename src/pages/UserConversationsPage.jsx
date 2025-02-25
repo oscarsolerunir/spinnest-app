@@ -12,7 +12,7 @@ const UserConversationsPage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h1 className="text-2xl font-medium mb-4">Mensajes</h1>
       <div className="py-4">
         {conversations.length > 0 ? (

@@ -122,7 +122,7 @@ const FeedPage = () => {
   }
 
   return (
-    <div className="p-4">
+    <div>
       <h1 className="text-2xl font-medium mb-4">Feed</h1>
       <h2 className="text-xl font-medium mb-2">Álbums</h2>
       {feedAlbums.length > 0 ? (
