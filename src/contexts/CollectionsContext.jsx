@@ -5,7 +5,6 @@ import {
   collection,
   query,
   onSnapshot,
-  addDoc,
   updateDoc,
   deleteDoc,
   doc
@@ -16,7 +15,7 @@ const CollectionsContext = createContext()
 
 export const CollectionsProvider = ({ children }) => {
   const [collections, setCollections] = useState([])
-  const [currentUser] = useAuthState(auth)
+  useAuthState(auth)
 
   useEffect(() => {
     const q = query(collection(db, 'collections'))

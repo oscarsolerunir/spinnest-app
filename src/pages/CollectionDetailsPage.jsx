@@ -22,7 +22,7 @@ const CollectionDetailsPage = () => {
           throw new Error('Colección no encontrada')
         }
         setCollection(data)
-      } catch (error) {
+      } catch {
         setError(
           'Hubo un error al cargar la colección. Por favor, inténtalo de nuevo.'
         )
