@@ -30,7 +30,7 @@ const CollectionDetailsPage = () => {
         const user = await getUserById(data.userId)
         setUserName(user.name)
         setUserId(user.id)
-      } catch (error) {
+      } catch {
         setError(
           'Hubo un error al cargar la colección. Por favor, inténtalo de nuevo.'
         )
