@@ -115,7 +115,7 @@ const CollectionForm = ({
       <div className="space-x-2">
         <button
           type="submit"
-          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
         >
           {submitButtonText}
         </button>
@@ -123,7 +123,7 @@ const CollectionForm = ({
           <button
             type="button"
             onClick={onDelete}
-            className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-red-500 hover:bg-red-700 text-lg font-bold"
+            className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-red-500 hover:bg-red-700 text-lg font-medium"
           >
             Eliminar Colección
           </button>
@@ -132,7 +132,7 @@ const CollectionForm = ({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 bg-dark text-light rounded hover:bg-dark"
+            className="px-4 py-2 bg-dark text-neutralaccent hover:text-light rounded hover:bg-dark"
           >
             Volver a Colecciones
           </button>

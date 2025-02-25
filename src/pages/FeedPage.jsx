@@ -123,8 +123,8 @@ const FeedPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Feed</h1>
-      <h2 className="text-xl font-semibold mb-2">Álbums</h2>
+      <h1 className="text-2xl font-medium mb-4">Feed</h1>
+      <h2 className="text-xl font-medium mb-2">Álbums</h2>
       {feedAlbums.length > 0 ? (
         <AlbumsList
           albums={feedAlbums}
@@ -138,7 +138,7 @@ const FeedPage = () => {
         <p>No hay álbumes disponibles.</p>
       )}
 
-      <h2 className="text-xl font-semibold mb-2">Colecciones</h2>
+      <h2 className="text-xl font-medium mb-2">Colecciones</h2>
       {loadingCollections ? (
         <p>Cargando colecciones...</p>
       ) : collections.length > 0 ? (

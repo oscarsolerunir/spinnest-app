@@ -37,12 +37,12 @@ const LoginPage = () => {
 
   return (
     <div className="max-w-md mx-auto my-10 p-4">
-      <h1 className="text-3xl font-bold mb-4">Bienvenido a Spinnest</h1>
+      <h1 className="text-3xl font-medium mb-4">Bienvenido a Spinnest</h1>
       <p className="mb-4">
         Organiza y comparte tu colección de discos con tus amigos
       </p>
       <form onSubmit={handleLogin} className="space-y-4">
-        <h2 className="text-2xl font-semibold mb-2">Inico de sesión</h2>
+        <h2 className="text-2xl font-medium mb-2">Inico de sesión</h2>
         <div>
           <label className="block text-sm font-medium text-light mb-3">
             Email:
@@ -50,7 +50,7 @@ const LoginPage = () => {
           <input
             type="email"
             value={email}
-            placeholder='Escribe tu email'
+            placeholder="Escribe tu email"
             onChange={e => setEmail(e.target.value)}
             required
             className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
@@ -63,7 +63,7 @@ const LoginPage = () => {
           <input
             type="contraseña"
             value={password}
-            placeholder='Escribe tu contraseña'
+            placeholder="Escribe tu contraseña"
             onChange={e => setPassword(e.target.value)}
             required
             className="mb-4 p-4 text-lg block w-full border-none rounded bg-darkaccent focus:outline-none focus:ring-2 focus:ring-primary active:outline-none active:ring-2 active:ring-primary"
@@ -73,7 +73,7 @@ const LoginPage = () => {
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 w-full px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+          className="mt-2 w-full px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
         >
           {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </button>

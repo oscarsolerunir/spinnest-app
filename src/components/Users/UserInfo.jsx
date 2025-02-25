@@ -40,7 +40,7 @@ const UserInfo = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
+      <h2 className="text-2xl font-medium mb-4">Información del Usuario</h2>
       <p className="mb-2">
         <strong>Nombre:</strong> {name}
       </p>
@@ -49,13 +49,13 @@ const UserInfo = () => {
       </p>
       <button
         onClick={handleEditProfile}
-        className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+        className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
       >
         Editar Perfil
       </button>
       <button
         onClick={handleSignOut}
-        className="mt-2 ml-4 px-4 py-2 text-black rounded-full font-medium bg-neutral hover:bg-neutralaccent text-lg font-bold"
+        className="mt-2 ml-4 px-4 py-2 text-black rounded-full font-medium bg-neutral hover:bg-neutralaccent text-lg font-medium"
       >
         Cerrar sesión
       </button>

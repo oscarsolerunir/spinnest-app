@@ -63,8 +63,8 @@ const ExplorePage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Explorar</h1>
-      <h2 className="text-xl font-semibold mb-2">Todos los álbumes</h2>
+      <h1 className="text-2xl font-medium mb-4">Explorar</h1>
+      <h2 className="text-xl font-medium mb-2">Todos los álbumes</h2>
       <AlbumsList
         albums={allAlbums}
         showCollectedBy={false}
@@ -74,14 +74,14 @@ const ExplorePage = () => {
         handleAddToMyAlbums={handleAddToMyAlbums}
       />
 
-      <h2 className="text-xl font-semibold mb-2">Todas las colecciones</h2>
+      <h2 className="text-xl font-medium mb-2">Todas las colecciones</h2>
       <CollectionsList
         collections={collections}
         onClick={handleCollectionClick}
         allUsers
       />
 
-      <h2 className="text-xl font-semibold mb-2">Todos los usuarios</h2>
+      <h2 className="text-xl font-medium mb-2">Todos los usuarios</h2>
       {user ? (
         <UserList userId={user.uid} />
       ) : (

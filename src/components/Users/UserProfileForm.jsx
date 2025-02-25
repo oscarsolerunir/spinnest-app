@@ -82,7 +82,7 @@ const UserProfileForm = () => {
 
   return (
     <form onSubmit={handleSaveChanges} className="space-y-4 max-w-3xl mx-0">
-      <h2 className="text-2xl font-bold mb-4">Perfil de usuario</h2>
+      <h2 className="text-2xl font-medium mb-4">Perfil de usuario</h2>
       <div>
         <label className="block text-sm font-medium text-light mb-3">
           Nombre:
@@ -123,14 +123,14 @@ const UserProfileForm = () => {
       <div className="flex space-x-2">
         <button
           type="submit"
-          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
         >
           Guardar cambios
         </button>
         <button
           type="button"
           onClick={handleDeleteAccount}
-          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-red-500 hover:bg-red-600 text-lg font-bold"
+          className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-red-500 hover:bg-red-600 text-lg font-medium"
         >
           Borrar cuenta
         </button>

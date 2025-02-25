@@ -22,7 +22,7 @@ const UserConversations = () => {
               className={`p-4 rounded-md bg-darkaccent hover:bg-dark cursor-pointer ${
                 convo.readBy && convo.readBy.includes(auth.currentUser.uid)
                   ? 'font-normal'
-                  : 'font-bold'
+                  : 'font-medium'
               }`}
             >
               <strong>{convo.userName}</strong> - {convo.lastMessage} -{' '}

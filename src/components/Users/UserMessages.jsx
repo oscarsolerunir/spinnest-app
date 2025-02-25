@@ -104,7 +104,7 @@ const UserMessages = ({ conversationId }) => {
         />
         <button
           onClick={handleSend}
-          className="ml-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+          className="ml-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
         >
           Enviar
         </button>

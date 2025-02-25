@@ -59,7 +59,7 @@ const AddCollectionPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Añadir colección</h1>
+      <h1 className="text-2xl font-medium mb-4">Añadir colección</h1>
       <CollectionForm
         userAlbums={userAlbums}
         onSubmit={handleSubmit}

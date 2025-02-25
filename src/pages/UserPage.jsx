@@ -132,33 +132,35 @@ const UserPage = () => {
   return (
     <div className="p-4">
       <div className="flex md:items-center flex-col md:flex-row justify-between">
-        <h1 className="text-2xl font-bold mb-3">Perfil de {userName}</h1>
-        <div className="mb-6 flex items-end font-medium gap-6">
-          {following ? (
+        <h1 className="text-2xl font-medium mb-3">Perfil de {userName}</h1>
+        {currentUser && currentUser.uid !== selectedUserId && (
+          <div className="mb-6 flex items-end font-medium gap-6">
+            {following ? (
+              <button
+                onClick={handleUnfollow}
+                className="px-4 py-2 bg-neutral text-dark rounded-full hover:bg-neutralaccent"
+              >
+                Dejar de seguir
+              </button>
+            ) : (
+              <button
+                onClick={handleFollow}
+                className="px-4 py-2 bg-primary text-dark text-medium rounded-full hover:bg-accent"
+              >
+                Seguir
+              </button>
+            )}
             <button
-              onClick={handleUnfollow}
-              className="px-4 py-2 bg-neutral text-dark rounded-full hover:bg-neutralaccent"
+              onClick={handleSendMessage}
+              className="py-2 mt-3 text-light flex items-center"
             >
-              Dejar de seguir
+              <FaEnvelope className="mr-2" />
+              Enviar mensaje
             </button>
-          ) : (
-            <button
-              onClick={handleFollow}
-              className="px-4 py-2 bg-primary text-dark text-medium rounded-full hover:bg-accent"
-            >
-              Seguir
-            </button>
-          )}
-          <button
-            onClick={handleSendMessage}
-            className="py-2 mt-3 text-light flex items-center"
-          >
-            <FaEnvelope className="mr-2" />
-            Enviar mensaje
-          </button>
-        </div>
+          </div>
+        )}
       </div>
-      <h2 className="text-xl font-semibold mb-2">Álbumes del Usuario</h2>
+      <h2 className="text-xl font-medium mb-2">Álbumes del Usuario</h2>
       {filteredAlbums && filteredAlbums.length > 0 ? (
         <AlbumsList
           albums={filteredAlbums}
@@ -171,7 +173,7 @@ const UserPage = () => {
       ) : (
         <p>{userName} usuario no tiene álbumes agregados.</p>
       )}
-      <h2 className="text-xl font-semibold mb-2">Colecciones de {userName}</h2>
+      <h2 className="text-xl font-medium mb-2">Colecciones de {userName}</h2>
       {filteredCollections && filteredCollections.length > 0 ? (
         <CollectionsList collections={filteredCollections} />
       ) : (

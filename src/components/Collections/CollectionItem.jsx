@@ -40,7 +40,7 @@ const CollectionItem = ({ collection }) => {
           ></div>
         ))}
       </div>
-      <h3 className="mt-2 mb-2 text-lg font-semibold truncate">
+      <h3 className="mt-2 mb-2 text-lg font-medium truncate">
         {collection.name}
       </h3>
       {collection.description && (
@@ -48,7 +48,7 @@ const CollectionItem = ({ collection }) => {
       )}
       <Link
         to={`/collection/${collection.id}`}
-        className="hover:underline my-2 block text-spotifyGreen"
+        className="hover:underline my-2 block text-primary"
       >
         Ver colección
       </Link>
@@ -58,7 +58,7 @@ const CollectionItem = ({ collection }) => {
             e.stopPropagation()
             navigate(`/edit-collection/${collection.id}`)
           }}
-          className="mt-2 px-4 py-2 text-light bg-darkaccent rounded-full hover:bg-dark"
+          className="mt-2 px-4 py-2 text-dark font-medium bg-neutral rounded-full hover:bg-neutralaccent"
         >
           Editar Colección
         </button>

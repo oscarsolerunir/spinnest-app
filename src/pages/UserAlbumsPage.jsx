@@ -30,9 +30,9 @@ const UserAlbumsPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Tus álbumes</h1>
+      <h1 className="text-2xl font-medium mb-4">Tus álbumes</h1>
       <Link to="/add-album">
-        <button className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold">
+        <button className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium">
           Añadir álbum
         </button>
       </Link>

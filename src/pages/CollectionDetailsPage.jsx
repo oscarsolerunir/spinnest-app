@@ -54,9 +54,9 @@ const CollectionDetailsPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Ver Colección</h1>
+      <h1 className="text-2xl font-medium mb-4">Ver Colección</h1>
       <div className="mx-auto py-4">
-        <h1 className="text-2xl font-bold mb-4">{collection.name}</h1>
+        <h1 className="text-2xl font-medium mb-4">{collection.name}</h1>
         <p>
           <strong>Creada por:</strong> {collection.userName || 'Desconocido'}
         </p>
@@ -67,7 +67,7 @@ const CollectionDetailsPage = () => {
           <strong>Privacidad:</strong>{' '}
           {collection.privacy === 'public' ? 'Pública' : 'Privada'}
         </p>
-        <h2 className="text-xl font-semibold mt-4 mb-2">Álbums:</h2>
+        <h2 className="text-xl font-medium mt-4 mb-2">Álbums:</h2>
         <AlbumsList
           albums={collection.albums}
           showCollectedBy={false}
@@ -78,7 +78,7 @@ const CollectionDetailsPage = () => {
         {isOwner && (
           <button
             onClick={() => navigate(`/edit-collection/${id}`)}
-            className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+            className="mt-2 px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
           >
             Editar Colección
           </button>
@@ -86,7 +86,7 @@ const CollectionDetailsPage = () => {
       </div>
       <button
         onClick={handleBackClick}
-        className="mt-6 text-light rounded-full font-medium text-lg font-bold"
+        className="mt-6 text-neutralaccent hover:text-light rounded-full font-medium text-lg font-medium"
       >
         Volver
       </button>

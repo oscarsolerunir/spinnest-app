@@ -123,9 +123,7 @@ const AlbumItem = ({
           alt={album.name}
           className="max-w-full h-auto rounded-2xl shadow-xl"
         />
-        <h3 className="mt-2 mb-2 text-lg font-semibold truncate">
-          {album.name}
-        </h3>
+        <h3 className="mt-2 mb-2 text-lg font-medium truncate">{album.name}</h3>
         <p className="text-light truncate">Artista: {albumArtist}</p>
         <p className="text-light truncate">Año: {albumYear}</p>
         <p className="text-light truncate">Género: {albumGenre}</p>

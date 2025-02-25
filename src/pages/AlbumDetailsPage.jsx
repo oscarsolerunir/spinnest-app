@@ -144,7 +144,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         />
       </div>
       <div className="overflow-y-auto">
-        <h3 className="my-4 text-3xl font-bold text-light">{album.name}</h3>
+        <h3 className="my-4 text-3xl font-medium text-light">{album.name}</h3>
         <p className="text-lg text-light">
           {album.artist || 'Artista desconocido'}
         </p>
@@ -203,7 +203,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         </ol>
         {album.videos?.length > 0 && (
           <div className="mt-4">
-            <h4 className="text-2xl font-bold text-light">Videos</h4>
+            <h4 className="text-2xl font-medium text-light">Videos</h4>
             {album.videos.map((video, index) => (
               <div key={index} className="mt-2">
                 <a
@@ -257,7 +257,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
               isInMyAlbums
                 ? 'bg-neutral hover:bg-neutralaccent'
                 : 'bg-primary hover:bg-accent'
-            } text-lg font-bold`}
+            } text-lg font-medium`}
           >
             {isInMyAlbums ? 'Eliminar de mis albums' : 'Añadir a mis albums'}
           </button>
@@ -275,7 +275,7 @@ const AlbumDetailsPage = ({ showCollectedBy = true }) => {
         </div>
         <button
           onClick={handleBackClick}
-          className="mt-6 text-light rounded-full font-medium text-lg font-bold"
+          className="mt-6 text-neutralaccent hover:text-light rounded-full font-medium text-lg font-medium"
         >
           Volver
         </button>

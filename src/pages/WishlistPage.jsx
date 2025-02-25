@@ -59,7 +59,7 @@ const WishlistPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Wishlist</h1>
+      <h1 className="text-2xl font-medium mb-4">Wishlist</h1>
       {albums.length > 0 ? (
         <AlbumsList
           albums={albums}

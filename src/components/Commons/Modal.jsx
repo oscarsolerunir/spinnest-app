@@ -4,7 +4,7 @@ const Modal = ({ showModal, handleDeleteAlbum, setShowModal }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-dark bg-opacity-50">
       <div className="bg-white p-6 rounded shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Confirmar Eliminación</h2>
+        <h2 className="text-xl font-medium mb-4">Confirmar Eliminación</h2>
         <p className="mb-4">
           ¿Estás seguro de que quieres eliminar este álbum?
         </p>

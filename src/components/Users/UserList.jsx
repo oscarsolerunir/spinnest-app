@@ -164,7 +164,7 @@ const UserList = ({ userId, filterType }) => {
           >
             <div className="flex justify-between items-center">
               <div>
-                <p className="font-bold text-lg truncate">{u.name}</p>
+                <p className="font-medium text-lg truncate">{u.name}</p>
                 <p className="text-light truncate">
                   {userAlbums[u.id] || 0} álbums y {userCollections[u.id] || 0}{' '}
                   colecciones

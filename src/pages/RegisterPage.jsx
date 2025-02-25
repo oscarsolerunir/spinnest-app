@@ -52,10 +52,10 @@ const RegisterPage = () => {
 
   return (
     <div className="max-w-md mx-auto my-10 p-4">
-      <h1 className="text-3xl font-bold mb-4">Bienvenido a Spinnest</h1>
+      <h1 className="text-3xl font-medium mb-4">Bienvenido a Spinnest</h1>
       <p className="mb-4">Comparte tu colección de discos con tus amigos</p>
       <form onSubmit={handleRegister} className="space-y-4">
-        <h2 className="text-2xl font-semibold mb-2">Registro</h2>
+        <h2 className="text-2xl font-medium mb-2">Registro</h2>
         <div>
           <label className="block text-sm font-medium text-light mb-3">
             Nombre:
@@ -99,7 +99,7 @@ const RegisterPage = () => {
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 w-full px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-bold"
+          className="mt-2 w-full px-4 py-2 text-black rounded-full font-medium bg-primary hover:bg-accent text-lg font-medium"
         >
           {loading ? 'Registrando usuario...' : 'Regístrate'}
         </button>
