@@ -17,13 +17,13 @@ import CollectionDetailsPage from '../pages/CollectionDetailsPage'
 import UserCollectionsPage from '../pages/UserCollectionsPage'
 import LoginPage from '../pages/LoginPage'
 import RegisterPage from '../pages/RegisterPage'
-import UserProfilePage from '../pages/UserProfilePage'
+import UserDetailsPage from '../pages/UserDetailsPage'
 import EditProfilePage from '../pages/EditProfilePage'
 import UserConversationsPage from '../pages/UserConversationsPage'
 import UserMessagesPage from '../pages/UserMessagesPage'
 import FollowersPage from '../pages/FollowersPage'
 import FollowingPage from '../pages/FollowingPage'
-import UserPage from '../pages/UserPage'
+import UserProfilePage from '../pages/UserProfilePage'
 import FeedPage from '../pages/FeedPage'
 import WishlistPage from '../pages/WishlistPage'
 
@@ -41,7 +41,10 @@ const RouterApp = () => {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/followers" element={<FollowersPage />} />
                       <Route path="/following" element={<FollowingPage />} />
-                      <Route path="/user/:userId" element={<UserPage />} />
+                      <Route
+                        path="/user/:userId"
+                        element={<UserProfilePage />}
+                      />
                       <Route path="/feed" element={<FeedPage />} />
                       <Route
                         path="/add-album"
@@ -98,7 +101,7 @@ const RouterApp = () => {
                         path="/profile"
                         element={
                           <PrivateRoute>
-                            <UserProfilePage />
+                            <UserDetailsPage />
                           </PrivateRoute>
                         }
                       />
